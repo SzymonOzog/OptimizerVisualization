@@ -15,6 +15,7 @@ extern "C" {
 #endif
     char* finish_string(char* start);
     Buffer* create_buffer(int width, int height);
+    void free_buffer(Buffer* buffer);
 #ifdef __cplusplus
 }
 
@@ -36,4 +37,9 @@ Buffer* create_buffer(int width, int height){
         buffer->data[i].z = 1.0f;
     }
     return buffer;
+}
+
+void free_buffer(Buffer* buffer){
+    delete[] buffer->data;
+    delete buffer;
 }

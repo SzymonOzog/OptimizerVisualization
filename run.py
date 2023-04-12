@@ -33,3 +33,5 @@ if __name__ == '__main__':
     print(data)
     cv2.imshow('test', data)
     cv2.waitKey(0)
+
+    c_lib.free_buffer(ctypes.c_void_p(out))
