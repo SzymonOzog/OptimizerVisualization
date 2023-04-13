@@ -1,3 +1,5 @@
+#include <vector>
+
 struct Vec3 
 {
     float x, y, z;
@@ -16,6 +18,13 @@ struct Point
 };
 
 
+struct IndexedLineVector
+{
+    std::vector<Vec3> vertices;
+    std::vector<int> indices;
+};
+
+
 class BufferController
 {
 public:
@@ -24,7 +33,11 @@ public:
 
     Buffer* GetBuffer();
 
+  
+
 private:
+
+    Point ProjectToScreen(const Vec3& vertex);
     void DrawLine(Buffer* buffer, Point a, Point b, Vec3 Color);
     void PutPixel(Buffer* buffer, Point a, Vec3 Color);
 
