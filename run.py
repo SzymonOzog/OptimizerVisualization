@@ -36,4 +36,4 @@ if __name__ == '__main__':
     cv2.imshow('test', data)
     cv2.waitKey(0)
 
-    c_lib.BufferController_Destroy(buffer_controller)
+    c_lib.BufferController_Destroy(ctypes.c_void_p(buffer_controller))
