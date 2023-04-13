@@ -13,25 +13,27 @@ class Vec3(ctypes.Structure):
 class Buffer(ctypes.Structure):
     _fields_ = [("data", ctypes.POINTER(Vec3)),
                 ("size", ctypes.c_int)]
+    
 
 if __name__ == '__main__':
-    libname = pathlib.Path().absolute() /'obj'/'libutils.dll'
-    print(find_library(str(libname)))
-    c_lib = ctypes.cdll.LoadLibrary(str(libname))
-    c_lib.create_buffer.restype = ctypes.c_void_p
 
     w,h = 500,500
-    out = c_lib.create_buffer(w,h)
-    
-    buffer = Buffer.from_address(out)
-    print(buffer.size)
+
+    libname = pathlib.Path().absolute() /'obj'/'libbuffer.dll'
+    c_lib = ctypes.cdll.LoadLibrary(str(libname))
+
+    c_lib.BufferController_Create.restype = ctypes.c_void_p
+    c_lib.GetBuffer.restype = ctypes.c_void_p
+
+    buffer_controller = c_lib.BufferController_Create(w,h)
+    buffer = Buffer.from_address(c_lib.GetBuffer(ctypes.c_void_p(buffer_controller)))
+
 
     data = np.zeros((h,w,3), dtype=np.float32)
     for i in range(h):
         for j in range(w):
             data[i,j] = [buffer.data[i*w+j].x, buffer.data[i*w+j].y, buffer.data[i*w+j].z]
-    print(data)
     cv2.imshow('test', data)
     cv2.waitKey(0)
 
-    c_lib.free_buffer(ctypes.c_void_p(out))
+    c_lib.BufferController_Delete(buffer_controller)
