@@ -17,6 +17,9 @@ class Buffer(ctypes.Structure):
 
 if __name__ == '__main__':
 
+    os.system('g++ -c source/*')
+    os.system('g++ -static -shared -o obj/libbuffer.dll BufferController.o utils.o')
+
     w,h = 500,500
 
     libname = pathlib.Path().absolute() /'obj'/'libbuffer.dll'
