@@ -1,5 +1,30 @@
 #include <vector>
 
+struct Mat3
+{
+    std::vector<std::vector<float>> data;
+
+    Mat3()
+    {
+        data.resize(3);
+        for (int i = 0; i < 3; i++)
+        {
+            data[i].resize(3);
+        }
+    }
+
+    static Mat3 Identity()
+    {
+        Mat3 result;
+        result.data[0][0] = 1.0f;
+        result.data[1][1] = 1.0f;
+        result.data[2][2] = 1.0f;
+        return result;
+    }
+
+    
+};
+
 struct Vec3 
 {
     float x, y, z;
