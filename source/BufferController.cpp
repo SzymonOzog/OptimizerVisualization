@@ -52,14 +52,15 @@ BufferController::BufferController(int width, int height)
 
     cube.projectedVertices.resize(cube.vertices.size());
 
+    Mat3 rotation = Mat3::RotationZ(45.0f) * Mat3::RotationY(45.f) * Mat3::RotationX(45.0f);
     for (int i = 0; i < cube.vertices.size(); i++)
     {
-        cube.projectedVertices[i] = ProjectToScreen(cube.vertices[i]);
+        cube.projectedVertices[i] = ProjectToScreen(rotation * cube.vertices[i]);
     }
 
     for (int i = 0; i < cube.indices.size(); i += 2)
     {
-        DrawLine(buffer, cube.projectedVertices[cube.indices[i]], cube.projectedVertices[cube.indices[i + 1]], Vec3{ 1.0f, 1.0f, 1.0f });
+        DrawLine(buffer, cube.projectedVertices[cube.indices[i]], cube.projectedVertices[cube.indices[i + 1]], Vec3{ 1.0f, 0.0f, 1.0f });
     }
 
 }
