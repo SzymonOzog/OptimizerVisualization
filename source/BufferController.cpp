@@ -50,9 +50,16 @@ BufferController::BufferController(int width, int height)
     cube.indices.push_back(3);
     cube.indices.push_back(7);
 
+    cube.projectedVertices.resize(cube.vertices.size());
+
+    for (int i = 0; i < cube.vertices.size(); i++)
+    {
+        cube.projectedVertices[i] = ProjectToScreen(cube.vertices[i]);
+    }
+
     for (int i = 0; i < cube.indices.size(); i += 2)
     {
-        DrawLine(buffer, ProjectToScreen(cube.vertices[cube.indices[i]]), ProjectToScreen(cube.vertices[cube.indices[i + 1]]), Vec3{ 1.0f, 1.0f, 1.0f });
+        DrawLine(buffer, cube.projectedVertices[cube.indices[i]], cube.projectedVertices[cube.indices[i + 1]], Vec3{ 1.0f, 1.0f, 1.0f });
     }
 
 }
