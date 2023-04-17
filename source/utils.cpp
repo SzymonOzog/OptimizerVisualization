@@ -18,6 +18,11 @@ extern "C"
     {
         return bufferController->GetBuffer();
     }
+
+    void FillBuffer(BufferController* bufferController, const ViewInfo& viewInfo)
+    {
+        bufferController->FillBuffer(viewInfo);
+    }
 #ifdef __cplusplus
 }
 #endif

@@ -8,7 +8,16 @@ BufferController::BufferController(int width, int height)
     buffer->data = new Vec3[width * height];
     buffer->width = width;
     buffer->height = height;
+}
 
+BufferController::~BufferController()
+{
+    delete[] buffer->data;
+    delete buffer;
+}
+
+void BufferController::FillBuffer(const ViewInfo& viewInfo)
+{
     for (int i = 0; i < buffer->width * buffer->height; i++)
     {
         PutPixel(buffer, Point{ i % buffer->width, i / buffer->width }, Vec3{ 0.0f, 0.0f, 0.0f });
@@ -52,7 +61,7 @@ BufferController::BufferController(int width, int height)
 
     cube.projectedVertices.resize(cube.vertices.size());
 
-    Mat3 rotation = Mat3::RotationZ(45.0f) * Mat3::RotationY(45.f) * Mat3::RotationX(45.0f);
+    Mat3 rotation = Mat3::RotationZ(viewInfo.RotZ) * Mat3::RotationY(viewInfo.RotY) * Mat3::RotationX(viewInfo.RotX);
     for (int i = 0; i < cube.vertices.size(); i++)
     {
         cube.projectedVertices[i] = ProjectToScreen(rotation * cube.vertices[i]);
@@ -62,13 +71,6 @@ BufferController::BufferController(int width, int height)
     {
         DrawLine(buffer, cube.projectedVertices[cube.indices[i]], cube.projectedVertices[cube.indices[i + 1]], Vec3{ 1.0f, 0.0f, 1.0f });
     }
-
-}
-
-BufferController::~BufferController()
-{
-    delete[] buffer->data;
-    delete buffer;
 }
 
 Buffer* BufferController::GetBuffer()

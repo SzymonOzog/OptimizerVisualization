@@ -87,6 +87,12 @@ struct Mat3
     }
 };
 
+struct ViewInfo
+{
+    float RotX;
+    float RotY;
+    float RotZ;
+};
 
 struct Buffer 
 {
@@ -114,6 +120,7 @@ public:
     BufferController(int width, int height);
     ~BufferController();
 
+    void FillBuffer(const ViewInfo& viewInfo);
     Buffer* GetBuffer();
 
   
