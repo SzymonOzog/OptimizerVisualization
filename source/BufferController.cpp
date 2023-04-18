@@ -20,7 +20,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
 {
     for (int i = 0; i < buffer->width * buffer->height; i++)
     {
-        PutPixel(buffer, Point{ i % buffer->width, i / buffer->width }, Vec3{ 0.0f, 0.0f, 0.0f });
+        PutPixel(Point{ i % buffer->width, i / buffer->width }, Vec3{ 0.0f, 0.0f, 0.0f });
     }
 
     IndexedLineVector cube;
@@ -71,7 +71,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
 
     for (int i = 0; i < cube.indices.size(); i += 2)
     {
-        DrawLine(buffer, cube.projectedVertices[cube.indices[i]], cube.projectedVertices[cube.indices[i + 1]], Vec3{ 1.0f, 0.0f, 1.0f });
+        DrawLine(cube.projectedVertices[cube.indices[i]], cube.projectedVertices[cube.indices[i + 1]], Vec3{ 1.0f, 0.0f, 1.0f });
     }
 }
 
@@ -85,7 +85,7 @@ Point BufferController::ProjectToScreen(const Vec3& vertex)
     return Point{ (int)((vertex.x / vertex.z + 1.0f) * 0.5f * buffer->width), (int)((vertex.y / vertex.z + 1.0f) * 0.5f * buffer->height) };
 }
 
-void BufferController::DrawLine(Buffer* buffer, Point a, Point b, Vec3 Color)
+void BufferController::DrawLine(Point a, Point b, Vec3 Color)
 {
     int dx = b.x - a.x;
     int dy = b.y - a.y;
@@ -96,13 +96,13 @@ void BufferController::DrawLine(Buffer* buffer, Point a, Point b, Vec3 Color)
     float y = a.y;
     for (int i = 0; i <= steps; i++)
     {
-        PutPixel(buffer, Point{ (int)x, (int)y }, Color);
+        PutPixel(Point{ (int)x, (int)y }, Color);
         x += xIncrement;
         y += yIncrement;
     }
 }
 
-void BufferController::PutPixel(Buffer* buffer, Point a, Vec3 Color)
+void BufferController::PutPixel(Point a, Vec3 Color)
 {
     if (a.x < 0 || a.x >= buffer->width || a.y < 0 || a.y >= buffer->height)
     {

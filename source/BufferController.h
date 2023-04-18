@@ -123,13 +123,11 @@ public:
     void FillBuffer(const ViewInfo& viewInfo);
     Buffer* GetBuffer();
 
-  
-
 private:
 
     Point ProjectToScreen(const Vec3& vertex);
-    void DrawLine(Buffer* buffer, Point a, Point b, Vec3 Color);
-    void PutPixel(Buffer* buffer, Point a, Vec3 Color);
+    void DrawLine(Point a, Point b, Vec3 Color);
+    void PutPixel(Point a, Vec3 Color);
 
     Buffer* buffer;
 
