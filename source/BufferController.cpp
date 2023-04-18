@@ -64,7 +64,9 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
     Mat3 rotation = Mat3::RotationZ(viewInfo.RotZ) * Mat3::RotationY(viewInfo.RotY) * Mat3::RotationX(viewInfo.RotX);
     for (int i = 0; i < cube.vertices.size(); i++)
     {
-        cube.projectedVertices[i] = ProjectToScreen(rotation * cube.vertices[i]);
+        cube.vertices[i] = rotation * cube.vertices[i];
+        cube.vertices[i].z += 2.f;
+        cube.projectedVertices[i] = ProjectToScreen(cube.vertices[i]);
     }
 
     for (int i = 0; i < cube.indices.size(); i += 2)
@@ -80,7 +82,7 @@ Buffer* BufferController::GetBuffer()
 
 Point BufferController::ProjectToScreen(const Vec3& vertex)
 {
-    return Point{ (int)((vertex.x + 1.0f) * 0.5f * buffer->width), (int)((vertex.y + 1.0f) * 0.5f * buffer->height) };
+    return Point{ (int)((vertex.x / vertex.z + 1.0f) * 0.5f * buffer->width), (int)((vertex.y / vertex.z + 1.0f) * 0.5f * buffer->height) };
 }
 
 void BufferController::DrawLine(Buffer* buffer, Point a, Point b, Vec3 Color)
@@ -102,5 +104,9 @@ void BufferController::DrawLine(Buffer* buffer, Point a, Point b, Vec3 Color)
 
 void BufferController::PutPixel(Buffer* buffer, Point a, Vec3 Color)
 {
+    if (a.x < 0 || a.x >= buffer->width || a.y < 0 || a.y >= buffer->height)
+    {
+        return;
+    }
     buffer->data[a.x + a.y * buffer->width] = Color;
 }
