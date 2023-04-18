@@ -23,41 +23,27 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         PutPixel(Point{ i % buffer->width, i / buffer->width }, Vec3{ 0.0f, 0.0f, 0.0f });
     }
 
-    IndexedLineVector cube;
+    IndexedTriangleVector cube;
     float size = 0.5f;
+
     cube.vertices.push_back(Vec3{ -size, -size, -size });
-    cube.vertices.push_back(Vec3{ size, -size, -size });
-    cube.vertices.push_back(Vec3{ -size, size, -size });
-    cube.vertices.push_back(Vec3{ size, size, -size });
     cube.vertices.push_back(Vec3{ -size, -size, size });
-    cube.vertices.push_back(Vec3{ size, -size, size });
+    cube.vertices.push_back(Vec3{ -size, size, -size });
     cube.vertices.push_back(Vec3{ -size, size, size });
+    cube.vertices.push_back(Vec3{ size, -size, -size });
+    cube.vertices.push_back(Vec3{ size, -size, size });
+    cube.vertices.push_back(Vec3{ size, size, -size });
     cube.vertices.push_back(Vec3{ size, size, size });
-    
-    cube.indices.push_back(0);
-    cube.indices.push_back(1);
-    cube.indices.push_back(1);
-    cube.indices.push_back(3);
-    cube.indices.push_back(3);
-    cube.indices.push_back(2);
-    cube.indices.push_back(2);
-    cube.indices.push_back(0);
-    cube.indices.push_back(4);
-    cube.indices.push_back(5);
-    cube.indices.push_back(5);
-    cube.indices.push_back(7);
-    cube.indices.push_back(7);
-    cube.indices.push_back(6);
-    cube.indices.push_back(6);
-    cube.indices.push_back(4);
-    cube.indices.push_back(0);
-    cube.indices.push_back(4);
-    cube.indices.push_back(1);
-    cube.indices.push_back(5);
-    cube.indices.push_back(2);
-    cube.indices.push_back(6);
-    cube.indices.push_back(3);
-    cube.indices.push_back(7);
+
+    cube.indices = {
+        0, 1, 2, 2, 1, 3,
+        4, 5, 6, 6, 5, 7,
+        0, 2, 4, 4, 2, 6,
+        1, 3, 5, 5, 3, 7,
+        0, 4, 1, 1, 4, 5,
+        2, 6, 3, 3, 6, 7
+    };
+
 
     cube.projectedVertices.resize(cube.vertices.size());
 
@@ -69,9 +55,9 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         cube.projectedVertices[i] = ProjectToScreen(cube.vertices[i]);
     }
 
-    for (int i = 0; i < cube.indices.size(); i += 2)
+    for (int i = 0; i < cube.indices.size(); i += 3)
     {
-        DrawLine(cube.projectedVertices[cube.indices[i]], cube.projectedVertices[cube.indices[i + 1]], Vec3{ 1.0f, 0.0f, 1.0f });
+        DrawTriangle(&cube.projectedVertices[cube.indices[i]], &cube.projectedVertices[cube.indices[i + 1]], &cube.projectedVertices[cube.indices[i + 2]], Vec3{ 1.0f, 0.0f, 1.0f });
     }
 }
 
@@ -83,6 +69,74 @@ Buffer* BufferController::GetBuffer()
 Point BufferController::ProjectToScreen(const Vec3& vertex)
 {
     return Point{ (int)((vertex.x / vertex.z + 1.0f) * 0.5f * buffer->width), (int)((vertex.y / vertex.z + 1.0f) * 0.5f * buffer->height) };
+}
+
+void BufferController::DrawTriangle(Point *v0, Point *v1, Point *v2, Vec3 Color)
+{
+    if(v0->y > v1->y) std::swap(v0, v1);
+    if(v0->y > v2->y) std::swap(v0, v2);
+    if(v1->y > v2->y) std::swap(v1, v2);
+
+    if(v0->y == v1->y) 
+    {
+        DrawFlatTopTriangle(v0, v1, v2, Color);
+    }
+    else if(v1->y == v2->y)
+    {
+        DrawFlatBottomTriangle(v0, v1, v2, Color);
+    }
+    else
+    {
+        Point v3;
+        v3.y = v1->y;
+        v3.x = v0->x + (float)(v1->y - v0->y) / (float)(v2->y - v0->y) * (v2->x - v0->x);
+        DrawFlatBottomTriangle(v0, v1, &v3, Color);
+        DrawFlatTopTriangle(v1, &v3, v2, Color);
+    }
+}
+
+void BufferController::DrawFlatBottomTriangle(Point *v0, Point *v1, Point *v2, Vec3 Color)
+{
+    if(v1->x > v2->x) std::swap(v1, v2);
+
+    float invslope1 = (float)(v1->x - v0->x) / (float)(v1->y - v0->y);
+    float invslope2 = (float)(v2->x - v0->x) / (float)(v2->y - v0->y);
+
+    const int yStart = (int)ceil(v0->y - 0.5f);
+    const int yEnd = (int)ceil(v1->y - 0.5f);
+    
+
+    for (int y = yStart; y < yEnd; y++)
+    {
+        const int xStart = (int)ceil(v0->x + invslope1 * (y + 0.5f - v0->y) - 0.5f);
+        const int xEnd = (int)ceil(v0->x + invslope2 * (y + 0.5f - v0->y) - 0.5f);
+        for (int x = xStart; x < xEnd; x++)
+        {
+            PutPixel(Point{ x, y }, Color);
+        }
+    }
+}
+
+void BufferController::DrawFlatTopTriangle(Point *v0, Point *v1, Point *v2, Vec3 Color)
+{
+    if(v0->x > v1->x) std::swap(v0, v1);
+
+    float invslope1 = (float)(v2->x - v0->x) / (float)(v2->y - v0->y);
+    float invslope2 = (float)(v2->x - v1->x) / (float)(v2->y - v1->y);
+
+    const int yStart = (int)ceil(v0->y - 0.5f);
+    const int yEnd = (int)ceil(v2->y - 0.5f);
+    
+
+    for (int y = yStart; y < yEnd; y++)
+    {
+        const int xStart = (int)ceil(v0->x + invslope1 * (y + 0.5f - v0->y) - 0.5f);
+        const int xEnd = (int)ceil(v1->x + invslope2 * (y + 0.5f - v0->y) - 0.5f);
+        for (int x = xStart; x < xEnd; x++)
+        {
+            PutPixel(Point{ x, y }, Color);
+        }
+    }
 }
 
 void BufferController::DrawLine(Point a, Point b, Vec3 Color)

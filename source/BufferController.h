@@ -113,6 +113,13 @@ struct IndexedLineVector
     std::vector<int> indices;
 };
 
+struct IndexedTriangleVector
+{
+    std::vector<Vec3> vertices;
+    std::vector<Point> projectedVertices;
+    std::vector<int> indices;
+};
+
 
 class BufferController
 {
@@ -126,6 +133,11 @@ public:
 private:
 
     Point ProjectToScreen(const Vec3& vertex);
+
+    void DrawTriangle(Point* v0, Point* v1, Point* v2, Vec3 Color);
+    void DrawFlatBottomTriangle(Point* v0, Point* v1, Point* v2, Vec3 Color);
+    void DrawFlatTopTriangle(Point* v0, Point* v1, Point* v2, Vec3 Color);
+
     void DrawLine(Point a, Point b, Vec3 Color);
     void PutPixel(Point a, Vec3 Color);
 
