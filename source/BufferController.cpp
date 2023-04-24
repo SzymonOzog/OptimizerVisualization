@@ -44,6 +44,10 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         2, 6, 3, 3, 6, 7
     };
 
+    std::vector<Vec3> colors{
+        Color::Red, Color::Green, Color::Blue, Color::Yellow, Color::Cyan, Color::Magenta,
+        Color::Red, Color::Green, Color::Blue, Color::Yellow, Color::Cyan, Color::Magenta
+    };
 
     cube.projectedVertices.resize(cube.vertices.size());
 
@@ -57,7 +61,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
 
     for (int i = 0; i < cube.indices.size(); i += 3)
     {
-        DrawTriangle(&cube.projectedVertices[cube.indices[i]], &cube.projectedVertices[cube.indices[i + 1]], &cube.projectedVertices[cube.indices[i + 2]], Color::White);
+        DrawTriangle(&cube.projectedVertices[cube.indices[i]], &cube.projectedVertices[cube.indices[i + 1]], &cube.projectedVertices[cube.indices[i + 2]], colors[i / 3]);
     }
 }
 
