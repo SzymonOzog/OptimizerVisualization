@@ -26,22 +26,22 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
     IndexedTriangleVector cube;
     float size = 0.5f;
 
-    cube.vertices.push_back(Vec3{ -size, -size, -size });
-    cube.vertices.push_back(Vec3{ -size, -size, size });
-    cube.vertices.push_back(Vec3{ -size, size, -size });
-    cube.vertices.push_back(Vec3{ -size, size, size });
-    cube.vertices.push_back(Vec3{ size, -size, -size });
-    cube.vertices.push_back(Vec3{ size, -size, size });
-    cube.vertices.push_back(Vec3{ size, size, -size });
-    cube.vertices.push_back(Vec3{ size, size, size });
+    cube.vertices.push_back({-size,-size,-size}); // 0
+	cube.vertices.push_back({size,-size,-size}); // 1
+	cube.vertices.push_back({-size,size,-size}); // 2
+	cube.vertices.push_back({size,size,-size}); // 3
+	cube.vertices.push_back({-size,-size,size}); // 4
+	cube.vertices.push_back({size,-size,size}); // 5
+	cube.vertices.push_back({-size,size,size}); // 6
+	cube.vertices.push_back({size,size,size}); // 7
 
     cube.indices = {
-        0, 1, 2, 2, 1, 3,
-        4, 5, 6, 6, 5, 7,
-        0, 2, 4, 4, 2, 6,
-        1, 3, 5, 5, 3, 7,
-        0, 4, 1, 1, 4, 5,
-        2, 6, 3, 3, 6, 7
+        0,2,1, 2,3,1,
+        1,3,5, 3,7,5,
+        2,6,3, 3,6,7,
+        4,5,7, 4,7,6,
+        0,4,2, 2,4,6,
+        0,1,4, 1,5,4
     };
 
     std::vector<Vec3> colors{
