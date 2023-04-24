@@ -20,7 +20,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
 {
     for (int i = 0; i < buffer->width * buffer->height; i++)
     {
-        PutPixel(Point{ i % buffer->width, i / buffer->width }, Vec3{ 0.0f, 0.0f, 0.0f });
+        PutPixel(Point{ i % buffer->width, i / buffer->width }, Color::Black);
     }
 
     IndexedTriangleVector cube;
@@ -57,7 +57,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
 
     for (int i = 0; i < cube.indices.size(); i += 3)
     {
-        DrawTriangle(&cube.projectedVertices[cube.indices[i]], &cube.projectedVertices[cube.indices[i + 1]], &cube.projectedVertices[cube.indices[i + 2]], Vec3{ 1.0f, 0.0f, 1.0f });
+        DrawTriangle(&cube.projectedVertices[cube.indices[i]], &cube.projectedVertices[cube.indices[i + 1]], &cube.projectedVertices[cube.indices[i + 2]], Color::White);
     }
 }
 
