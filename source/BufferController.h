@@ -1,10 +1,65 @@
+#pragma once
 #include <vector>
 #include <cmath>
-
 
 struct Vec3 
 {
     float x, y, z;
+
+    Vec3 operator += (const Vec3& other)
+    {
+        x += other.x;
+        y += other.y;
+        z += other.z;
+        return *this;
+    }
+    Vec3 operator -= (const Vec3& other)
+    {
+        x -= other.x;
+        y -= other.y;
+        z -= other.z;
+        return *this;
+    }
+    Vec3 operator *= (const float& other)
+    {
+        x *= other;
+        y *= other;
+        z *= other;
+        return *this;
+    }
+    Vec3 operator /= (const float& other)
+    {
+        x /= other;
+        y /= other;
+        z /= other;
+        return *this;
+    }
+    Vec3 operator + (const Vec3& other) const
+    {
+        Vec3 result = *this;
+        result += other;
+        return result;
+    }
+    Vec3 operator - (const Vec3& other) const
+    {
+        Vec3 result = *this;
+        result -= other;
+        return result;
+    }
+    Vec3 operator * (const float& other) const
+    {
+        Vec3 result = *this;
+        result *= other;
+        return result;
+    }
+    Vec3 operator / (const float& other) const
+    {
+        Vec3 result = *this;
+        result /= other;
+        return result;
+    }
+
+
 };
 
 struct Mat3
@@ -120,6 +175,22 @@ struct IndexedTriangleVector
     std::vector<int> indices;
 };
 
+
+namespace Math
+{
+    inline float DotProduct(const Vec3& a, const Vec3& b)
+    {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+    inline Vec3 CrossProduct(const Vec3& a, const Vec3& b)
+    {
+        Vec3 result;
+        result.x = a.y * b.z - a.z * b.y;
+        result.y = a.z * b.x - a.x * b.z;
+        result.z = a.x * b.y - a.y * b.x;
+        return result;
+    }
+}
 
 namespace Color
 {
