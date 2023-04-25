@@ -61,7 +61,10 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
 
     for (int i = 0; i < cube.indices.size(); i += 3)
     {
-        if(Math::DotProduct(Math::CrossProduct(cube.vertices[cube.indices[i + 1]] - cube.vertices[cube.indices[i]], cube.vertices[cube.indices[i + 2]] - cube.vertices[cube.indices[i]]), cube.vertices[cube.indices[i]])  <= 0)
+        Vec3 v0 = cube.vertices[cube.indices[i]];
+        Vec3 v1 = cube.vertices[cube.indices[i + 1]];
+        Vec3 v2 = cube.vertices[cube.indices[i + 2]];
+        if(Math::DotProduct(Math::CrossProduct(v1 - v0, v2 - v0), v0)  <= 0)
         {
             DrawTriangle(&cube.projectedVertices[cube.indices[i]], &cube.projectedVertices[cube.indices[i + 1]], &cube.projectedVertices[cube.indices[i + 2]], colors[i / 3]);
         }
