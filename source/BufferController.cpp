@@ -5,7 +5,7 @@
 #include "Color.h"
 #include "Shapes.h"
 
-BufferController::BufferController(int width, int height)
+BufferController::BufferController(int width, int height) : zBuffer(width * height, std::numeric_limits<float>::max())
 {
     buffer = new Buffer();
     buffer->data = new Vec3[width * height];
@@ -26,26 +26,33 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         PutPixel(Point{ i % buffer->width, i / buffer->width }, Color::Black);
     }
 
-    Shape cube = Cube(0.5f);
-    IndexedTriangleVector shape = cube.GetIndexedTriangleVector();
-    std::vector<Vec3> colors = cube.GetColors();
-    
-    Mat3 rotation = Mat3::RotationZ(viewInfo.RotZ) * Mat3::RotationY(viewInfo.RotY) * Mat3::RotationX(viewInfo.RotX);
-    for (int i = 0; i < shape.vertices.size(); i++)
-    {
-        shape.vertices[i] = rotation * shape.vertices[i];
-        shape.vertices[i].z += 2.f;
-        shape.projectedVertices[i] = ProjectToScreen(shape.vertices[i]);
-    }
-
-    for (int i = 0; i < shape.indices.size(); i += 3)
-    {
-        Vec3 v0 = shape.vertices[shape.indices[i]];
-        Vec3 v1 = shape.vertices[shape.indices[i + 1]];
-        Vec3 v2 = shape.vertices[shape.indices[i + 2]];
-        if(Math::DotProduct(Math::CrossProduct(v1 - v0, v2 - v0), v0)  <= 0)
+    Shape cube1 = Cube(0.5f);
+    Shape cube2 = Cube(0.5f);
+    cube1.position = Vec3{ 0.0f, 0.0f, 3.0f };
+    cube2.position = Vec3{ 1.0f, 0.0f, 2.0f };
+    std::vector<Shape> shapes = { cube1, cube2 };
+    for (auto& cube : shapes)
         {
-            DrawTriangle(&shape.projectedVertices[shape.indices[i]], &shape.projectedVertices[shape.indices[i + 1]], &shape.projectedVertices[shape.indices[i + 2]], colors[i / 3]);
+        IndexedTriangleVector shape = cube.GetIndexedTriangleVector();
+        std::vector<Vec3> colors = cube.GetColors();
+        
+        Mat3 rotation = Mat3::RotationZ(viewInfo.RotZ) * Mat3::RotationY(viewInfo.RotY) * Mat3::RotationX(viewInfo.RotX);
+        for (int i = 0; i < shape.vertices.size(); i++)
+        {
+            shape.vertices[i] = rotation * shape.vertices[i];
+            shape.vertices[i] += cube.position;
+            shape.projectedVertices[i] = ProjectToScreen(shape.vertices[i]);
+        }
+
+        for (int i = 0; i < shape.indices.size(); i += 3)
+        {
+            Vec3 v0 = shape.vertices[shape.indices[i]];
+            Vec3 v1 = shape.vertices[shape.indices[i + 1]];
+            Vec3 v2 = shape.vertices[shape.indices[i + 2]];
+            if(Math::DotProduct(Math::CrossProduct(v1 - v0, v2 - v0), v0)  <= 0)
+            {
+                DrawTriangle(&shape.projectedVertices[shape.indices[i]], &shape.projectedVertices[shape.indices[i + 1]], &shape.projectedVertices[shape.indices[i + 2]], colors[i / 3]);
+            }
         }
     }
 }

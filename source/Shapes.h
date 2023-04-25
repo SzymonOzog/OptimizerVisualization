@@ -7,6 +7,8 @@ public:
     IndexedLineVector GetIndexedLineVector();
     IndexedTriangleVector GetIndexedTriangleVector();
     std::vector<Vec3> GetColors();
+
+    Vec3 position;
 protected:
     IndexedLineVector indexedLineVector;
     IndexedTriangleVector indexedTriangleVector;
