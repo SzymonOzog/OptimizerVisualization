@@ -165,13 +165,13 @@ struct Point
 struct IndexedLineVector
 {
     std::vector<Vec3> vertices;
-    std::vector<Point> projectedVertices;
+    std::vector<Vec3> projectedVertices;
     std::vector<int> indices;
 };
 
 struct IndexedTriangleVector
 {
     std::vector<Vec3> vertices;
-    std::vector<Point> projectedVertices;
+    std::vector<Vec3> projectedVertices;
     std::vector<int> indices;
 };

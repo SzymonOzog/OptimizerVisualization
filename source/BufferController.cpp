@@ -24,6 +24,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
     for (int i = 0; i < buffer->width * buffer->height; i++)
     {
         PutPixel(Point{ i % buffer->width, i / buffer->width }, Color::Black);
+        zBuffer[i] = std::numeric_limits<float>::max();
     }
 
     Shape cube1 = Cube(0.5f);
@@ -55,6 +56,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
             }
         }
     }
+
 }
 
 Buffer* BufferController::GetBuffer()
@@ -62,12 +64,12 @@ Buffer* BufferController::GetBuffer()
     return buffer;
 }
 
-Point BufferController::ProjectToScreen(const Vec3& vertex)
+Vec3 BufferController::ProjectToScreen(const Vec3& vertex)
 {
-    return Point{ (int)((vertex.x / vertex.z + 1.0f) * 0.5f * buffer->width), (int)((vertex.y / vertex.z + 1.0f) * 0.5f * buffer->height) };
+    return Vec3{(vertex.x / vertex.z + 1.0f) * 0.5f * buffer->width, (vertex.y / vertex.z + 1.0f) * 0.5f * buffer->height, vertex.z };
 }
 
-void BufferController::DrawTriangle(Point *v0, Point *v1, Point *v2, Vec3 Color)
+void BufferController::DrawTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3 Color)
 {
     if(v0->y > v1->y) std::swap(v0, v1);
     if(v0->y > v2->y) std::swap(v0, v2);
@@ -83,42 +85,51 @@ void BufferController::DrawTriangle(Point *v0, Point *v1, Point *v2, Vec3 Color)
     }
     else
     {
-        Point v3;
+        Vec3 v3;
         v3.y = v1->y;
         v3.x = v0->x + (float)(v1->y - v0->y) / (float)(v2->y - v0->y) * (v2->x - v0->x);
+        v3.z = v0->z + (float)(v1->y - v0->y) / (float)(v2->y - v0->y) * (v2->z - v0->z);
         DrawFlatBottomTriangle(v0, v1, &v3, Color);
         DrawFlatTopTriangle(v1, &v3, v2, Color);
     }
 }
 
-void BufferController::DrawFlatBottomTriangle(Point *v0, Point *v1, Point *v2, Vec3 Color)
+void BufferController::DrawFlatBottomTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3 Color)
 {
     if(v1->x > v2->x) std::swap(v1, v2);
 
     float invslope1 = (float)(v1->x - v0->x) / (float)(v1->y - v0->y);
     float invslope2 = (float)(v2->x - v0->x) / (float)(v2->y - v0->y);
 
+    float zInvslope1 = (float)(v1->z - v0->z) / (float)(v1->y - v0->y);
+    float zInvslope2 = (float)(v2->z - v0->z) / (float)(v2->y - v0->y);
+
     const int yStart = (int)ceil(v0->y - 0.5f);
     const int yEnd = (int)ceil(v1->y - 0.5f);
-    
 
     for (int y = yStart; y < yEnd; y++)
     {
         const int xStart = (int)ceil(v0->x + invslope1 * (y + 0.5f - v0->y) - 0.5f);
         const int xEnd = (int)ceil(v0->x + invslope2 * (y + 0.5f - v0->y) - 0.5f);
+        
+        const float zStart = v0->z + zInvslope1 * (y + 0.5f - v0->y);
+        const float zEnd = v0->z + zInvslope2 * (y + 0.5f - v0->y);
         for (int x = xStart; x < xEnd; x++)
         {
-            PutPixel(Point{ x, y }, Color);
+            PutPixel(Point{ x, y }, Color, zStart + (zEnd - zStart) * (x + 0.5f - xStart) / (xEnd - xStart));
         }
     }
 }
 
-void BufferController::DrawFlatTopTriangle(Point *v0, Point *v1, Point *v2, Vec3 Color)
+void BufferController::DrawFlatTopTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3 Color)
 {
     if(v0->x > v1->x) std::swap(v0, v1);
 
     float invslope1 = (float)(v2->x - v0->x) / (float)(v2->y - v0->y);
     float invslope2 = (float)(v2->x - v1->x) / (float)(v2->y - v1->y);
+
+    float zInvslope1 = (float)(v2->z - v0->z) / (float)(v2->y - v0->y);
+    float zInvslope2 = (float)(v2->z - v1->z) / (float)(v2->y - v1->y);
 
     const int yStart = (int)ceil(v0->y - 0.5f);
     const int yEnd = (int)ceil(v2->y - 0.5f);
@@ -128,9 +139,12 @@ void BufferController::DrawFlatTopTriangle(Point *v0, Point *v1, Point *v2, Vec3
     {
         const int xStart = (int)ceil(v0->x + invslope1 * (y + 0.5f - v0->y) - 0.5f);
         const int xEnd = (int)ceil(v1->x + invslope2 * (y + 0.5f - v0->y) - 0.5f);
+
+        const float zStart = v0->z + zInvslope1 * (y - v0->y);
+        const float zEnd = v1->z + zInvslope2 * (y - v0->y);
         for (int x = xStart; x < xEnd; x++)
         {
-            PutPixel(Point{ x, y }, Color);
+            PutPixel(Point{ x, y }, Color, zStart + (zEnd - zStart) * (x - xStart) / (xEnd - xStart));
         }
     }
 }
@@ -152,11 +166,12 @@ void BufferController::DrawLine(Point a, Point b, Vec3 Color)
     }
 }
 
-void BufferController::PutPixel(Point a, Vec3 Color)
+void BufferController::PutPixel(Point a, Vec3 Color, float z)
 {
-    if (a.x < 0 || a.x >= buffer->width || a.y < 0 || a.y >= buffer->height)
+    if (a.x < 0 || a.x >= buffer->width || a.y < 0 || a.y >= buffer->height || z > zBuffer[a.x + a.y * buffer->width])
     {
         return;
     }
+    zBuffer[a.x + a.y * buffer->width] = z;
     buffer->data[a.x + a.y * buffer->width] = Color;
 }
