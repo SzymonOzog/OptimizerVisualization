@@ -52,3 +52,32 @@ Cube::Cube(float size)
         Color::Red, Color::Green, Color::Blue, Color::Yellow, Color::Cyan, Color::Magenta
     };
 }
+
+Plane::Plane(int xSize, int ySize)
+{
+    indexedTriangleVector.vertices.reserve(xSize*ySize);
+    for(int x = 0; x<xSize; x++)
+    {
+        for(int y = 0; y<ySize; y++)
+        {
+            indexedTriangleVector.vertices.push_back(Vec3{(float)x,0.f,float(y)});
+        }
+    }
+    indexedTriangleVector.indices.reserve((xSize-1)*(ySize-1)*6);
+
+    for(int x = 0; x<xSize-1; x++)
+    {
+        for(int y = 0; y<ySize-1; y++)
+        {
+            indexedTriangleVector.indices.push_back(x*ySize+y);
+            indexedTriangleVector.indices.push_back(x*ySize+y+1);
+            indexedTriangleVector.indices.push_back((x+1)*ySize+y);
+
+            indexedTriangleVector.indices.push_back((x+1)*ySize+y);
+            indexedTriangleVector.indices.push_back(x*ySize+y+1);
+            indexedTriangleVector.indices.push_back((x+1)*ySize+y+1);
+        }
+    }
+    indexedTriangleVector.projectedVertices.resize(indexedTriangleVector.vertices.size());
+    colors = std::vector<Vec3>(indexedTriangleVector.vertices.size(), Color::White);
+}

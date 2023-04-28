@@ -21,3 +21,9 @@ class Cube : public Shape
 public:
     Cube(float size);
 };
+
+class Plane : public Shape
+{
+public:
+    Plane(int xSize, int zSize);
+};
