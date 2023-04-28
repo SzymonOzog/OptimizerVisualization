@@ -1,6 +1,7 @@
 #include "BufferController.h"
 #include <iostream>
 #include <cmath>
+#include <memory>
 #include "Math.h"
 #include "Color.h"
 #include "Shapes.h"
@@ -27,21 +28,27 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         zBuffer[i] = std::numeric_limits<float>::max();
     }
 
-    Shape cube1 = Cube(0.5f);
-    Shape cube2 = Cube(0.5f);
-    cube1.position = Vec3{ 0.0f, 0.0f, 3.0f };
-    cube2.position = Vec3{ 1.0f, 0.0f, 2.0f };
-    std::vector<Shape> shapes = { cube1, cube2 };
+    std::unique_ptr<Shape> cube1 = std::make_unique<Cube>(0.5f);
+    std::unique_ptr<Shape> cube2 = std::make_unique<Cube>(0.5f);
+    std::unique_ptr<Shape> plane = std::make_unique<Plane>(10,10);
+    cube1->position = Vec3{ 0.0f, 1.0f, 3.0f };
+    cube2->position = Vec3{ 1.0f, 0.0f, 2.0f };
+    plane->position = Vec3{ 0.0f, 0.0f, 15.0f };
+
+    std::vector<std::unique_ptr<Shape>> shapes;
+    shapes.push_back(std::move(cube1));
+    shapes.push_back(std::move(cube2));
+    shapes.push_back(std::move(plane));
+    
     for (auto& cube : shapes)
-        {
-        IndexedTriangleVector shape = cube.GetIndexedTriangleVector();
-        std::vector<Vec3> colors = cube.GetColors();
+    {
+        IndexedTriangleVector shape = cube->GetIndexedTriangleVector();
         
         Mat3 rotation = Mat3::RotationZ(viewInfo.RotZ) * Mat3::RotationY(viewInfo.RotY) * Mat3::RotationX(viewInfo.RotX);
         for (int i = 0; i < shape.vertices.size(); i++)
         {
             shape.vertices[i] = rotation * shape.vertices[i];
-            shape.vertices[i] += cube.position;
+            shape.vertices[i] += cube->position;
             shape.projectedVertices[i] = ProjectToScreen(shape.vertices[i]);
         }
 
@@ -52,7 +59,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
             Vec3 v2 = shape.vertices[shape.indices[i + 2]];
             if(Math::DotProduct(Math::CrossProduct(v1 - v0, v2 - v0), v0)  <= 0)
             {
-                DrawTriangle(&shape.projectedVertices[shape.indices[i]], &shape.projectedVertices[shape.indices[i + 1]], &shape.projectedVertices[shape.indices[i + 2]], colors[i / 3]);
+                DrawTriangle(&shape.projectedVertices[shape.indices[i]], &shape.projectedVertices[shape.indices[i + 1]], &shape.projectedVertices[shape.indices[i + 2]], cube->GetColor(i / 3));
             }
         }
     }

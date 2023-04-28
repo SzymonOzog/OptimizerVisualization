@@ -12,10 +12,11 @@ IndexedTriangleVector Shape::GetIndexedTriangleVector()
     return indexedTriangleVector;
 }
 
-std::vector<Vec3> Shape::GetColors()
+Vec3 Shape::GetColor(int triangle_index)
 {
-    return colors;
+    return Color::White;
 }
+
 
 Cube::Cube(float size)
 {
@@ -53,6 +54,11 @@ Cube::Cube(float size)
     };
 }
 
+Vec3 Cube::GetColor(int triangle_index)
+{
+    return colors[triangle_index];
+}
+
 Plane::Plane(int xSize, int ySize)
 {
     indexedTriangleVector.vertices.reserve(xSize*ySize);
@@ -79,5 +85,4 @@ Plane::Plane(int xSize, int ySize)
         }
     }
     indexedTriangleVector.projectedVertices.resize(indexedTriangleVector.vertices.size());
-    colors = std::vector<Vec3>(indexedTriangleVector.vertices.size(), Color::White);
 }

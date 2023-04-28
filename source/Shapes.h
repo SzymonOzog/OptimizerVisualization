@@ -6,13 +6,13 @@ class Shape
 public:
     IndexedLineVector GetIndexedLineVector();
     IndexedTriangleVector GetIndexedTriangleVector();
-    std::vector<Vec3> GetColors();
+    
+    virtual Vec3 GetColor(int triangle_index);
 
     Vec3 position;
 protected:
     IndexedLineVector indexedLineVector;
     IndexedTriangleVector indexedTriangleVector;
-    std::vector<Vec3> colors;
 
 };
 
@@ -20,6 +20,10 @@ class Cube : public Shape
 {
 public:
     Cube(float size);
+
+    virtual Vec3 GetColor(int triangle_index) override;
+
+    std::vector<Vec3> colors;
 };
 
 class Plane : public Shape
