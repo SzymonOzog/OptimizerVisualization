@@ -21,7 +21,8 @@ class ViewInfo(ctypes.Structure):
                 ("RotZ", ctypes.c_float)]
 
 if __name__ == '__main__':
-    os.mkdir("obj")
+    if not os.path.exists("obj"):
+        os.mkdir("obj")
     os.system('g++ -static -shared -o obj/libbuffer.dll source/*.cpp')
 
     w,h = 500,500
