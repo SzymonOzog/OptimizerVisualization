@@ -59,7 +59,7 @@ Vec3 Cube::GetColor(int triangle_index)
     return colors[triangle_index];
 }
 
-Plane::Plane(int xSize, int ySize)
+Plane::Plane(int xSize, int ySize, bool twoSided)
 {
     indexedTriangleVector.vertices.reserve(xSize*ySize);
     for(int x = 0; x<xSize; x++)
@@ -82,6 +82,17 @@ Plane::Plane(int xSize, int ySize)
             indexedTriangleVector.indices.push_back((x+1)*ySize+y);
             indexedTriangleVector.indices.push_back(x*ySize+y+1);
             indexedTriangleVector.indices.push_back((x+1)*ySize+y+1);
+
+            if(twoSided)
+            {
+                indexedTriangleVector.indices.push_back(x*ySize+y);
+                indexedTriangleVector.indices.push_back((x+1)*ySize+y);
+                indexedTriangleVector.indices.push_back(x*ySize+y+1);
+
+                indexedTriangleVector.indices.push_back((x+1)*ySize+y);
+                indexedTriangleVector.indices.push_back((x+1)*ySize+y+1);
+                indexedTriangleVector.indices.push_back(x*ySize+y+1);
+            }
         }
     }
     indexedTriangleVector.projectedVertices.resize(indexedTriangleVector.vertices.size());
