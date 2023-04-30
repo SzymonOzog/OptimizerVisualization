@@ -72,8 +72,8 @@ if __name__ == '__main__':
             view_info.position.x += 0.01 * frame_time
         elif key == ord('d'):
             view_info.position.x -= 0.01 * frame_time
+            
         frame_time =  current_time() - start_frame
-        print(frame_time, view_info.rotX)
         if frame_time < 16:
             time.sleep((16 - frame_time) / 1000)
 
