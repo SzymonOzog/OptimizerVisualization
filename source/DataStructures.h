@@ -148,6 +148,7 @@ struct ViewInfo
     float rotX;
     float rotY;
     float rotZ;
+    Vec3 position;
 };
 
 struct Buffer 

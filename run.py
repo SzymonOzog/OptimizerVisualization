@@ -18,7 +18,8 @@ class Buffer(ctypes.Structure):
 class ViewInfo(ctypes.Structure):
     _fields_ = [("rotX", ctypes.c_float),
                 ("rotY", ctypes.c_float),
-                ("rotZ", ctypes.c_float)]
+                ("rotZ", ctypes.c_float),
+                ("position", Vec3)]
 
 if __name__ == '__main__':
     if not os.path.exists("obj"):
@@ -38,9 +39,13 @@ if __name__ == '__main__':
     view_info.rotX = 0
     view_info.rotY = 0
     view_info.rotZ = 0
+    view_info.position.x = 0
+    view_info.position.y = 0
+    view_info.position.z = 10
+    
     
     #while escape key is not pressed
-    while cv2.waitKey(16) != 27:
+    while True:
         view_info.rotX = view_info.rotX + 0.01 % 2*math.pi
         view_info.rotY = view_info.rotY + 0.01 % 2*math.pi
         view_info.rotZ = view_info.rotZ + 0.01 % 2*math.pi
@@ -51,5 +56,18 @@ if __name__ == '__main__':
         data = np.ctypeslib.as_array(buffer.data, (w,h))
         data = data.view((np.float32, 3))
         cv2.imshow('test', data)
+        key = cv2.waitKey(16)
+        if key == 27:
+            break
+        elif key == ord('w'):
+            view_info.position.z += 0.1
+        elif key == ord('s'):
+            view_info.position.z -= 0.1
+        elif key == ord('a'):
+            view_info.position.x += 0.1
+        elif key == ord('d'):
+            view_info.position.x -= 0.1
+        
 
+    
     c_lib.BufferController_Destroy(ctypes.c_void_p(buffer_controller))

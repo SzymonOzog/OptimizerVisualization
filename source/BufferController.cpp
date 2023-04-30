@@ -33,11 +33,9 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
     std::unique_ptr<Shape> plane = std::make_unique<Plane>(10,10);
     cube1->position = Vec3{ 0.0f, 1.0f, 3.0f };
     cube2->position = Vec3{ 1.0f, 0.0f, 2.0f };
-    plane->position = Vec3{ 0.0f, 0.0f, 15.0f };
+    plane->position = viewInfo.position;
 
     std::vector<std::unique_ptr<Shape>> shapes;
-    shapes.push_back(std::move(cube1));
-    shapes.push_back(std::move(cube2));
     shapes.push_back(std::move(plane));
     
     for (auto& cube : shapes)
