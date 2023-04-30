@@ -47,14 +47,14 @@ if __name__ == '__main__':
     view_info.position.y = 0
     view_info.position.z = 10
     
-    
+    frame_time = 16
     #while escape key is not pressed
     while True:
         start_frame = current_time()
-        view_info.rotX = view_info.rotX + 0.01 % 2*math.pi
-        view_info.rotY = view_info.rotY + 0.01 % 2*math.pi
-        view_info.rotZ = view_info.rotZ + 0.01 % 2*math.pi
-
+        view_info.rotX = (view_info.rotX + (0.001 * frame_time)) % (2 * math.pi)  
+        view_info.rotY = (view_info.rotY + (0.001 * frame_time)) % (2 * math.pi) 
+        view_info.rotZ = (view_info.rotZ + (0.001 * frame_time)) % (2 * math.pi) 
+        
         c_lib.FillBuffer(ctypes.c_void_p(buffer_controller), ctypes.byref(view_info))
         buffer = Buffer.from_address(c_lib.GetBuffer(ctypes.c_void_p(buffer_controller)))  
 
@@ -65,15 +65,15 @@ if __name__ == '__main__':
         if key == 27:
             break
         elif key == ord('w'):
-            view_info.position.z += 0.1
+            view_info.position.z += 0.01 * frame_time
         elif key == ord('s'):
-            view_info.position.z -= 0.1
+            view_info.position.z -= 0.01 * frame_time
         elif key == ord('a'):
-            view_info.position.x += 0.1
+            view_info.position.x += 0.01 * frame_time
         elif key == ord('d'):
-            view_info.position.x -= 0.1
+            view_info.position.x -= 0.01 * frame_time
         frame_time =  current_time() - start_frame
-        print(frame_time)
+        print(frame_time, view_info.rotX)
         if frame_time < 16:
             time.sleep((16 - frame_time) / 1000)
 
