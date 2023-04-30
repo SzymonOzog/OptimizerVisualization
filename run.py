@@ -5,6 +5,7 @@ import os
 import numpy as np
 import cv2
 import math
+import time
 
 class Vec3(ctypes.Structure):
     _fields_ = [("x", ctypes.c_float),
@@ -20,6 +21,9 @@ class ViewInfo(ctypes.Structure):
                 ("rotY", ctypes.c_float),
                 ("rotZ", ctypes.c_float),
                 ("position", Vec3)]
+    
+def current_time():
+    return time.time_ns() // 1_000_000
 
 if __name__ == '__main__':
     if not os.path.exists("obj"):
@@ -46,6 +50,7 @@ if __name__ == '__main__':
     
     #while escape key is not pressed
     while True:
+        start_frame = current_time()
         view_info.rotX = view_info.rotX + 0.01 % 2*math.pi
         view_info.rotY = view_info.rotY + 0.01 % 2*math.pi
         view_info.rotZ = view_info.rotZ + 0.01 % 2*math.pi
@@ -67,7 +72,10 @@ if __name__ == '__main__':
             view_info.position.x += 0.1
         elif key == ord('d'):
             view_info.position.x -= 0.1
-        
+        frame_time =  current_time() - start_frame
+        print(frame_time)
+        if frame_time < 16:
+            time.sleep((16 - frame_time) / 1000)
 
     
     c_lib.BufferController_Destroy(ctypes.c_void_p(buffer_controller))
