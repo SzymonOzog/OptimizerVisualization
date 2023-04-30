@@ -16,9 +16,9 @@ class Buffer(ctypes.Structure):
                 ("size", ctypes.c_int)]
 
 class ViewInfo(ctypes.Structure):
-    _fields_ = [("RotX", ctypes.c_float),
-                ("RotY", ctypes.c_float),
-                ("RotZ", ctypes.c_float)]
+    _fields_ = [("rotX", ctypes.c_float),
+                ("rotY", ctypes.c_float),
+                ("rotZ", ctypes.c_float)]
 
 if __name__ == '__main__':
     if not os.path.exists("obj"):
@@ -35,15 +35,15 @@ if __name__ == '__main__':
     buffer_controller = c_lib.BufferController_Create(w,h)
     
     view_info = ViewInfo()
-    view_info.RotX = 0
-    view_info.RotY = 0
-    view_info.RotZ = 0
+    view_info.rotX = 0
+    view_info.rotY = 0
+    view_info.rotZ = 0
     
     #while escape key is not pressed
     while cv2.waitKey(16) != 27:
-        view_info.RotX = view_info.RotX + 0.01 % 2*math.pi
-        view_info.RotY = view_info.RotY + 0.01 % 2*math.pi
-        view_info.RotZ = view_info.RotZ + 0.01 % 2*math.pi
+        view_info.rotX = view_info.rotX + 0.01 % 2*math.pi
+        view_info.rotY = view_info.rotY + 0.01 % 2*math.pi
+        view_info.rotZ = view_info.rotZ + 0.01 % 2*math.pi
 
         c_lib.FillBuffer(ctypes.c_void_p(buffer_controller), ctypes.byref(view_info))
         buffer = Buffer.from_address(c_lib.GetBuffer(ctypes.c_void_p(buffer_controller)))  

@@ -145,9 +145,9 @@ struct Mat3
 
 struct ViewInfo
 {
-    float RotX;
-    float RotY;
-    float RotZ;
+    float rotX;
+    float rotY;
+    float rotZ;
 };
 
 struct Buffer 

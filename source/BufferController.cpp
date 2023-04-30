@@ -44,7 +44,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
     {
         IndexedTriangleVector shape = cube->GetIndexedTriangleVector();
         
-        Mat3 rotation = Mat3::RotationZ(viewInfo.RotZ) * Mat3::RotationY(viewInfo.RotY) * Mat3::RotationX(viewInfo.RotX);
+        Mat3 rotation = Mat3::RotationZ(viewInfo.rotZ) * Mat3::RotationY(viewInfo.rotY) * Mat3::RotationX(viewInfo.rotX);
         for (int i = 0; i < shape.vertices.size(); i++)
         {
             shape.vertices[i] = rotation * shape.vertices[i];
