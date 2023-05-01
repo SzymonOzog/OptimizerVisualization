@@ -6,6 +6,8 @@ import numpy as np
 import cv2
 import math
 import time
+from pynput import mouse
+
 
 class Vec3(ctypes.Structure):
     _fields_ = [("x", ctypes.c_float),
@@ -25,11 +27,35 @@ class ViewInfo(ctypes.Structure):
 def current_time():
     return time.time_ns() // 1_000_000
 
+mouse_pressed = False
+mouse_x=-1
+mouse_y=-1
+def on_move(x,y):
+    global mouse_pressed
+    global mouse_x
+    global mouse_y
+    if mouse_pressed:
+        print(x, mouse_x)
+        view_info.rotX = (view_info.rotX + ((x-mouse_x) * 0.001 * frame_time)) % (2 * math.pi)  
+        view_info.rotY = (view_info.rotY + ((y-mouse_y) * 0.001 * frame_time)) % (2 * math.pi)
+        mouse_y=y
+        mouse_x=x 
+
+def on_click(x,y,button, pressed):
+    global mouse_pressed
+    global mouse_x
+    global mouse_y
+    mouse_pressed = pressed
+    print(pressed, mouse_pressed)
+    mouse_x = x
+    mouse_y = y
+
 if __name__ == '__main__':
     if not os.path.exists("obj"):
         os.mkdir("obj")
     os.system('g++ -static -shared -o obj/libbuffer.dll source/*.cpp')
-
+    listener = mouse.Listener(on_move=on_move, on_click=on_click)
+    listener.start()
     w,h = 500,500
     libname = pathlib.Path().absolute() /'obj'/'libbuffer.dll'
     c_lib = ctypes.cdll.LoadLibrary(str(libname))
@@ -51,9 +77,9 @@ if __name__ == '__main__':
     #while escape key is not pressed
     while True:
         start_frame = current_time()
-        view_info.rotX = (view_info.rotX + (0.001 * frame_time)) % (2 * math.pi)  
-        view_info.rotY = (view_info.rotY + (0.001 * frame_time)) % (2 * math.pi) 
-        view_info.rotZ = (view_info.rotZ + (0.001 * frame_time)) % (2 * math.pi) 
+        #view_info.rotX = (view_info.rotX + (0.001 * frame_time)) % (2 * math.pi)  
+        #view_info.rotY = (view_info.rotY + (0.001 * frame_time)) % (2 * math.pi) 
+        #view_info.rotZ = (view_info.rotZ + (0.001 * frame_time)) % (2 * math.pi) 
         
         c_lib.FillBuffer(ctypes.c_void_p(buffer_controller), ctypes.byref(view_info))
         buffer = Buffer.from_address(c_lib.GetBuffer(ctypes.c_void_p(buffer_controller)))  
@@ -72,7 +98,7 @@ if __name__ == '__main__':
             view_info.position.x += 0.01 * frame_time
         elif key == ord('d'):
             view_info.position.x -= 0.01 * frame_time
-            
+        
         frame_time =  current_time() - start_frame
         if frame_time < 16:
             time.sleep((16 - frame_time) / 1000)
