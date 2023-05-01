@@ -61,7 +61,7 @@ if __name__ == '__main__':
         data = np.ctypeslib.as_array(buffer.data, (w,h))
         data = data.view((np.float32, 3))
         cv2.imshow('test', data)
-        key = cv2.waitKey(16)
+        key = cv2.waitKey(1)
         if key == 27:
             break
         elif key == ord('w'):
