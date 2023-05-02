@@ -77,15 +77,14 @@ if __name__ == '__main__':
     #while escape key is not pressed
     while True:
         start_frame = current_time()
-        #view_info.rotX = (view_info.rotX + (0.001 * frame_time)) % (2 * math.pi)  
-        #view_info.rotY = (view_info.rotY + (0.001 * frame_time)) % (2 * math.pi) 
-        #view_info.rotZ = (view_info.rotZ + (0.001 * frame_time)) % (2 * math.pi) 
         
         c_lib.FillBuffer(ctypes.c_void_p(buffer_controller), ctypes.byref(view_info))
         buffer = Buffer.from_address(c_lib.GetBuffer(ctypes.c_void_p(buffer_controller)))  
 
         data = np.ctypeslib.as_array(buffer.data, (w,h))
         data = data.view((np.float32, 3))
+        cv2.putText(data, f'FPS:{format(1000/frame_time, ".2f")}',(30,30)
+                    ,cv2.FONT_HERSHEY_SIMPLEX,0.3,(0,0,255),1)
         cv2.imshow('test', data)
         key = cv2.waitKey(1)
         if key == 27:
@@ -98,7 +97,6 @@ if __name__ == '__main__':
             view_info.position.x += 0.01 * frame_time
         elif key == ord('d'):
             view_info.position.x -= 0.01 * frame_time
-        
         frame_time =  current_time() - start_frame
         if frame_time < 16:
             time.sleep((16 - frame_time) / 1000)
