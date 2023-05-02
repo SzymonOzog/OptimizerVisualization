@@ -6,7 +6,7 @@ import numpy as np
 import cv2
 import math
 import time
-from pynput import mouse
+from pynput import mouse, keyboard
 
 
 class Vec3(ctypes.Structure):
@@ -30,6 +30,7 @@ def current_time():
 mouse_pressed = False
 mouse_x=-1
 mouse_y=-1
+run = True
 def on_move(x,y):
     global mouse_pressed
     global mouse_x
@@ -48,12 +49,32 @@ def on_click(x,y,button, pressed):
     mouse_x = x
     mouse_y = y
 
+def on_key_press(key):
+        print(key)
+        if key == keyboard.Key.esc:
+            global run
+            run = False
+        elif key.char == 'w':
+            view_info.position.z += 0.01 * frame_time
+        elif key.char == 's':
+            view_info.position.z -= 0.01 * frame_time
+        elif key.char == 'a':
+            view_info.position.x += 0.01 * frame_time
+        elif key.char == 'd':
+            view_info.position.x -= 0.01 * frame_time
+
 if __name__ == '__main__':
     if not os.path.exists("obj"):
         os.mkdir("obj")
     os.system('g++ -static -shared -o obj/libbuffer.dll source/*.cpp')
-    listener = mouse.Listener(on_move=on_move, on_click=on_click)
-    listener.start()
+
+
+    mouse_listener = mouse.Listener(on_move=on_move, on_click=on_click)
+    mouse_listener.start()
+
+    keyboard_listener = keyboard.Listener(on_press=on_key_press)
+    keyboard_listener.start()
+
     w,h = 500,500
     libname = pathlib.Path().absolute() /'obj'/'libbuffer.dll'
     c_lib = ctypes.cdll.LoadLibrary(str(libname))
@@ -73,7 +94,7 @@ if __name__ == '__main__':
     
     frame_time = 16
     #while escape key is not pressed
-    while True:
+    while run:
         start_frame = current_time()
         
         c_lib.FillBuffer(ctypes.c_void_p(buffer_controller), ctypes.byref(view_info))
@@ -85,16 +106,7 @@ if __name__ == '__main__':
                     ,cv2.FONT_HERSHEY_SIMPLEX,0.3,(0,0,255),1)
         cv2.imshow('test', data)
         key = cv2.waitKey(1)
-        if key == 27:
-            break
-        elif key == ord('w'):
-            view_info.position.z += 0.01 * frame_time
-        elif key == ord('s'):
-            view_info.position.z -= 0.01 * frame_time
-        elif key == ord('a'):
-            view_info.position.x += 0.01 * frame_time
-        elif key == ord('d'):
-            view_info.position.x -= 0.01 * frame_time
+
         frame_time =  current_time() - start_frame
         if frame_time < 16:
             time.sleep((16 - frame_time) / 1000)
