@@ -35,7 +35,6 @@ def on_move(x,y):
     global mouse_x
     global mouse_y
     if mouse_pressed:
-        print(x, mouse_x)
         view_info.rotY = (view_info.rotY + ((x-mouse_x) * 0.001 * frame_time)) % (2 * math.pi)  
         view_info.rotX = (view_info.rotX + ((y-mouse_y) * 0.001 * frame_time)) % (2 * math.pi)
         mouse_y=y
@@ -46,7 +45,6 @@ def on_click(x,y,button, pressed):
     global mouse_x
     global mouse_y
     mouse_pressed = pressed
-    print(pressed, mouse_pressed)
     mouse_x = x
     mouse_y = y
 
