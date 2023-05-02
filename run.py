@@ -102,6 +102,7 @@ if __name__ == '__main__':
 
         data = np.ctypeslib.as_array(buffer.data, (w,h))
         data = data.view((np.float32, 3))
+
         cv2.putText(data, f'FPS:{format(1000/frame_time, ".2f")}',(30,30)
                     ,cv2.FONT_HERSHEY_SIMPLEX,0.3,(0,0,255),1)
         cv2.imshow('test', data)
@@ -109,6 +110,7 @@ if __name__ == '__main__':
 
         frame_time =  current_time() - start_frame
         if frame_time < 16:
+            frame_time = 16
             time.sleep((16 - frame_time) / 1000)
 
     
