@@ -101,9 +101,9 @@ bool BufferController::IsPointInsideTriangle(const Point& p, const Vec3& v0, con
 
     bool p_v0v1 = (v1.x - v0.x) * v0p_y - (v1.y - v0.y) * v0p_x > 0;
 
-    if ((v2.x - v0.x) * v0p_y - (v2.y - v0.y) * v0p_x > 0 == p_v0v1) 
+    if (((v2.x - v0.x) * v0p_y - (v2.y - v0.y) * v0p_x > 0) == p_v0v1) 
         return false;
-    if ((v2.x - v1.x) * (p.y - v1.y) - (v2.y - v1.y)*(p.x - v1.x) > 0 != p_v0v1) 
+    if (((v2.x - v1.x) * (p.y - v1.y) - (v2.y - v1.y)*(p.x - v1.x) > 0 )!= p_v0v1) 
         return false;
     return true;
 }
