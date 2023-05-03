@@ -73,6 +73,7 @@ class Engine():
 
             data = np.ctypeslib.as_array(buffer.data, (self.w,self.h))
             data = data.view((np.float32, 3))
+            data = cv2.cvtColor(data, cv2.COLOR_RGB2BGR)
 
             cv2.putText(data, f'FPS:{format(1000/self.frame_time, ".2f")}',(30,30)
                         ,cv2.FONT_HERSHEY_SIMPLEX,0.3,(0,0,255),1)
