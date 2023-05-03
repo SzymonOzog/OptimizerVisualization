@@ -13,4 +13,6 @@ class ViewInfo(ctypes.Structure):
     _fields_ = [("rotX", ctypes.c_float),
                 ("rotY", ctypes.c_float),
                 ("rotZ", ctypes.c_float),
-                ("position", Vec3)]
+                ("position", Vec3),
+                ("mouse_x", ctypes.c_int),
+                ("mouse_y", ctypes.c_int)]

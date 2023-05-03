@@ -36,6 +36,8 @@ class Engine():
         self.c_lib.GetBuffer.restype = ctypes.c_void_p
 
         self.buffer_controller = self.c_lib.BufferController_Create(w,h)
+        self.mouse_x = 0
+        self.mouse_y = 0
 
     def on_move(self,x,y):
         if self.mouse_pressed:
@@ -75,6 +77,11 @@ class Engine():
             cv2.putText(data, f'FPS:{format(1000/self.frame_time, ".2f")}',(30,30)
                         ,cv2.FONT_HERSHEY_SIMPLEX,0.3,(0,0,255),1)
             cv2.imshow('test', data)            
+            
+            image_transform = cv2.getWindowImageRect('test')
+            self.view_info.mouse_x = self.mouse_x - image_transform[0]
+            self.view_info.mouse_y = self.mouse_y - image_transform[1]
+            
             cv2.waitKey(1)
 
             self.frame_time =  current_time() - start_frame
