@@ -24,4 +24,7 @@ private:
 
     Buffer* buffer;
     std::vector<float> zBuffer;
+    
+    Vec3 ambientLight;
+    Vec3 directionalLightColor;
 };

@@ -15,4 +15,8 @@ namespace Math
         result.z = a.x * b.y - a.y * b.x;
         return result;
     }
+    inline Vec3 Hadamard(const Vec3& a, const Vec3& b)
+    {
+        return {a.x*b.x, a.y*b.y,a.z*b.z};
+    }
 }

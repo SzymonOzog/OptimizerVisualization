@@ -6,7 +6,9 @@
 #include "Color.h"
 #include "Shapes.h"
 
-BufferController::BufferController(int width, int height) : zBuffer(width * height, std::numeric_limits<float>::max())
+BufferController::BufferController(int width, int height) : zBuffer(width * height, std::numeric_limits<float>::max()),
+ambientLight({0.1f,0.1f,0.1f}),
+directionalLightColor({0.8f,0.85f,1.f})
 {
     buffer = new Buffer();
     buffer->data = new Vec3[width * height];
@@ -34,7 +36,6 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
     cube1->position = Vec3{ 0.0f, 1.0f, 3.0f };
     cube2->position = Vec3{ 1.0f, 0.0f, 2.0f };
     plane->position = viewInfo.position;
-
     std::vector<std::unique_ptr<Shape>> shapes;
     shapes.push_back(std::move(plane));
     
@@ -55,9 +56,15 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
             Vec3 v0 = shape.vertices[shape.indices[i]];
             Vec3 v1 = shape.vertices[shape.indices[i + 1]];
             Vec3 v2 = shape.vertices[shape.indices[i + 2]];
-            if(Math::DotProduct(Math::CrossProduct(v1 - v0, v2 - v0), v0)  <= 0)
+            Vec3 faceNormal = Math::CrossProduct(v1 - v0, v2 - v0);
+            if(Math::DotProduct(faceNormal, v0)  <= 0)
             {
-                DrawTriangle(&shape.projectedVertices[shape.indices[i]], &shape.projectedVertices[shape.indices[i + 1]], &shape.projectedVertices[shape.indices[i + 2]], cube->GetColor(i / 3));
+                float directionalLightAmount = std::max(0.f,Math::DotProduct(faceNormal, Vec3({0.f,-1.f,0.f})));
+                Vec3 unlitColor = cube->GetColor(i / 3);
+                Vec3 litColor = Math::Hadamard(unlitColor, ambientLight) + Math::Hadamard(unlitColor, directionalLightColor) * directionalLightAmount;
+            
+                DrawTriangle(&shape.projectedVertices[shape.indices[i]],
+                 &shape.projectedVertices[shape.indices[i + 1]], &shape.projectedVertices[shape.indices[i + 2]], litColor);
             }
         }
     }
