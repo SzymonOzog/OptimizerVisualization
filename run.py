@@ -7,23 +7,8 @@ import cv2
 import math
 import time
 from pynput import mouse, keyboard
+from cpp_classes import *
 
-
-class Vec3(ctypes.Structure):
-    _fields_ = [("x", ctypes.c_float),
-                ("y", ctypes.c_float),
-                ("z", ctypes.c_float)]
-
-class Buffer(ctypes.Structure):
-    _fields_ = [("data", ctypes.POINTER(Vec3)),
-                ("size", ctypes.c_int)]
-
-class ViewInfo(ctypes.Structure):
-    _fields_ = [("rotX", ctypes.c_float),
-                ("rotY", ctypes.c_float),
-                ("rotZ", ctypes.c_float),
-                ("position", Vec3)]
-    
 def current_time():
     return time.time_ns() // 1_000_000
 
