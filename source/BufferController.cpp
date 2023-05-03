@@ -57,6 +57,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
             Vec3 v1 = shape.vertices[shape.indices[i + 1]];
             Vec3 v2 = shape.vertices[shape.indices[i + 2]];
             Vec3 faceNormal = Math::CrossProduct(v1 - v0, v2 - v0);
+            faceNormal.normalize();
             if(Math::DotProduct(faceNormal, v0)  <= 0)
             {
                 float directionalLightAmount = std::max(0.f,Math::DotProduct(faceNormal, Vec3({0.f,-1.f,0.f})));

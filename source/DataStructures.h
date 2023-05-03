@@ -7,6 +7,19 @@ struct Vec3
 {
     float x, y, z;
 
+    float length()
+    {
+        return sqrt(x*x + y*y + z*z);
+    }
+
+    void normalize()
+    {
+        float len = length();
+        x/=len;
+        y/=len;
+        z/=len;
+    }
+
     Vec3 operator += (const Vec3& other)
     {
         x += other.x;
