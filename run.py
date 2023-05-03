@@ -50,7 +50,6 @@ def on_click(x,y,button, pressed):
     mouse_y = y
 
 def on_key_press(key):
-        print(key)
         if key == keyboard.Key.esc:
             global run
             run = False
