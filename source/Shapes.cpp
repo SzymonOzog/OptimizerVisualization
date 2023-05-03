@@ -59,39 +59,39 @@ Vec3 Cube::GetColor(int triangle_index)
     return colors[triangle_index];
 }
 
-Plane::Plane(int xSize, int ySize, bool twoSided)
+Plane::Plane(int xSize, int zSize,float xLen, float zLen, bool twoSided)
 {
-    indexedTriangleVector.vertices.reserve(xSize*ySize);
+    indexedTriangleVector.vertices.reserve(xSize*zSize);
     for(int x = 0; x<xSize; x++)
     {
-        for(int y = 0; y<ySize; y++)
+        for(int z = 0; z<zSize; z++)
         {
-            indexedTriangleVector.vertices.push_back(Vec3{(float)x,0.f,float(y)});
+            indexedTriangleVector.vertices.push_back(Vec3{(float)xLen*x/xSize, 0.f, (float)zLen*z/zSize});
         }
     }
-    indexedTriangleVector.indices.reserve((xSize-1)*(ySize-1)*6);
+    indexedTriangleVector.indices.reserve((xSize-1)*(zSize-1)*6);
 
     for(int x = 0; x<xSize-1; x++)
     {
-        for(int y = 0; y<ySize-1; y++)
+        for(int z = 0; z<zSize-1; z++)
         {
-            indexedTriangleVector.indices.push_back(x*ySize+y);
-            indexedTriangleVector.indices.push_back(x*ySize+y+1);
-            indexedTriangleVector.indices.push_back((x+1)*ySize+y);
+            indexedTriangleVector.indices.push_back(x*zSize+z);
+            indexedTriangleVector.indices.push_back(x*zSize+z+1);
+            indexedTriangleVector.indices.push_back((x+1)*zSize+z);
 
-            indexedTriangleVector.indices.push_back((x+1)*ySize+y);
-            indexedTriangleVector.indices.push_back(x*ySize+y+1);
-            indexedTriangleVector.indices.push_back((x+1)*ySize+y+1);
+            indexedTriangleVector.indices.push_back((x+1)*zSize+z);
+            indexedTriangleVector.indices.push_back(x*zSize+z+1);
+            indexedTriangleVector.indices.push_back((x+1)*zSize+z+1);
 
             if(twoSided)
             {
-                indexedTriangleVector.indices.push_back(x*ySize+y);
-                indexedTriangleVector.indices.push_back((x+1)*ySize+y);
-                indexedTriangleVector.indices.push_back(x*ySize+y+1);
+                indexedTriangleVector.indices.push_back(x*zSize+z);
+                indexedTriangleVector.indices.push_back((x+1)*zSize+z);
+                indexedTriangleVector.indices.push_back(x*zSize+z+1);
 
-                indexedTriangleVector.indices.push_back((x+1)*ySize+y);
-                indexedTriangleVector.indices.push_back((x+1)*ySize+y+1);
-                indexedTriangleVector.indices.push_back(x*ySize+y+1);
+                indexedTriangleVector.indices.push_back((x+1)*zSize+z);
+                indexedTriangleVector.indices.push_back((x+1)*zSize+z+1);
+                indexedTriangleVector.indices.push_back(x*zSize+z+1);
             }
         }
     }

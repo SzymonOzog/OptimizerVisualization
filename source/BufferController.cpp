@@ -32,7 +32,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
 
     std::unique_ptr<Shape> cube1 = std::make_unique<Cube>(0.5f);
     std::unique_ptr<Shape> cube2 = std::make_unique<Cube>(0.5f);
-    std::unique_ptr<Shape> plane = std::make_unique<Plane>(10,10);
+    std::unique_ptr<Shape> plane = std::make_unique<Plane>(50,50);
     cube1->position = Vec3{ 0.0f, 1.0f, 3.0f };
     cube2->position = Vec3{ 1.0f, 0.0f, 2.0f };
     plane->position = viewInfo.position;

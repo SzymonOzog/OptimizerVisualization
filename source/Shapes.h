@@ -29,5 +29,5 @@ public:
 class Plane : public Shape
 {
 public:
-    Plane(int xSize, int zSize, bool twoSided = true);
+    Plane(int xSize, int zSize,float xLen=10.f, float zLen=10.f, bool twoSided = true);
 };
