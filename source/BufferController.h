@@ -15,6 +15,8 @@ private:
 
     Vec3 ProjectToScreen(const Vec3& vertex);
 
+    bool IsPointInsideTriangle(const Point& p, const Vec3& v0, const Vec3& v1, const Vec3& v2);
+
     void DrawTriangle(Vec3* v0, Vec3* v1, Vec3* v2, Vec3 Color);
     void DrawFlatBottomTriangle(Vec3* v0, Vec3* v1, Vec3* v2, Vec3 Color);
     void DrawFlatTopTriangle(Vec3* v0, Vec3* v1, Vec3* v2, Vec3 Color);

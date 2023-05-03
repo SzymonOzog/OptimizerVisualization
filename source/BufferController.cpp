@@ -62,13 +62,32 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
                 float directionalLightAmount = std::max(0.f,Math::DotProduct(faceNormal, Vec3({0.f,-1.f,0.f})));
                 Vec3 unlitColor = cube->GetColor(i / 3);
                 Vec3 litColor = Math::Hadamard(unlitColor, ambientLight) + Math::Hadamard(unlitColor, directionalLightColor) * directionalLightAmount;
-            
+                if (IsPointInsideTriangle(Point({viewInfo.mouse_x, viewInfo.mouse_y}), shape.projectedVertices[shape.indices[i]],
+                 shape.projectedVertices[shape.indices[i + 1]], shape.projectedVertices[shape.indices[i + 2]] ))  
+                 {
+                    litColor = Color::Red;
+                 }  
+
                 DrawTriangle(&shape.projectedVertices[shape.indices[i]],
                  &shape.projectedVertices[shape.indices[i + 1]], &shape.projectedVertices[shape.indices[i + 2]], litColor);
             }
         }
     }
 
+}
+
+bool BufferController::IsPointInsideTriangle(const Point& p, const Vec3& v0, const Vec3& v1, const Vec3& v2)
+{
+    int v0p_x = p.x - v0.x;
+    int v0p_y = p.y - v0.y;
+
+    bool p_v0v1 = (v1.x - v0.x) * v0p_y - (v1.y - v0.y) * v0p_x > 0;
+
+    if ((v2.x - v0.x) * v0p_y - (v2.y - v0.y) * v0p_x > 0 == p_v0v1) 
+        return false;
+    if ((v2.x - v1.x) * (p.y - v1.y) - (v2.y - v1.y)*(p.x - v1.x) > 0 != p_v0v1) 
+        return false;
+    return true;
 }
 
 Buffer* BufferController::GetBuffer()
