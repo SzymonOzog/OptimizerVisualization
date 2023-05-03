@@ -51,23 +51,19 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
             shape.projectedVertices[i] = ProjectToScreen(shape.vertices[i]);
         }
 
+        
         Vec3 sphereLocation;
         float radius = 2.f;
-        for (int i = 0; i < shape.indices.size(); i += 3)
+
+        float closestVertexDist = std::numeric_limits<float>::max();
+        for(int i = 0; i<shape.projectedVertices.size(); i++)
         {
-            Vec3 v0 = shape.vertices[shape.indices[i]];
-            Vec3 v1 = shape.vertices[shape.indices[i + 1]];
-            Vec3 v2 = shape.vertices[shape.indices[i + 2]];
-            Vec3 faceNormal = Math::CrossProduct(v1 - v0, v2 - v0);
-            faceNormal.normalize();
-            if(Math::DotProduct(faceNormal, v0)  <= 0)
-            {
-                if (IsPointInsideTriangle(Point({viewInfo.mouse_x, viewInfo.mouse_y}), shape.projectedVertices[shape.indices[i]],
-                 shape.projectedVertices[shape.indices[i + 1]], shape.projectedVertices[shape.indices[i + 2]] ))  
-                 {
-                    sphereLocation = (v0+v1+v2)/3;
-                    break;
-                 }  
+            const auto& vertex = shape.projectedVertices[i];
+            float distFromMouse = sqrt(pow(vertex.x - viewInfo.mouse_x,2) + pow(vertex.y - viewInfo.mouse_y,2));
+            if (distFromMouse < 2.f && distFromMouse < closestVertexDist)
+            {  
+                closestVertexDist = distFromMouse;
+                sphereLocation = shape.vertices[i];
             }
         }
 
