@@ -51,6 +51,26 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
             shape.projectedVertices[i] = ProjectToScreen(shape.vertices[i]);
         }
 
+        Vec3 sphereLocation;
+        float radius = 2.f;
+        for (int i = 0; i < shape.indices.size(); i += 3)
+        {
+            Vec3 v0 = shape.vertices[shape.indices[i]];
+            Vec3 v1 = shape.vertices[shape.indices[i + 1]];
+            Vec3 v2 = shape.vertices[shape.indices[i + 2]];
+            Vec3 faceNormal = Math::CrossProduct(v1 - v0, v2 - v0);
+            faceNormal.normalize();
+            if(Math::DotProduct(faceNormal, v0)  <= 0)
+            {
+                if (IsPointInsideTriangle(Point({viewInfo.mouse_x, viewInfo.mouse_y}), shape.projectedVertices[shape.indices[i]],
+                 shape.projectedVertices[shape.indices[i + 1]], shape.projectedVertices[shape.indices[i + 2]] ))  
+                 {
+                    sphereLocation = (v0+v1+v2)/3;
+                    break;
+                 }  
+            }
+        }
+
         for (int i = 0; i < shape.indices.size(); i += 3)
         {
             Vec3 v0 = shape.vertices[shape.indices[i]];
@@ -63,8 +83,9 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
                 float directionalLightAmount = std::max(0.f,Math::DotProduct(faceNormal, Vec3({0.f,-1.f,0.f})));
                 Vec3 unlitColor = cube->GetColor(i / 3);
                 Vec3 litColor = Math::Hadamard(unlitColor, ambientLight) + Math::Hadamard(unlitColor, directionalLightColor) * directionalLightAmount;
-                if (IsPointInsideTriangle(Point({viewInfo.mouse_x, viewInfo.mouse_y}), shape.projectedVertices[shape.indices[i]],
-                 shape.projectedVertices[shape.indices[i + 1]], shape.projectedVertices[shape.indices[i + 2]] ))  
+                if (Math::Distance(v0, sphereLocation) < radius &&
+                    Math::Distance(v1, sphereLocation) < radius &&
+                    Math::Distance(v2, sphereLocation) < radius )  
                  {
                     litColor = Color::Red;
                  }  
