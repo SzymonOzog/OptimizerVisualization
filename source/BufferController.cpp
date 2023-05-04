@@ -32,7 +32,11 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
     }
 
     for (auto& cube : shapes)
-    {
+    {        
+        float closestVertexDist = std::numeric_limits<float>::max();
+        Vec3 sphereLocation;
+        float radius = 2.f;
+        float outerRadius = 3.5f;
         cube->position = viewInfo.position;
         IndexedTriangleVector shape = cube->GetIndexedTriangleVector();
         
@@ -42,16 +46,6 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
             shape.vertices[i] = rotation * shape.vertices[i];
             shape.vertices[i] += cube->position;
             shape.projectedVertices[i] = ProjectToScreen(shape.vertices[i]);
-        }
-
-        
-        Vec3 sphereLocation;
-        float radius = 2.f;
-        float outerRadius = 3.5f;
-
-        float closestVertexDist = std::numeric_limits<float>::max();
-        for(int i = 0; i<shape.projectedVertices.size(); i++)
-        {
             const auto& vertex = shape.projectedVertices[i];
             float distFromMouse = sqrt(pow(vertex.x - viewInfo.mouseX,2) + pow(vertex.y - viewInfo.mouseY,2));
             if (distFromMouse < 2.f && distFromMouse < closestVertexDist)
@@ -61,6 +55,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
             }
         }
 
+
         for (int i = 0; i < shape.indices.size(); i += 3)
         {
             Vec3 v0 = shape.vertices[shape.indices[i]];
@@ -68,11 +63,13 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
             Vec3 v2 = shape.vertices[shape.indices[i + 2]];
             Vec3 faceNormal = Math::CrossProduct(v1 - v0, v2 - v0);
             faceNormal.normalize();
+            
             if(Math::DotProduct(faceNormal, v0)  <= 0)
             {
                 float directionalLightAmount = std::max(0.f,Math::DotProduct(faceNormal, Vec3({0.f,-1.f,0.f})));
                 Vec3 unlitColor = cube->GetColor(i / 3);
                 Vec3 litColor = Math::Hadamard(unlitColor, ambientLight) + Math::Hadamard(unlitColor, directionalLightColor) * directionalLightAmount;
+                
                 float sphereDist = (Math::Distance(sphereLocation, v0) + Math::Distance(sphereLocation, v1) + Math::Distance(sphereLocation, v2))/3.f;
                 if (sphereDist < radius )  
                 {
@@ -83,11 +80,10 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
                     float alpha = (sphereDist - radius) / (outerRadius - radius);
                     litColor = Math::Hadamard(litColor, Color::Red) * (1.f - alpha) + litColor * alpha ;
                 } 
-
-
                 DrawTriangle(&shape.projectedVertices[shape.indices[i]],
                  &shape.projectedVertices[shape.indices[i + 1]], &shape.projectedVertices[shape.indices[i + 2]], litColor);
             }
+
         }
     }
 
