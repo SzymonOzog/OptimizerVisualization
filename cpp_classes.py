@@ -14,5 +14,5 @@ class ViewInfo(ctypes.Structure):
                 ("rotY", ctypes.c_float),
                 ("rotZ", ctypes.c_float),
                 ("position", Vec3),
-                ("mouse_x", ctypes.c_int),
-                ("mouse_y", ctypes.c_int)]
+                ("mouseX", ctypes.c_int),
+                ("mouseY", ctypes.c_int)]
