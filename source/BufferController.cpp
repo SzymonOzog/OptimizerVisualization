@@ -53,7 +53,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         for(int i = 0; i<shape.projectedVertices.size(); i++)
         {
             const auto& vertex = shape.projectedVertices[i];
-            float distFromMouse = sqrt(pow(vertex.x - viewInfo.mouse_x,2) + pow(vertex.y - viewInfo.mouse_y,2));
+            float distFromMouse = sqrt(pow(vertex.x - viewInfo.mouseX,2) + pow(vertex.y - viewInfo.mouseY,2));
             if (distFromMouse < 2.f && distFromMouse < closestVertexDist)
             {  
                 closestVertexDist = distFromMouse;

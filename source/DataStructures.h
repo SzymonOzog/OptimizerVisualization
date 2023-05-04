@@ -162,8 +162,9 @@ struct ViewInfo
     float rotY;
     float rotZ;
     Vec3 position;
-    int mouse_x;
-    int mouse_y;
+
+    int mouseX;
+    int mouseY;
 };
 
 struct Buffer 
