@@ -1,5 +1,7 @@
 #pragma once
 #include "DataStructures.h"
+#include <memory>
+#include "Shapes.h"
 
 
 class BufferController
@@ -26,7 +28,8 @@ private:
 
     Buffer* buffer;
     std::vector<float> zBuffer;
-    
+    std::vector<std::unique_ptr<Shape>> shapes;
+
     Vec3 ambientLight;
     Vec3 directionalLightColor;
 };

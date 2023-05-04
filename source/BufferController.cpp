@@ -1,10 +1,8 @@
 #include "BufferController.h"
 #include <iostream>
 #include <cmath>
-#include <memory>
 #include "Math.h"
 #include "Color.h"
-#include "Shapes.h"
 
 BufferController::BufferController(int width, int height) : zBuffer(width * height, std::numeric_limits<float>::max()),
 ambientLight({0.1f,0.1f,0.1f}),
@@ -14,6 +12,9 @@ directionalLightColor({0.8f,0.85f,1.f})
     buffer->data = new Vec3[width * height];
     buffer->width = width;
     buffer->height = height;
+
+    std::unique_ptr<Shape> plane = std::make_unique<Plane>(50,50);    
+    shapes.push_back(std::move(plane));
 }
 
 BufferController::~BufferController()
@@ -30,17 +31,9 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         zBuffer[i] = std::numeric_limits<float>::max();
     }
 
-    std::unique_ptr<Shape> cube1 = std::make_unique<Cube>(0.5f);
-    std::unique_ptr<Shape> cube2 = std::make_unique<Cube>(0.5f);
-    std::unique_ptr<Shape> plane = std::make_unique<Plane>(50,50);
-    cube1->position = Vec3{ 0.0f, 1.0f, 3.0f };
-    cube2->position = Vec3{ 1.0f, 0.0f, 2.0f };
-    plane->position = viewInfo.position;
-    std::vector<std::unique_ptr<Shape>> shapes;
-    shapes.push_back(std::move(plane));
-    
     for (auto& cube : shapes)
     {
+        cube->position = viewInfo.position;
         IndexedTriangleVector shape = cube->GetIndexedTriangleVector();
         
         Mat3 rotation = Mat3::RotationZ(viewInfo.rotZ) * Mat3::RotationY(viewInfo.rotY) * Mat3::RotationX(viewInfo.rotX);
