@@ -54,6 +54,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         
         Vec3 sphereLocation;
         float radius = 2.f;
+        float outerRadius = 3.5f;
 
         float closestVertexDist = std::numeric_limits<float>::max();
         for(int i = 0; i<shape.projectedVertices.size(); i++)
@@ -79,12 +80,17 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
                 float directionalLightAmount = std::max(0.f,Math::DotProduct(faceNormal, Vec3({0.f,-1.f,0.f})));
                 Vec3 unlitColor = cube->GetColor(i / 3);
                 Vec3 litColor = Math::Hadamard(unlitColor, ambientLight) + Math::Hadamard(unlitColor, directionalLightColor) * directionalLightAmount;
-                if (Math::Distance(v0, sphereLocation) < radius &&
-                    Math::Distance(v1, sphereLocation) < radius &&
-                    Math::Distance(v2, sphereLocation) < radius )  
-                 {
-                    litColor = Color::Red;
-                 }  
+                float sphereDist = (Math::Distance(sphereLocation, v0) + Math::Distance(sphereLocation, v1) + Math::Distance(sphereLocation, v2))/3.f;
+                if (sphereDist < radius )  
+                {
+                   litColor = Color::Red;
+                }
+                else if(sphereDist < outerRadius)
+                {
+                    float alpha = (sphereDist - radius) / (outerRadius - radius);
+                    litColor = Math::Hadamard(litColor, Color::Red) * (1.f - alpha) + litColor * alpha ;
+                } 
+
 
                 DrawTriangle(&shape.projectedVertices[shape.indices[i]],
                  &shape.projectedVertices[shape.indices[i + 1]], &shape.projectedVertices[shape.indices[i + 2]], litColor);
