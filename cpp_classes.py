@@ -15,4 +15,6 @@ class ViewInfo(ctypes.Structure):
                 ("rotZ", ctypes.c_float),
                 ("position", Vec3),
                 ("mouseX", ctypes.c_int),
-                ("mouseY", ctypes.c_int)]
+                ("mouseY", ctypes.c_int),
+                ("mouseLeft", ctypes.c_bool),
+                ("deltaTime", ctypes.c_int)]

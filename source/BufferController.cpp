@@ -38,14 +38,12 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         float radius = 2.f;
         float outerRadius = 3.5f;
         cube->position = viewInfo.position;
-        IndexedTriangleVector shape = cube->GetIndexedTriangleVector();
+        IndexedTriangleVector& shape = cube->GetIndexedTriangleVector();
         
         Mat3 rotation = Mat3::RotationZ(viewInfo.rotZ) * Mat3::RotationY(viewInfo.rotY) * Mat3::RotationX(viewInfo.rotX);
         for (int i = 0; i < shape.vertices.size(); i++)
         {
-            shape.vertices[i] = rotation * shape.vertices[i];
-            shape.vertices[i] += cube->position;
-            shape.projectedVertices[i] = ProjectToScreen(shape.vertices[i]);
+            shape.projectedVertices[i] = ProjectToScreen((rotation * shape.vertices[i]) + cube->position);
             const auto& vertex = shape.projectedVertices[i];
             float distFromMouse = sqrt(pow(vertex.x - viewInfo.mouseX,2) + pow(vertex.y - viewInfo.mouseY,2));
             if (distFromMouse < 2.f && distFromMouse < closestVertexDist)
@@ -55,6 +53,13 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
             }
         }
 
+        for(int i = 0; i<shape.vertices.size(); i++)
+        {
+            if(viewInfo.mouseLeft && Math::Distance(shape.vertices[i], sphereLocation) < radius)
+            {
+                shape.vertices[i] -= Vec3({0.f,0.01f,0.f}) * viewInfo.deltaTime;
+            }
+        }
 
         for (int i = 0; i < shape.indices.size(); i += 3)
         {

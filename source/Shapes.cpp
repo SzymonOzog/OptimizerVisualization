@@ -7,7 +7,7 @@ IndexedLineVector Shape::GetIndexedLineVector()
     return indexedLineVector;
 }
 
-IndexedTriangleVector Shape::GetIndexedTriangleVector()
+IndexedTriangleVector& Shape::GetIndexedTriangleVector()
 {
     return indexedTriangleVector;
 }

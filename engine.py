@@ -22,7 +22,8 @@ class Engine():
         self.keyboard_listener = keyboard.Listener(on_press=self.on_key_press)
 
         self.run = True
-        self.mouse_pressed = False
+        self.mouse_pressed_right = False
+        self.mouse_pressed_left = False
 
         self.frame_time = 16
 
@@ -40,7 +41,7 @@ class Engine():
         self.mouse_y = 0
 
     def on_move(self,x,y):
-        if self.mouse_pressed:
+        if self.mouse_pressed_right:
             self.view_info.rotY = (self.view_info.rotY + ((x-self.mouse_x) * 0.001 * self.frame_time)) % (2 * math.pi)  
             self.view_info.rotX = (self.view_info.rotX + ((y-self.mouse_y) * 0.001 * self.frame_time)) % (2 * math.pi)
         self.mouse_y=y
@@ -48,7 +49,10 @@ class Engine():
 
 
     def on_click(self, x, y, button, pressed):
-        self.mouse_pressed = pressed
+        if button == mouse.Button.left:
+            self.mouse_pressed_left = pressed
+        elif button == mouse.Button.right:
+            self.mouse_pressed_right = pressed
     
     def on_key_press(self, key):
             if key == keyboard.Key.esc:
@@ -80,9 +84,10 @@ class Engine():
             cv2.imshow('test', data)            
             
             image_transform = cv2.getWindowImageRect('test')
-            self.view_info.mouse_x = self.mouse_x - image_transform[0]
-            self.view_info.mouse_y = self.mouse_y - image_transform[1]
-            
+            self.view_info.mouseX = self.mouse_x - image_transform[0]
+            self.view_info.mouseY = self.mouse_y - image_transform[1]
+            self.view_info.mouseLeft = self.mouse_pressed_left
+            self.view_info.deltaTime = self.frame_time
             cv2.waitKey(1)
 
             self.frame_time =  current_time() - start_frame

@@ -5,7 +5,7 @@ class Shape
 {
 public:
     IndexedLineVector GetIndexedLineVector();
-    IndexedTriangleVector GetIndexedTriangleVector();
+    IndexedTriangleVector& GetIndexedTriangleVector();
     
     virtual Vec3 GetColor(int triangle_index);
 

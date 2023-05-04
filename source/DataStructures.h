@@ -165,6 +165,9 @@ struct ViewInfo
 
     int mouseX;
     int mouseY;
+    bool mouseLeft;
+
+    int deltaTime;
 };
 
 struct Buffer 
