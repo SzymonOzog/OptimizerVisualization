@@ -3,12 +3,12 @@
 
 namespace Math
 {
-    inline float DotProduct(const Vec3& a, const Vec3& b)
+    inline float dotProduct(const Vec3& a, const Vec3& b)
     {
         return a.x * b.x + a.y * b.y + a.z * b.z;
     }
     
-    inline Vec3 CrossProduct(const Vec3& a, const Vec3& b)
+    inline Vec3 crossProduct(const Vec3& a, const Vec3& b)
     {
         Vec3 result;
         result.x = a.y * b.z - a.z * b.y;
@@ -17,12 +17,12 @@ namespace Math
         return result;
     }
     
-    inline Vec3 Hadamard(const Vec3& a, const Vec3& b)
+    inline Vec3 hadamard(const Vec3& a, const Vec3& b)
     {
         return {a.x*b.x, a.y*b.y,a.z*b.z};
     }
 
-    inline float Distance(const Vec3& a, const Vec3& b)
+    inline float distance(const Vec3& a, const Vec3& b)
     {
         return Vec3({a.x-b.x, a.y-b.y, a.z-b.z}).length();
     }
