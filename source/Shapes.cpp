@@ -39,6 +39,7 @@ Cube::Cube(float size)
         0,1,4, 1,5,4
     };
     indexedTriangleVector.projectedVertices.resize(indexedTriangleVector.vertices.size());
+    indexedTriangleVector.transformedVertices.resize(indexedTriangleVector.vertices.size());
 
     indexedLineVector.vertices = indexedTriangleVector.vertices;
     indexedLineVector.indices = {
@@ -96,4 +97,5 @@ Plane::Plane(int xSize, int zSize,float xLen, float zLen, bool twoSided)
         }
     }
     indexedTriangleVector.projectedVertices.resize(indexedTriangleVector.vertices.size());
+    indexedTriangleVector.transformedVertices.resize(indexedTriangleVector.vertices.size());
 }

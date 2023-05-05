@@ -43,19 +43,20 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         Mat3 rotation = Mat3::RotationZ(viewInfo.rotZ) * Mat3::RotationY(viewInfo.rotY) * Mat3::RotationX(viewInfo.rotX);
         for (int i = 0; i < shape.vertices.size(); i++)
         {
-            shape.projectedVertices[i] = ProjectToScreen((rotation * shape.vertices[i]) + cube->position);
+            shape.transformedVertices[i] = (rotation * shape.vertices[i]) + cube->position;
+            shape.projectedVertices[i] = ProjectToScreen(shape.transformedVertices[i]);
             const auto& vertex = shape.projectedVertices[i];
             float distFromMouse = sqrt(pow(vertex.x - viewInfo.mouseX,2) + pow(vertex.y - viewInfo.mouseY,2));
             if (distFromMouse < 2.f && distFromMouse < closestVertexDist)
             {  
                 closestVertexDist = distFromMouse;
-                sphereLocation = shape.vertices[i];
+                sphereLocation = shape.transformedVertices[i];
             }
         }
 
         for(int i = 0; i<shape.vertices.size(); i++)
         {
-            if(viewInfo.mouseLeft && Math::distance(shape.vertices[i], sphereLocation) < radius)
+            if(viewInfo.mouseLeft && Math::distance(shape.transformedVertices[i], sphereLocation) < radius)
             {
                 shape.vertices[i] -= Vec3({0.f,0.01f,0.f}) * viewInfo.deltaTime;
             }
@@ -63,9 +64,9 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
 
         for (int i = 0; i < shape.indices.size(); i += 3)
         {
-            Vec3 v0 = shape.vertices[shape.indices[i]];
-            Vec3 v1 = shape.vertices[shape.indices[i + 1]];
-            Vec3 v2 = shape.vertices[shape.indices[i + 2]];
+            Vec3 v0 = shape.transformedVertices[shape.indices[i]];
+            Vec3 v1 = shape.transformedVertices[shape.indices[i + 1]];
+            Vec3 v2 = shape.transformedVertices[shape.indices[i + 2]];
             Vec3 faceNormal = Math::crossProduct(v1 - v0, v2 - v0);
             faceNormal.normalize();
             
