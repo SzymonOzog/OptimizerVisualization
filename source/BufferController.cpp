@@ -34,7 +34,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
     for (auto& cube : shapes)
     {        
         float closestVertexDist = std::numeric_limits<float>::max();
-        Vec3 sphereLocation;
+        Vec3 sphereLocation = Vec3{0.f,0.f,std::numeric_limits<float>::max()};
         float radius = 2.f;
         float outerRadius = 3.5f;
         cube->position = viewInfo.position;
@@ -47,7 +47,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
             shape.projectedVertices[i] = ProjectToScreen(shape.transformedVertices[i]);
             const auto& vertex = shape.projectedVertices[i];
             float distFromMouse = sqrt(pow(vertex.x - viewInfo.mouseX,2) + pow(vertex.y - viewInfo.mouseY,2));
-            if (distFromMouse < 2.f && distFromMouse < closestVertexDist)
+            if (distFromMouse < 50.f && distFromMouse < closestVertexDist)
             {  
                 closestVertexDist = distFromMouse;
                 sphereLocation = shape.transformedVertices[i];
