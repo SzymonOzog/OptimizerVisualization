@@ -13,7 +13,7 @@ directionalLightColor({0.8f,0.85f,1.f})
     buffer->width = width;
     buffer->height = height;
 
-    std::unique_ptr<Shape> plane = std::make_unique<Plane>(50,50);    
+    std::unique_ptr<Shape> plane = std::make_unique<Plane>(80,80);    
     shapes.push_back(std::move(plane));
 }
 
