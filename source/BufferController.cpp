@@ -35,8 +35,8 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
     {        
         float closestVertexDist = std::numeric_limits<float>::max();
         Vec3 sphereLocation = Vec3{0.f,0.f,std::numeric_limits<float>::max()};
-        float radius = 2.f;
-        float outerRadius = 3.5f;
+        float radius = 1.f;
+        float outerRadius = 1.5f;
         cube->position = viewInfo.position;
         IndexedTriangleVector& shape = cube->GetIndexedTriangleVector();
         
@@ -56,9 +56,15 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
 
         for(int i = 0; i<shape.vertices.size(); i++)
         {
-            if(viewInfo.mouseLeft && Math::distance(shape.transformedVertices[i], sphereLocation) < radius)
+            float dist = Math::distance(shape.transformedVertices[i], sphereLocation);
+            if(viewInfo.mouseLeft && dist < radius)
             {
                 shape.vertices[i] -= Vec3({0.f,0.01f,0.f}) * viewInfo.deltaTime;
+            }
+            else if(viewInfo.mouseLeft && dist < outerRadius)
+            {
+                float alpha = (Math::distance(shape.transformedVertices[i], sphereLocation) - radius) / (outerRadius - radius);
+                shape.vertices[i] -= Vec3({0.f,0.01f *(1.f - alpha),0.f}) * viewInfo.deltaTime;
             }
         }
 
