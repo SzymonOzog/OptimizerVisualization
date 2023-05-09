@@ -19,6 +19,8 @@ class Engine():
         self.view_info.position.z = 10
         self.view_info.innerRadius = 0.5
         self.view_info.outerRadius = 1.5
+
+        self.trackbarRadiusScale = 33
         
         self.mouse_listener = mouse.Listener(on_move=self.on_move, on_click=self.on_click)
         self.keyboard_listener = keyboard.Listener(on_press=self.on_key_press)
@@ -68,9 +70,19 @@ class Engine():
             elif key.char == 'd':
                 self.view_info.position.x -= 0.01 * self.frame_time
     
+    def change_outer_radius(self, value):
+        self.view_info.outerRadius = value/self.trackbarRadiusScale
+    
+    def change_inner_radius(self, value):
+        self.view_info.innerRadius = value/self.trackbarRadiusScale
+
+
     def start(self):
         self.mouse_listener.start()
         self.keyboard_listener.start()
+        cv2.namedWindow('test')
+        cv2.createTrackbar('innerRadius', 'test', int(self.view_info.innerRadius*self.trackbarRadiusScale), 100, self.change_inner_radius)
+        cv2.createTrackbar('outerRadius', 'test', int(self.view_info.outerRadius*self.trackbarRadiusScale), 100, self.change_outer_radius)     
         while self.run:
             start_frame = current_time()
             
@@ -83,7 +95,7 @@ class Engine():
 
             cv2.putText(data, f'FPS:{format(1000/self.frame_time, ".2f")}',(30,30)
                         ,cv2.FONT_HERSHEY_SIMPLEX,0.3,(0,0,255),1)
-            cv2.imshow('test', data)            
+            cv2.imshow('test', data)       
             
             image_transform = cv2.getWindowImageRect('test')
             self.view_info.mouseX = self.mouse_x - image_transform[0]
