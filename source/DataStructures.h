@@ -168,6 +168,9 @@ struct ViewInfo
     bool mouseLeft;
 
     int deltaTime;
+
+    float innerRadius;
+    float outerRadius;
 };
 
 struct Buffer 

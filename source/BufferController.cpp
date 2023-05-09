@@ -35,8 +35,8 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
     {        
         float closestVertexDist = std::numeric_limits<float>::max();
         Vec3 sphereLocation = Vec3{0.f,0.f,std::numeric_limits<float>::max()};
-        float radius = 1.f;
-        float outerRadius = 1.5f;
+        float radius = viewInfo.innerRadius;
+        float outerRadius = viewInfo.outerRadius;
         cube->position = viewInfo.position;
         IndexedTriangleVector& shape = cube->GetIndexedTriangleVector();
         

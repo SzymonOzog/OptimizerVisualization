@@ -17,6 +17,8 @@ class Engine():
         self.view_info.position.x = 0
         self.view_info.position.y = 0
         self.view_info.position.z = 10
+        self.view_info.innerRadius = 0.5
+        self.view_info.outerRadius = 1.5
         
         self.mouse_listener = mouse.Listener(on_move=self.on_move, on_click=self.on_click)
         self.keyboard_listener = keyboard.Listener(on_press=self.on_key_press)

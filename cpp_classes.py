@@ -17,4 +17,6 @@ class ViewInfo(ctypes.Structure):
                 ("mouseX", ctypes.c_int),
                 ("mouseY", ctypes.c_int),
                 ("mouseLeft", ctypes.c_bool),
-                ("deltaTime", ctypes.c_int)]
+                ("deltaTime", ctypes.c_int),
+                ("innerRadius", ctypes.c_float),
+                ("outerRadius", ctypes.c_float)]
