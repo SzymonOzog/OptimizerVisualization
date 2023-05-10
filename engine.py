@@ -9,7 +9,9 @@ from cpp_classes import *
 from pynput import mouse, keyboard
 
 class Engine():
-    def __init__(self, w, h):
+    def __init__(self, w, h, window_name = 'OptimizerVisualisation'):
+        self.window_name = window_name
+
         self.view_info = ViewInfo()
         self.view_info.rotX = 0
         self.view_info.rotY = 0
@@ -80,9 +82,9 @@ class Engine():
     def start(self):
         self.mouse_listener.start()
         self.keyboard_listener.start()
-        cv2.namedWindow('test')
-        cv2.createTrackbar('innerRadius', 'test', int(self.view_info.innerRadius*self.trackbarRadiusScale), 100, self.change_inner_radius)
-        cv2.createTrackbar('outerRadius', 'test', int(self.view_info.outerRadius*self.trackbarRadiusScale), 100, self.change_outer_radius)     
+        cv2.namedWindow(self.window_name)
+        cv2.createTrackbar('innerRadius', self.window_name, int(self.view_info.innerRadius*self.trackbarRadiusScale), 100, self.change_inner_radius)
+        cv2.createTrackbar('outerRadius', self.window_name, int(self.view_info.outerRadius*self.trackbarRadiusScale), 100, self.change_outer_radius)     
         while self.run:
             start_frame = current_time()
             
@@ -95,9 +97,9 @@ class Engine():
 
             cv2.putText(data, f'FPS:{format(1000/self.frame_time, ".2f")}',(30,30)
                         ,cv2.FONT_HERSHEY_SIMPLEX,0.3,(0,0,255),1)
-            cv2.imshow('test', data)       
+            cv2.imshow(self.window_name, data)       
             
-            image_transform = cv2.getWindowImageRect('test')
+            image_transform = cv2.getWindowImageRect(self.window_name)
             self.view_info.mouseX = self.mouse_x - image_transform[0]
             self.view_info.mouseY = self.mouse_y - image_transform[1]
             self.view_info.mouseLeft = self.mouse_pressed_left
