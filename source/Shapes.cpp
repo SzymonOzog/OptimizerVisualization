@@ -1,5 +1,6 @@
 #include "Shapes.h"
 #include "Color.h"
+#include "Math.h"
 
 
 IndexedLineVector Shape::GetIndexedLineVector()
@@ -17,6 +18,28 @@ Vec3 Shape::GetColor(int triangle_index)
     return Color::White;
 }
 
+void Shape::CalculateNormals()
+{
+    indexedTriangleVector.normals = std::vector<Vec3>(indexedTriangleVector.vertices.size(), Vec3{0.f,0.f,0.f});
+
+    for (int j = 0; j<indexedTriangleVector.indices.size(); j+=3)
+    {
+
+        Vec3 v0 = indexedTriangleVector.vertices[indexedTriangleVector.indices[j]];
+        Vec3 v1 = indexedTriangleVector.vertices[indexedTriangleVector.indices[j+1]];
+        Vec3 v2 = indexedTriangleVector.vertices[indexedTriangleVector.indices[j+2]];
+        Vec3 faceNormal = Math::crossProduct(v1 - v0, v2 - v0);
+        faceNormal.normalize();
+        indexedTriangleVector.normals[indexedTriangleVector.indices[j]] += faceNormal;
+        indexedTriangleVector.normals[indexedTriangleVector.indices[j+1]] += faceNormal;
+        indexedTriangleVector.normals[indexedTriangleVector.indices[j+2]] += faceNormal;
+    }
+    for (int j = 0; j<indexedTriangleVector.normals.size(); j++)
+    {
+        indexedTriangleVector.normals[j].normalize();
+    }
+    
+}
 
 Cube::Cube(float size)
 {
@@ -53,6 +76,7 @@ Cube::Cube(float size)
         Color::Red, Color::Green, Color::Blue, Color::Yellow, Color::Cyan, Color::Magenta,
         Color::Red, Color::Green, Color::Blue, Color::Yellow, Color::Cyan, Color::Magenta
     };
+    CalculateNormals();
 }
 
 Vec3 Cube::GetColor(int triangle_index)
@@ -70,7 +94,7 @@ Plane::Plane(int xSize, int zSize,float xLen, float zLen, bool twoSided)
             indexedTriangleVector.vertices.push_back(Vec3{(float)xLen*x/xSize, 0.f, (float)zLen*z/zSize});
         }
     }
-    indexedTriangleVector.indices.reserve((xSize-1)*(zSize-1)*6);
+    indexedTriangleVector.indices.reserve((xSize-1)*(zSize-1)* 6);
 
     for(int x = 0; x<xSize-1; x++)
     {
@@ -98,4 +122,6 @@ Plane::Plane(int xSize, int zSize,float xLen, float zLen, bool twoSided)
     }
     indexedTriangleVector.projectedVertices.resize(indexedTriangleVector.vertices.size());
     indexedTriangleVector.transformedVertices.resize(indexedTriangleVector.vertices.size());
+
+    CalculateNormals();
 }

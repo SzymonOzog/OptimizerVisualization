@@ -197,5 +197,6 @@ struct IndexedTriangleVector
     std::vector<Vec3> vertices;
     std::vector<Vec3> transformedVertices;
     std::vector<Vec3> projectedVertices;
+    std::vector<Vec3> normals;
     std::vector<int> indices;
 };

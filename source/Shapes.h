@@ -6,8 +6,9 @@ class Shape
 public:
     IndexedLineVector GetIndexedLineVector();
     IndexedTriangleVector& GetIndexedTriangleVector();
-    
+
     virtual Vec3 GetColor(int triangle_index);
+    void CalculateNormals();
 
     Vec3 position;
 protected:
