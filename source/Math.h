@@ -26,5 +26,9 @@ namespace Math
     {
         return Vec3({a.x-b.x, a.y-b.y, 0.f ? TwoD : (a.z-b.z)}).length();
     }
+
+    inline Vec3 lerp(const Vec3& a, const Vec3& b, float t)
+    {
+        return a + (b-a)*t;
     }
 }
