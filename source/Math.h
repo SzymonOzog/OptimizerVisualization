@@ -22,8 +22,9 @@ namespace Math
         return {a.x*b.x, a.y*b.y,a.z*b.z};
     }
 
-    inline float distance(const Vec3& a, const Vec3& b)
+    inline float distance(const Vec3& a, const Vec3& b, bool TwoD = false)
     {
-        return Vec3({a.x-b.x, a.y-b.y, a.z-b.z}).length();
+        return Vec3({a.x-b.x, a.y-b.y, 0.f ? TwoD : (a.z-b.z)}).length();
+    }
     }
 }
