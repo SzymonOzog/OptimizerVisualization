@@ -13,7 +13,7 @@ directionalLightColor({0.8f,0.85f,1.f})
     buffer->width = width;
     buffer->height = height;
 
-    std::unique_ptr<Shape> plane = std::make_unique<Plane>(80,80);    
+    std::unique_ptr<Shape> plane = std::make_unique<Plane>(80,80,10.f,10.f, true);
     shapes.push_back(std::move(plane));
 }
 
@@ -34,16 +34,19 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
     for (auto& cube : shapes)
     {        
         float closestVertexDist = std::numeric_limits<float>::max();
-        Vec3 sphereLocation = Vec3{0.f,0.f,std::numeric_limits<float>::max()};
-        float radius = viewInfo.innerRadius;
-        float outerRadius = viewInfo.outerRadius;
+        radius = viewInfo.innerRadius;
+        outerRadius = viewInfo.outerRadius;
+        
+        sphereLocation = Vec3{0.f,0.f,std::numeric_limits<float>::max()};
         cube->position = viewInfo.position;
+        cube->CalculateNormals();
         IndexedTriangleVector& shape = cube->GetIndexedTriangleVector();
         
         Mat3 rotation = Mat3::RotationZ(viewInfo.rotZ) * Mat3::RotationY(viewInfo.rotY) * Mat3::RotationX(viewInfo.rotX);
         for (int i = 0; i < shape.vertices.size(); i++)
         {
             shape.transformedVertices[i] = (rotation * shape.vertices[i]) + cube->position;
+            shape.normals[i] = rotation * shape.normals[i];
             shape.projectedVertices[i] = ProjectToScreen(shape.transformedVertices[i]);
             const auto& vertex = shape.projectedVertices[i];
             float distFromMouse = sqrt(pow(vertex.x - viewInfo.mouseX,2) + pow(vertex.y - viewInfo.mouseY,2));
@@ -78,22 +81,20 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
             
             if(Math::dotProduct(faceNormal, v0)  <= 0)
             {
-                float directionalLightAmount = std::max(0.f,Math::dotProduct(faceNormal, Vec3({0.f,-1.f,0.f})));
                 Vec3 unlitColor = cube->GetColor(i / 3);
-                Vec3 litColor = Math::hadamard(unlitColor, ambientLight) + Math::hadamard(unlitColor, directionalLightColor) * directionalLightAmount;
-                
-                float sphereDist = (Math::distance(sphereLocation, v0) + Math::distance(sphereLocation, v1) + Math::distance(sphereLocation, v2))/3.f;
+                float sphereDist = (Math::distance(sphereLocation, v0, true) + Math::distance(sphereLocation, v1, true) + Math::distance(sphereLocation, v2, true))/3.f;
                 if (sphereDist < radius )  
                 {
-                   litColor = Color::Red;
+                   unlitColor = Color::Red;
                 }
                 else if(sphereDist < outerRadius)
                 {
                     float alpha = (sphereDist - radius) / (outerRadius - radius);
-                    litColor = Math::hadamard(litColor, Color::Red) * (1.f - alpha) + litColor * alpha ;
+                    unlitColor = Math::hadamard(unlitColor, Color::Red) * (1.f - alpha) + unlitColor * alpha ;
                 } 
                 DrawTriangle(&shape.projectedVertices[shape.indices[i]],
-                 &shape.projectedVertices[shape.indices[i + 1]], &shape.projectedVertices[shape.indices[i + 2]], litColor);
+                 &shape.projectedVertices[shape.indices[i + 1]], &shape.projectedVertices[shape.indices[i + 2]],
+                   &shape.normals[shape.indices[i]], &shape.normals[shape.indices[i + 1]], &shape.normals[shape.indices[i + 2]], unlitColor);
             }
 
         }
@@ -125,35 +126,55 @@ Vec3 BufferController::ProjectToScreen(const Vec3& vertex)
     return Vec3{(vertex.x / vertex.z + 1.0f) * 0.5f * buffer->width, (vertex.y / vertex.z + 1.0f) * 0.5f * buffer->height, vertex.z };
 }
 
-void BufferController::DrawTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3 Color)
+void BufferController::DrawTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3* n0, Vec3* n1, Vec3* n2, Vec3 Color)
 {
-    if(v0->y > v1->y) std::swap(v0, v1);
-    if(v0->y > v2->y) std::swap(v0, v2);
-    if(v1->y > v2->y) std::swap(v1, v2);
+    if(v0->y > v1->y)
+    {
+        std::swap(v0, v1);
+        std::swap(n0, n1);
+
+    }
+    if(v0->y > v2->y) 
+    {
+        std::swap(v0, v2);
+        std::swap(n0, n2);
+    }
+    if(v1->y > v2->y) 
+    {
+        std::swap(v1, v2);
+        std::swap(n1, n2);
+    }
 
     if(v0->y == v1->y) 
     {
-        DrawFlatTopTriangle(v0, v1, v2, Color);
+        DrawFlatTopTriangle(v0, v1, v2, n0, n1, n2, Color);
     }
     else if(v1->y == v2->y)
     {
-        DrawFlatBottomTriangle(v0, v1, v2, Color);
+        DrawFlatBottomTriangle(v0, v1, v2, n0, n1, n2, Color);
     }
     else
     {
         Vec3 v3;
         v3.y = v1->y;
-        v3.x = v0->x + (float)(v1->y - v0->y) / (float)(v2->y - v0->y) * (v2->x - v0->x);
-        v3.z = v0->z + (float)(v1->y - v0->y) / (float)(v2->y - v0->y) * (v2->z - v0->z);
-        DrawFlatBottomTriangle(v0, v1, &v3, Color);
-        DrawFlatTopTriangle(v1, &v3, v2, Color);
+
+        float lerpAmount = (float)(v1->y - v0->y) / (float)(v2->y - v0->y);
+        v3.x = v0->x +  lerpAmount * (v2->x - v0->x);
+        v3.z = v0->z + lerpAmount * (v2->z - v0->z);
+        Vec3 n3 = Math::lerp(*n0, *n2, lerpAmount);
+
+        DrawFlatBottomTriangle(v0, v1, &v3, n0, n1, &n3, Color);
+        DrawFlatTopTriangle(v1, &v3, v2, n1, &n3, n2, Color);
     }
 }
-
-void BufferController::DrawFlatBottomTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3 Color)
+ 
+void BufferController::DrawFlatBottomTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3* n0, Vec3* n1, Vec3* n2, Vec3 Color)
 {
-    if(v1->x > v2->x) std::swap(v1, v2);
-
+    if(v1->x > v2->x) 
+    {
+        std::swap(v1, v2);
+        std::swap(n1, n2);
+    }
     float invslope1 = (float)(v1->x - v0->x) / (float)(v1->y - v0->y);
     float invslope2 = (float)(v2->x - v0->x) / (float)(v2->y - v0->y);
 
@@ -170,16 +191,27 @@ void BufferController::DrawFlatBottomTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3
         
         const float zStart = v0->z + zInvslope1 * (y + 0.5f - v0->y);
         const float zEnd = v0->z + zInvslope2 * (y + 0.5f - v0->y);
+
+        Vec3 nStart = Math::lerp(*n0, *n1, (float)(y - v0->y) / (float)(v1->y - v0->y));
+        Vec3 nEnd = Math::lerp(*n0, *n2, (float)(y  - v0->y) / (float)(v2->y - v0->y));
+
         for (int x = xStart; x < xEnd; x++)
         {
-            PutPixel(Point{ x, y }, Color, zStart + (zEnd - zStart) * (x + 0.5f - xStart) / (xEnd - xStart));
+            float lerpAmount = (float)(x - xStart) / (float)(xEnd - xStart);
+            Vec3 lerpedNormal = Math::lerp(nStart, nEnd, lerpAmount);
+            Vec3 LitColor = GetColor(Vec3({(float)x, (float)y, 0.f}), lerpedNormal, Color);
+            PutPixel(Point{ x, y }, LitColor, zStart + (zEnd - zStart) * lerpAmount);
         }
     }
 }
 
-void BufferController::DrawFlatTopTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3 Color)
+void BufferController::DrawFlatTopTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3* n0, Vec3* n1, Vec3* n2, Vec3 Color)
 {
-    if(v0->x > v1->x) std::swap(v0, v1);
+    if(v0->x > v1->x) 
+    {
+        std::swap(v0, v1);
+        std::swap(n0, n1);
+    }
 
     float invslope1 = (float)(v2->x - v0->x) / (float)(v2->y - v0->y);
     float invslope2 = (float)(v2->x - v1->x) / (float)(v2->y - v1->y);
@@ -198,9 +230,16 @@ void BufferController::DrawFlatTopTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3 Co
 
         const float zStart = v0->z + zInvslope1 * (y - v0->y);
         const float zEnd = v1->z + zInvslope2 * (y - v0->y);
+
+        Vec3 nStart = Math::lerp(*n0, *n2, (float)(y - v0->y) /(float) (v2->y - v0->y));
+        Vec3 nEnd = Math::lerp(*n1, *n2, (float)(y - v1->y) /(float) (v2->y - v1->y));
+
         for (int x = xStart; x < xEnd; x++)
         {
-            PutPixel(Point{ x, y }, Color, zStart + (zEnd - zStart) * (x - xStart) / (xEnd - xStart));
+            float lerpAmount = (float)(x - xStart) / (float)(xEnd - xStart);
+            Vec3 lerpedNormal = Math::lerp(nStart, nEnd, lerpAmount);
+            Vec3 LitColor = GetColor(Vec3({(float)x, (float)y, 0.f}), lerpedNormal, Color);
+            PutPixel(Point{ x, y }, LitColor, zStart + (zEnd - zStart) * lerpAmount);
         }
     }
 }
@@ -230,4 +269,10 @@ void BufferController::PutPixel(Point a, Vec3 Color, float z)
     }
     zBuffer[a.x + a.y * buffer->width] = z;
     buffer->data[a.x + a.y * buffer->width] = Color;
+}
+
+Vec3 BufferController::GetColor(const Vec3 &vertex, const Vec3 &normal, Vec3 unlitColor)
+{
+    float directionalLightAmount = std::max(0.f,Math::dotProduct(normal, Vec3({0.f,-1.f,0.f})));
+    return Math::hadamard(unlitColor, ambientLight) + Math::hadamard(unlitColor, directionalLightColor) * directionalLightAmount;
 }
