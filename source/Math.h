@@ -29,6 +29,6 @@ namespace Math
 
     inline Vec3 lerp(const Vec3& a, const Vec3& b, float t)
     {
-        return a + (b-a)*t;
+        return a * (1-t) + b * t;
     }
 }
