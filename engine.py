@@ -71,6 +71,12 @@ class Engine():
                 self.view_info.position.x += 0.01 * self.frame_time
             elif key.char == 'd':
                 self.view_info.position.x -= 0.01 * self.frame_time
+            elif key.char == 'p':
+                if self.mouse_listener.is_alive():
+                    self.mouse_listener.stop()
+                    self.keyboard_listener.stop()
+                else:
+                    self.mouse_listener.start()
     
     def change_outer_radius(self, value):
         self.view_info.outerRadius = value/self.trackbarRadiusScale
