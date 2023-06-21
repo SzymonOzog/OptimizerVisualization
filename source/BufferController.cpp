@@ -1,9 +1,9 @@
 #include "BufferController.h"
 #include <iostream>
 #include <cmath>
+#include <algorithm>
 #include "Math.h"
 #include "Color.h"
-
 BufferController::BufferController(int width, int height) : zBuffer(width * height, std::numeric_limits<float>::max()),
 ambientLight({0.1f,0.1f,0.1f}),
 directionalLightColor({0.8f,0.85f,1.f}),
@@ -183,13 +183,13 @@ void BufferController::DrawFlatBottomTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3
     float zInvslope1 = (float)(v1->z - v0->z) / (float)(v1->y - v0->y);
     float zInvslope2 = (float)(v2->z - v0->z) / (float)(v2->y - v0->y);
 
-    const int yStart = (int)ceil(v0->y - 0.5f);
-    const int yEnd = (int)ceil(v1->y - 0.5f);
+    const int yStart = std::clamp((int)ceil(v0->y - 0.5f), 0, buffer->height);
+    const int yEnd = std::clamp((int)ceil(v1->y - 0.5f), 0, buffer->height);
 
     for (int y = yStart; y < yEnd; y++)
     {
-        const int xStart = (int)ceil(v0->x + invslope1 * (y + 0.5f - v0->y) - 0.5f);
-        const int xEnd = (int)ceil(v0->x + invslope2 * (y + 0.5f - v0->y) - 0.5f);
+        const int xStart = std::clamp((int)ceil(v0->x + invslope1 * (y + 0.5f - v0->y) - 0.5f), 0, buffer->width);
+        const int xEnd =   std::clamp((int)ceil(v0->x + invslope2 * (y + 0.5f - v0->y) - 0.5f), 0, buffer->width);
         
         const float zStart = v0->z + zInvslope1 * (y + 0.5f - v0->y);
         const float zEnd = v0->z + zInvslope2 * (y + 0.5f - v0->y);
@@ -221,14 +221,14 @@ void BufferController::DrawFlatTopTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3* n
     float zInvslope1 = (float)(v2->z - v0->z) / (float)(v2->y - v0->y);
     float zInvslope2 = (float)(v2->z - v1->z) / (float)(v2->y - v1->y);
 
-    const int yStart = (int)ceil(v0->y - 0.5f);
-    const int yEnd = (int)ceil(v2->y - 0.5f);
+    const int yStart = std::clamp((int)ceil(v0->y - 0.5f), 0, buffer->height);
+    const int yEnd =   std::clamp((int)ceil(v2->y - 0.5f), 0, buffer->height);
     
 
     for (int y = yStart; y < yEnd; y++)
     {
-        const int xStart = (int)ceil(v0->x + invslope1 * (y + 0.5f - v0->y) - 0.5f);
-        const int xEnd = (int)ceil(v1->x + invslope2 * (y + 0.5f - v0->y) - 0.5f);
+        const int xStart = std::clamp((int)ceil(v0->x + invslope1 * (y + 0.5f - v0->y) - 0.5f), 0, buffer->width);
+        const int xEnd =   std::clamp((int)ceil(v1->x + invslope2 * (y + 0.5f - v0->y) - 0.5f), 0, buffer->width);
 
         const float zStart = v0->z + zInvslope1 * (y - v0->y);
         const float zEnd = v1->z + zInvslope2 * (y - v0->y);
@@ -265,7 +265,7 @@ void BufferController::DrawLine(Point a, Point b, Vec3 Color)
 
 void BufferController::PutPixel(Point a, Vec3 Color, float z)
 {
-    if (a.x < 0 || a.x >= buffer->width || a.y < 0 || a.y >= buffer->height || z > zBuffer[a.x + a.y * buffer->width])
+    if (z > zBuffer[a.x + a.y * buffer->width])
     {
         return;
     }
