@@ -6,7 +6,8 @@
 
 BufferController::BufferController(int width, int height) : zBuffer(width * height, std::numeric_limits<float>::max()),
 ambientLight({0.1f,0.1f,0.1f}),
-directionalLightColor({0.8f,0.85f,1.f})
+directionalLightColor({0.8f,0.85f,1.f}),
+NearPlane(0.1f)
 {
     buffer = new Buffer();
     buffer->data = new Vec3[width * height];
@@ -41,7 +42,6 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         cube->position = viewInfo.position;
         cube->CalculateNormals();
         IndexedTriangleVector& shape = cube->GetIndexedTriangleVector();
-        
         Mat3 rotation = Mat3::RotationZ(viewInfo.rotZ) * Mat3::RotationY(viewInfo.rotY) * Mat3::RotationX(viewInfo.rotX);
         for (int i = 0; i < shape.vertices.size(); i++)
         {
@@ -73,13 +73,15 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
 
         for (int i = 0; i < shape.indices.size(); i += 3)
         {
+            int size = shape.indices.size();
             Vec3 v0 = shape.transformedVertices[shape.indices[i]];
             Vec3 v1 = shape.transformedVertices[shape.indices[i + 1]];
             Vec3 v2 = shape.transformedVertices[shape.indices[i + 2]];
             Vec3 faceNormal = Math::crossProduct(v1 - v0, v2 - v0);
             faceNormal.normalize();
-            
-            if(Math::dotProduct(faceNormal, v0)  <= 0)
+            bool isFacingCamera = Math::dotProduct(faceNormal, v0)  <= 0;
+            bool isInFrontOfNearPlane = v0.z > NearPlane && v1.z > NearPlane && v2.z > NearPlane;
+            if(isFacingCamera && isInFrontOfNearPlane)
             {
                 Vec3 unlitColor = cube->GetColor(i / 3);
                 float sphereDist = (Math::distance(sphereLocation, v0, true) + Math::distance(sphereLocation, v1, true) + Math::distance(sphereLocation, v2, true))/3.f;

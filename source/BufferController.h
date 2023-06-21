@@ -34,6 +34,7 @@ private:
     Vec3 ambientLight;
     Vec3 directionalLightColor;
 
+    float NearPlane;
 
     Vec3 sphereLocation;
     float radius;
