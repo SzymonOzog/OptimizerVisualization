@@ -35,6 +35,9 @@ private:
     Vec3 directionalLightColor;
 
     float NearPlane;
+    float FarPlane;
+    float FOV;
+    Mat4 projectionMatrix;
 
     Vec3 sphereLocation;
     float radius;

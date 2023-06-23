@@ -195,6 +195,23 @@ struct Mat4
         result.data[3][3] = 0.0f;
         return result;
     }
+
+    Vec4 operator* (const Vec4& RHS)
+    {
+        Vec4 result;
+        result.x = data[0][0] * RHS.x + data[0][1] * RHS.y + data[0][2] * RHS.z + data[0][3] * RHS.w;
+        result.y = data[1][0] * RHS.x + data[1][1] * RHS.y + data[1][2] * RHS.z + data[1][3] * RHS.w;
+        result.z = data[2][0] * RHS.x + data[2][1] * RHS.y + data[2][2] * RHS.z + data[2][3] * RHS.w;
+        result.w = data[3][0] * RHS.x + data[3][1] * RHS.y + data[3][2] * RHS.z + data[3][3] * RHS.w;
+        return result;
+    }
+};
+
+struct Vertex
+{
+    Vec4 position;
+    Vec3 normal;
+    Vec3 color;
 };
 
 struct ViewInfo
@@ -236,7 +253,7 @@ struct IndexedLineVector
 struct IndexedTriangleVector
 {
     std::vector<Vec3> vertices;
-    std::vector<Vec3> transformedVertices;
+    std::vector<Vec4> transformedVertices;
     std::vector<Vec3> projectedVertices;
     std::vector<Vec3> normals;
     std::vector<int> indices;

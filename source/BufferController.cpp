@@ -7,7 +7,10 @@
 BufferController::BufferController(int width, int height) : zBuffer(width * height, std::numeric_limits<float>::max()),
 ambientLight({0.1f,0.1f,0.1f}),
 directionalLightColor({0.8f,0.85f,1.f}),
-NearPlane(0.1f)
+NearPlane(0.1f),
+FarPlane(1000.f),
+FOV(90.f),
+projectionMatrix(Mat4::projection(FOV, (float)height / (float)width, NearPlane, FarPlane))
 {
     buffer = new Buffer();
     buffer->data = new Vec3[width * height];
@@ -45,7 +48,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         Mat3 rotation = Mat3::RotationZ(viewInfo.rotZ) * Mat3::RotationY(viewInfo.rotY) * Mat3::RotationX(viewInfo.rotX);
         for (int i = 0; i < shape.vertices.size(); i++)
         {
-            shape.transformedVertices[i] = (rotation * shape.vertices[i]) + cube->position;
+            shape.transformedVertices[i] = projectionMatrix * Vec4((rotation * shape.vertices[i]) + cube->position);
             shape.normals[i] = rotation * shape.normals[i];
             shape.projectedVertices[i] = ProjectToScreen(shape.transformedVertices[i]);
             const auto& vertex = shape.projectedVertices[i];
