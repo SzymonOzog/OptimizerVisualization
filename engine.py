@@ -97,7 +97,7 @@ class Engine():
             self.c_lib.FillBuffer(ctypes.c_void_p(self.buffer_controller), ctypes.byref(self.view_info))
             buffer = Buffer.from_address(self.c_lib.GetBuffer(ctypes.c_void_p(self.buffer_controller)))  
 
-            data = np.ctypeslib.as_array(buffer.data, (self.w,self.h))
+            data = np.ctypeslib.as_array(buffer.data, (self.h,self.w))
             data = data.view((np.float32, 3))
             data = cv2.cvtColor(data, cv2.COLOR_RGB2BGR)
 
