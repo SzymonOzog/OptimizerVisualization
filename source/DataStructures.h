@@ -167,6 +167,36 @@ struct Mat3
     }
 };
 
+struct Mat4
+{
+    std::vector<std::vector<float>> data;
+
+    Mat4() : data(4,  { 0.0f, 0.0f, 0.0f, 0.0f }) {}
+
+    static Mat4 identity()
+    {
+        Mat4 result;
+        result.data[0][0] = 1.0f;
+        result.data[1][1] = 1.0f;
+        result.data[2][2] = 1.0f;
+        result.data[3][3] = 1.0f;
+        return result;
+    }
+
+    static Mat4 projection(float FOV, float aspectRatio, float nearPlane, float farPlane)
+    {
+        Mat4 result;
+        float FOVRad = 1.0f / tan(FOV * 0.5f / 180.0f * 3.14159f);
+        result.data[0][0] = aspectRatio * FOVRad;
+        result.data[1][1] = FOVRad;
+        result.data[2][2] = farPlane / (farPlane - nearPlane);
+        result.data[3][2] = (-farPlane * nearPlane) / (farPlane - nearPlane);
+        result.data[2][3] = 1.0f;
+        result.data[3][3] = 0.0f;
+        return result;
+    }
+};
+
 struct ViewInfo
 {
     float rotX;
