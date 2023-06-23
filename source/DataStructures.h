@@ -76,6 +76,17 @@ struct Vec3
 
 };
 
+struct Vec4 : Vec3
+{
+    float w;
+
+    Vec4() : Vec3({0.0f, 0.0f, 0.0f}), w(1.0f) {}
+
+    Vec4(float x, float y, float z, float w) : Vec3({x, y, z}), w(w) {}
+
+    Vec4(const Vec3& other) : Vec3(other), w(1.0f) {}
+};
+
 struct Mat3
 {
     std::vector<std::vector<float>> data;
