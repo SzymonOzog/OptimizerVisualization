@@ -111,16 +111,7 @@ class Engine():
             self.view_info.mouseLeft = self.mouse_pressed_left
             self.view_info.deltaTime = self.frame_time
             cv2.waitKey(1)
-
-            if cv2.getWindowProperty(self.window_name, 0) < 0:
-                self.run = False
-            
-            self.frame_time =  current_time() - start_frame
-            if self.frame_time < 16:
-                self.frame_time = 16
-                time.sleep((16 - self.frame_time) / 1000)
-
-        
+            self.frame_time =  current_time() - start_frame        
         self.c_lib.BufferController_Destroy(ctypes.c_void_p(self.buffer_controller))
         
 
