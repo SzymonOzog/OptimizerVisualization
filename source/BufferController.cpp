@@ -131,6 +131,11 @@ Vec3 BufferController::ProjectToScreen(const Vec3& vertex)
     return Vec3{(vertex.x / vertex.z + 1.0f) * 0.5f * buffer->width, (vertex.y / vertex.z + 1.0f) * 0.5f * buffer->height, vertex.z };
 }
 
+Vec3 BufferController::ProjectToScreen(const Vec4 &vertex)
+{
+    return Vec3({(vertex.x / vertex.w + 1.0f) * 0.5f * buffer->width, (vertex.y / vertex.w + 1.0f) * 0.5f * buffer->height, vertex.z / vertex.w});
+}
+
 void BufferController::DrawTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3* n0, Vec3* n1, Vec3* n2, Vec3 Color)
 {
     if(v0->y > v1->y)

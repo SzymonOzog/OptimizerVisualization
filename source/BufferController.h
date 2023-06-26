@@ -16,6 +16,7 @@ public:
 private:
 
     Vec3 ProjectToScreen(const Vec3& vertex);
+    Vec3 ProjectToScreen(const Vec4& vertex);
 
     bool IsPointInsideTriangle(const Point& p, const Vec3& v0, const Vec3& v1, const Vec3& v2);
 
