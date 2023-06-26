@@ -190,8 +190,8 @@ struct Mat4
         result.data[0][0] = aspectRatio * FOVRad;
         result.data[1][1] = FOVRad;
         result.data[2][2] = farPlane / (farPlane - nearPlane);
-        result.data[3][2] = (-farPlane * nearPlane) / (farPlane - nearPlane);
-        result.data[2][3] = 1.0f;
+        result.data[2][3] = (-farPlane * nearPlane) / (farPlane - nearPlane);
+        result.data[3][2] = 1.0f;
         result.data[3][3] = 0.0f;
         return result;
     }
