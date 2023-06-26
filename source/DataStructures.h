@@ -196,6 +196,15 @@ struct Mat4
         return result;
     }
 
+    static Mat4 translation(const Vec3& translation)
+    {
+        Mat4 result = identity();
+        result.data[3][0] = translation.x;
+        result.data[3][1] = translation.y;
+        result.data[3][2] = translation.z;
+        return result;
+    }
+
     Vec4 operator* (const Vec4& RHS)
     {
         Vec4 result;
