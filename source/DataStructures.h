@@ -205,6 +205,20 @@ struct Mat4
         result.w = data[0][3] * RHS.x + data[1][3] * RHS.y + data[2][3] * RHS.z + data[3][3] * RHS.w;
         return result;
     }
+
+    Mat4 operator * (const Mat4& RHS)
+    {
+        Mat4 result;
+        for (int i = 0; i < 4; i++)
+        {
+            for(int j = 0; j < 4; j++)
+            {
+                result.data[i][j] = data[i][0] * RHS.data[0][j] + data[i][1] * RHS.data[1][j] + data[i][2] * RHS.data[2][j] + data[i][3] * RHS.data[3][j];
+            }
+
+        }
+        return result;
+    }
 };
 
 struct Vertex
