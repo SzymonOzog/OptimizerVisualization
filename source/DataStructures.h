@@ -190,8 +190,8 @@ struct Mat4
         result.data[0][0] = aspectRatio * FOVRad;
         result.data[1][1] = FOVRad;
         result.data[2][2] = farPlane / (farPlane - nearPlane);
-        result.data[2][3] = (-farPlane * nearPlane) / (farPlane - nearPlane);
-        result.data[3][2] = 1.0f;
+        result.data[3][2] = (-farPlane * nearPlane) / (farPlane - nearPlane);
+        result.data[2][3] = 1.0f;
         result.data[3][3] = 0.0f;
         return result;
     }
@@ -199,10 +199,10 @@ struct Mat4
     Vec4 operator* (const Vec4& RHS)
     {
         Vec4 result;
-        result.x = data[0][0] * RHS.x + data[0][1] * RHS.y + data[0][2] * RHS.z + data[0][3] * RHS.w;
-        result.y = data[1][0] * RHS.x + data[1][1] * RHS.y + data[1][2] * RHS.z + data[1][3] * RHS.w;
-        result.z = data[2][0] * RHS.x + data[2][1] * RHS.y + data[2][2] * RHS.z + data[2][3] * RHS.w;
-        result.w = data[3][0] * RHS.x + data[3][1] * RHS.y + data[3][2] * RHS.z + data[3][3] * RHS.w;
+        result.x = data[0][0] * RHS.x + data[1][0] * RHS.y + data[2][0] * RHS.z + data[3][0] * RHS.w;
+        result.y = data[0][1] * RHS.x + data[1][1] * RHS.y + data[2][1] * RHS.z + data[3][1] * RHS.w;
+        result.z = data[0][2] * RHS.x + data[1][2] * RHS.y + data[2][2] * RHS.z + data[3][2] * RHS.w;
+        result.w = data[0][3] * RHS.x + data[1][3] * RHS.y + data[2][3] * RHS.z + data[3][3] * RHS.w;
         return result;
     }
 };
