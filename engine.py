@@ -100,17 +100,20 @@ class Engine():
             data = np.ctypeslib.as_array(buffer.data, (self.h,self.w))
             data = data.view((np.float32, 3))
             data = cv2.cvtColor(data, cv2.COLOR_RGB2BGR)
-
             cv2.putText(data, f'FPS:{format(1000/self.frame_time, ".2f")}',(30,30)
                         ,cv2.FONT_HERSHEY_SIMPLEX,0.3,(0,0,255),1)
             cv2.imshow(self.window_name, data)       
-            
+
             image_transform = cv2.getWindowImageRect(self.window_name)
             self.view_info.mouseX = self.mouse_x - image_transform[0]
             self.view_info.mouseY = self.mouse_y - image_transform[1]
             self.view_info.mouseLeft = self.mouse_pressed_left
             self.view_info.deltaTime = self.frame_time
+
             cv2.waitKey(1)
+            if cv2.getWindowProperty(self.window_name, cv2.WND_PROP_VISIBLE) < 1:
+                self.run = False
+
             self.frame_time =  current_time() - start_frame        
         self.c_lib.BufferController_Destroy(ctypes.c_void_p(self.buffer_controller))
         
