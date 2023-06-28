@@ -23,7 +23,7 @@ class Engine():
         self.trackbarRadiusScale = 33
         
         self.mouse_listener = mouse.Listener(on_move=self.on_move, on_click=self.on_click)
-        self.keyboard_listener = keyboard.Listener(on_press=self.on_key_press)
+        self.keyboard_listener = keyboard.Listener(on_press=self.on_key_press, on_release=self.on_key_release)
 
         self.run = True
         self.mouse_pressed_right = False
@@ -64,22 +64,34 @@ class Engine():
             self.mouse_pressed_right = pressed
     
     def on_key_press(self, key):
-            if key == keyboard.Key.esc:
-                self.run = False
-            elif key.char == 'w':
-                self.view_info.position.z += 0.01 * self.frame_time
-            elif key.char == 's':
-                self.view_info.position.z -= 0.01 * self.frame_time
-            elif key.char == 'a':
-                self.view_info.position.x += 0.01 * self.frame_time
-            elif key.char == 'd':
-                self.view_info.position.x -= 0.01 * self.frame_time
-            elif key.char == 'p':
-                if self.mouse_listener.is_alive():
-                    self.mouse_listener.stop()
-                    self.keyboard_listener.stop()
-                else:
-                    self.mouse_listener.start()
+        if key == keyboard.Key.esc:
+            self.run = False
+        elif key.char == 'w':
+            self.view_info.deltaPosition.z = -0.01 * self.frame_time
+        elif key.char == 's':
+            self.view_info.deltaPosition.z = 0.01 * self.frame_time
+        elif key.char == 'a':
+            self.view_info.deltaPosition.x = 0.01 * self.frame_time
+        elif key.char == 'd':
+            self.view_info.deltaPosition.x = -0.01 * self.frame_time
+        elif key.char == 'q':
+            self.view_info.deltaPosition.y = -0.01 * self.frame_time
+        elif key.char == 'e':
+            self.view_info.deltaPosition.y = 0.01 * self.frame_time
+        elif key.char == 'p':
+            if self.mouse_listener.is_alive():
+                self.mouse_listener.stop()
+                self.keyboard_listener.stop()
+            else:
+                self.mouse_listener.start()
+
+    def on_key_release(self, key):
+        if key.char == 'w' or key.char == 's':
+            self.view_info.deltaPosition.z = 0
+        elif key.char == 'a' or key.char == 'd':
+            self.view_info.deltaPosition.x = 0
+        elif key.char == 'q' or key.char == 'e':
+            self.view_info.deltaPosition.y = 0
     
     def change_outer_radius(self, value):
         self.view_info.outerRadius = value/self.trackbarRadiusScale
