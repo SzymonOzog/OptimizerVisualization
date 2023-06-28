@@ -205,6 +205,49 @@ struct Mat4
         return result;
     }
 
+    static Mat4 rotationX(float angle)
+    {
+        Mat4 result = identity();
+        result.data[1][1] = cos(angle);
+        result.data[1][2] = -sin(angle);
+        result.data[2][1] = sin(angle);
+        result.data[2][2] = cos(angle);
+        return result;
+    }
+
+    static Mat4 rotationY(float angle)
+    {
+        Mat4 result = identity();
+        result.data[0][0] = cos(angle);
+        result.data[0][2] = sin(angle);
+        result.data[2][0] = -sin(angle);
+        result.data[2][2] = cos(angle);
+        return result;
+    }
+
+    static Mat4 rotationZ(float angle)
+    {
+        Mat4 result = identity();
+        result.data[0][0] = cos(angle);
+        result.data[0][1] = -sin(angle);
+        result.data[1][0] = sin(angle);
+        result.data[1][1] = cos(angle);
+        return result;
+    }
+
+    Mat4 transpose()
+    {
+        Mat4 result = identity();
+        for (int i = 0; i < 4; i++)
+        {
+            for(int j = 0; j < 4; j++)
+            {
+                result.data[i][j] = data[j][i];
+            }
+        }
+        return result;
+    }
+
     Vec4 operator* (const Vec4& RHS)
     {
         Vec4 result;
