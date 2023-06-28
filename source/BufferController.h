@@ -40,6 +40,9 @@ private:
     float FOV;
     Mat4 projectionMatrix;
 
+    Mat4 cameraRotationInverse;
+    Vec3 cameraPosition;
+
     Vec3 sphereLocation;
     float radius;
     float outerRadius;

@@ -13,12 +13,10 @@ class Engine():
         self.window_name = window_name
 
         self.view_info = ViewInfo()
-        self.view_info.rotX = 0
-        self.view_info.rotY = 0
-        self.view_info.rotZ = 0
-        self.view_info.position.x = 0
-        self.view_info.position.y = 0
-        self.view_info.position.z = 10
+        self.view_info.deltaPosition.x = 0
+        self.view_info.deltaPosition.y = 0
+        self.view_info.deltaPosition.z = 0
+        self.reset_view()
         self.view_info.innerRadius = 0.5
         self.view_info.outerRadius = 1.5
 
@@ -46,10 +44,15 @@ class Engine():
         self.mouse_x = 0
         self.mouse_y = 0
 
+    def reset_view(self):
+        self.view_info.deltaRotX = 0
+        self.view_info.deltaRotY = 0
+        self.view_info.deltaRotZ = 0
+
     def on_move(self,x,y):
         if self.mouse_pressed_right:
-            self.view_info.rotY = (self.view_info.rotY + ((x-self.mouse_x) * 0.001 * self.frame_time)) % (2 * math.pi)  
-            self.view_info.rotX = (self.view_info.rotX + ((y-self.mouse_y) * 0.001 * self.frame_time)) % (2 * math.pi)
+            self.view_info.deltaRotY = (x-self.mouse_x) * 0.001 * self.frame_time  
+            self.view_info.deltaRotX = -(y-self.mouse_y) * 0.001 * self.frame_time
         self.mouse_y=y
         self.mouse_x=x 
 
@@ -95,8 +98,8 @@ class Engine():
             start_frame = current_time()
             
             self.c_lib.FillBuffer(ctypes.c_void_p(self.buffer_controller), ctypes.byref(self.view_info))
+            self.reset_view()
             buffer = Buffer.from_address(self.c_lib.GetBuffer(ctypes.c_void_p(self.buffer_controller)))  
-
             data = np.ctypeslib.as_array(buffer.data, (self.h,self.w))
             data = data.view((np.float32, 3))
             data = cv2.cvtColor(data, cv2.COLOR_RGB2BGR)

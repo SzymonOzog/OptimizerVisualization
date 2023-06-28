@@ -10,7 +10,9 @@ directionalLightColor({0.8f,0.85f,1.f}),
 NearPlane(0.1f),
 FarPlane(1000.f),
 FOV(90.f),
-projectionMatrix(Mat4::projection(FOV, (float)height / (float)width, NearPlane, FarPlane))
+projectionMatrix(Mat4::projection(FOV, (float)height / (float)width, NearPlane, FarPlane)),
+cameraRotationInverse(Mat4::identity()),
+cameraPosition({0.f,0.f,0.f})
 {
     buffer = new Buffer();
     buffer->data = new Vec3[width * height];
@@ -43,11 +45,13 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         outerRadius = viewInfo.outerRadius;
         
         sphereLocation = Vec3{0.f,0.f,std::numeric_limits<float>::max()};
-        cube->position = Vec3({0.f,0.f,10.f});
+        cube->position = Vec3({0.f,10.f,10.f});
         cube->CalculateNormals();
         IndexedTriangleVector& shape = cube->GetIndexedTriangleVector();
-        Mat3 rotation = Mat3::RotationZ(viewInfo.rotZ) * Mat3::RotationY(viewInfo.rotY) * Mat3::RotationX(viewInfo.rotX);
-        Mat4 WorldViewProjectionMatrix = Mat4::translation(viewInfo.position) * projectionMatrix;
+        Mat3 rotation = Mat3::Identity();
+        cameraRotationInverse = cameraRotationInverse * Mat4::rotationX(viewInfo.deltaRotX) * Mat4::rotationY(viewInfo.deltaRotY) * Mat4::rotationZ(viewInfo.deltaRotZ);
+        cameraPosition += cameraRotationInverse.transpose() * viewInfo.deltaPosition;
+        Mat4 WorldViewProjectionMatrix = Mat4::translation(cameraPosition) * cameraRotationInverse * projectionMatrix;
         for (int i = 0; i < shape.vertices.size(); i++)
         {
             shape.transformedVertices[i] = WorldViewProjectionMatrix * Vec4((rotation * shape.vertices[i]) + cube->position);

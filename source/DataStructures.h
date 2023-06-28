@@ -282,10 +282,10 @@ struct Vertex
 
 struct ViewInfo
 {
-    float rotX;
-    float rotY;
-    float rotZ;
-    Vec3 position;
+    float deltaRotX;
+    float deltaRotY;
+    float deltaRotZ;
+    Vec3 deltaPosition;
 
     int mouseX;
     int mouseY;
