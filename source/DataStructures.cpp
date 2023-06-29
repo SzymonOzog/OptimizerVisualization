@@ -147,7 +147,7 @@ Mat4 Mat4::identity()
 Mat4 Mat4::projection(float FOV, float aspectRatio, float nearPlane, float farPlane)
 {
     Mat4 result;
-    float FOVRad = 1.0f / tan(FOV * 0.5f / 180.0f * 3.14159f);
+    float FOVRad = 1.0f / tan(FOV * 0.5f / 180.0f * Math::PI);
     result.data[0][0] = aspectRatio * FOVRad;
     result.data[1][1] = FOVRad;
     result.data[2][2] = farPlane / (farPlane - nearPlane);
