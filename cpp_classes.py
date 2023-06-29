@@ -10,9 +10,9 @@ class Buffer(ctypes.Structure):
                 ("size", ctypes.c_int)]
 
 class ViewInfo(ctypes.Structure):
-    _fields_ = [("deltaRotX", ctypes.c_float),
-                ("deltaRotY", ctypes.c_float),
-                ("deltaRotZ", ctypes.c_float),
+    _fields_ = [("rotX", ctypes.c_float),
+                ("rotY", ctypes.c_float),
+                ("rotZ", ctypes.c_float),
                 ("deltaPosition", Vec3),
                 ("mouseX", ctypes.c_int),
                 ("mouseY", ctypes.c_int),
