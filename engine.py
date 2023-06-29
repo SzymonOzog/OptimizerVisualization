@@ -64,6 +64,8 @@ class Engine():
     def on_key_press(self, key):
         if key == keyboard.Key.esc:
             self.run = False
+        elif hasattr(key, 'char') == False:
+            return
         elif key.char == 'w':
             self.view_info.deltaPosition.z = -0.01 * self.frame_time
         elif key.char == 's':
@@ -84,7 +86,9 @@ class Engine():
                 self.mouse_listener.start()
 
     def on_key_release(self, key):
-        if key.char == 'w' or key.char == 's':
+        if hasattr(key, 'char') == False:
+            return
+        elif key.char == 'w' or key.char == 's':
             self.view_info.deltaPosition.z = 0
         elif key.char == 'a' or key.char == 'd':
             self.view_info.deltaPosition.x = 0
