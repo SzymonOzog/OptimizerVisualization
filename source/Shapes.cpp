@@ -138,7 +138,7 @@ Sphere::Sphere(int slices, int stacks, float radius)
         for(int j = 0; j<slices; j++)
         {
             float theta = 2 * Math::PI * j / slices;
-            indexedTriangleVector.vertices.push_back(Vec3{radius * sin(phi) * cos(theta), radius * cos(phi), radius * sin(phi) * sin(theta)});
+            indexedTriangleVector.vertices.push_back(Vec3{radius * sinf(phi) * cosf(theta), radius * cosf(phi), radius * sinf(phi) * sinf(theta)});
         }
     }
     indexedTriangleVector.vertices.push_back(Vec3{0.f, -radius, 0.f});
