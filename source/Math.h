@@ -31,4 +31,6 @@ namespace Math
     {
         return a * (1-t) + b * t;
     }
+
+    static constexpr float PI = 3.14159265358979323846f;
 }
