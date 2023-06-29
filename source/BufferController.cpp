@@ -48,10 +48,12 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         cube->position = Vec3({0.f,10.f,10.f});
         cube->CalculateNormals();
         IndexedTriangleVector& shape = cube->GetIndexedTriangleVector();
+        
         Mat3 rotation = Mat3::Identity();
-        cameraRotationInverse = cameraRotationInverse * Mat4::rotationX(viewInfo.deltaRotX) * Mat4::rotationY(viewInfo.deltaRotY) * Mat4::rotationZ(viewInfo.deltaRotZ);
+        cameraRotationInverse = Mat4::rotationY(viewInfo.rotY) * Mat4::rotationX(viewInfo.rotX) * Mat4::rotationZ(viewInfo.rotZ);
+        
+        Mat4 WorldViewProjectionMatrix = Mat4::translation(cameraPosition) * cameraRotationInverse * projectionMatrix; 
         cameraPosition += cameraRotationInverse.transpose() * viewInfo.deltaPosition;
-        Mat4 WorldViewProjectionMatrix = Mat4::translation(cameraPosition) * cameraRotationInverse * projectionMatrix;
         for (int i = 0; i < shape.vertices.size(); i++)
         {
             shape.transformedVertices[i] = WorldViewProjectionMatrix * Vec4((rotation * shape.vertices[i]) + cube->position);
