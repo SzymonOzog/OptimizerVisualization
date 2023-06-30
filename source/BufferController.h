@@ -14,6 +14,7 @@ public:
     Buffer* GetBuffer();
 
 private:
+    void ClearBuffer();
 
     Vec3 ProjectToScreen(const Vec3& vertex);
     Vec3 ProjectToScreen(const Vec4& vertex);

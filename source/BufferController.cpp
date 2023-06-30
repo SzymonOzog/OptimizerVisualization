@@ -31,12 +31,11 @@ BufferController::~BufferController()
 
 void BufferController::FillBuffer(const ViewInfo& viewInfo)
 {
-    for (int i = 0; i < buffer->width * buffer->height; i++)
-    {
-        PutPixel(Point{ i % buffer->width, i / buffer->width }, Color::Black);
-        zBuffer[i] = std::numeric_limits<float>::max();
-    }
+    ClearBuffer();
 
+    cameraRotationInverse = Mat4::rotationY(viewInfo.rotY) * Mat4::rotationX(viewInfo.rotX) * Mat4::rotationZ(viewInfo.rotZ);
+    Mat4 WorldViewProjectionMatrix = Mat4::translation(cameraPosition) * cameraRotationInverse * projectionMatrix; 
+    cameraPosition += cameraRotationInverse.transpose() * viewInfo.deltaPosition;
 
     for (auto& actor : actors)
     {        
@@ -50,10 +49,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         IndexedTriangleVector& shape = actor->GetIndexedTriangleVector();
         
         Mat3 rotation = Mat3::Identity();
-        cameraRotationInverse = Mat4::rotationY(viewInfo.rotY) * Mat4::rotationX(viewInfo.rotX) * Mat4::rotationZ(viewInfo.rotZ);
-        
-        Mat4 WorldViewProjectionMatrix = Mat4::translation(cameraPosition) * cameraRotationInverse * projectionMatrix; 
-        cameraPosition += cameraRotationInverse.transpose() * viewInfo.deltaPosition;
+
         for (int i = 0; i < shape.vertices.size(); i++)
         {
             shape.transformedVertices[i] = WorldViewProjectionMatrix * Vec4((rotation * shape.vertices[i]) + actor->position);
@@ -134,7 +130,16 @@ Buffer* BufferController::GetBuffer()
     return buffer;
 }
 
-Vec3 BufferController::ProjectToScreen(const Vec3& vertex)
+void BufferController::ClearBuffer()
+{
+    for (int i = 0; i < buffer->width * buffer->height; i++)
+    {
+        PutPixel(Point{ i % buffer->width, i / buffer->width }, Color::Black);
+        zBuffer[i] = std::numeric_limits<float>::max();
+    }
+}
+
+Vec3 BufferController::ProjectToScreen(const Vec3 &vertex)
 {
     return Vec3{(vertex.x / vertex.z + 1.0f) * 0.5f * buffer->width, (vertex.y / vertex.z + 1.0f) * 0.5f * buffer->height, vertex.z };
 }
