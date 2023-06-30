@@ -68,7 +68,7 @@ Vec3 Vec3::operator / (const float& other) const
 }
 
 
-Mat3 Mat3::Identity()
+Mat3 Mat3::identity()
 {
     Mat3 result;
     result.data[0][0] = 1.0f;
@@ -77,7 +77,7 @@ Mat3 Mat3::Identity()
     return result;
 }
 
-Mat3 Mat3::RotationZ(float angle)
+Mat3 Mat3::rotationZ(float angle)
 {
     Mat3 result;
     result.data[0][0] = cos(angle);
@@ -88,7 +88,7 @@ Mat3 Mat3::RotationZ(float angle)
     return result;
 }
 
-Mat3 Mat3::RotationY(float angle)
+Mat3 Mat3::rotationY(float angle)
 {
     Mat3 result;
     result.data[0][0] = cos(angle);
@@ -99,7 +99,7 @@ Mat3 Mat3::RotationY(float angle)
     return result;
 }
 
-Mat3 Mat3::RotationX(float angle)
+Mat3 Mat3::rotationX(float angle)
 {
     Mat3 result;
     result.data[0][0] = 1.0f;
@@ -144,10 +144,10 @@ Mat4 Mat4::identity()
     return result;
 }
 
-Mat4 Mat4::projection(float FOV, float aspectRatio, float nearPlane, float farPlane)
+Mat4 Mat4::projection(float fov, float aspectRatio, float nearPlane, float farPlane)
 {
     Mat4 result;
-    float FOVRad = 1.0f / tan(FOV * 0.5f / 180.0f * Math::PI);
+    float FOVRad = 1.0f / tan(fov * 0.5f / 180.0f * Math::PI);
     result.data[0][0] = aspectRatio * FOVRad;
     result.data[1][1] = FOVRad;
     result.data[2][2] = farPlane / (farPlane - nearPlane);

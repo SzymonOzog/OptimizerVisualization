@@ -37,10 +37,10 @@ struct Mat3
 
     Mat3() : data(3, { 0.0f, 0.0f, 0.0f }) {}
 
-    static Mat3 Identity();
-    static Mat3 RotationZ(float angle);
-    static Mat3 RotationY(float angle);
-    static Mat3 RotationX(float angle);
+    static Mat3 identity();
+    static Mat3 rotationZ(float angle);
+    static Mat3 rotationY(float angle);
+    static Mat3 rotationX(float angle);
 
     Vec3 operator*(const Vec3& other);
     Mat3 operator*(const Mat3& other);
@@ -53,7 +53,7 @@ struct Mat4
     Mat4() : data(4,  { 0.0f, 0.0f, 0.0f, 0.0f }) {}
 
     static Mat4 identity();
-    static Mat4 projection(float FOV, float aspectRatio, float nearPlane, float farPlane);
+    static Mat4 projection(float fov, float aspectRatio, float nearPlane, float farPlane);
     static Mat4 translation(const Vec3& translation);
     static Mat4 rotationX(float angle);
     static Mat4 rotationY(float angle);

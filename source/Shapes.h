@@ -5,10 +5,10 @@ class Shape
 {
 public:
     IndexedLineVector GetIndexedLineVector();
-    IndexedTriangleVector &GetIndexedTriangleVector();
+    IndexedTriangleVector &getIndexedTriangleVector();
 
-    virtual Vec3 GetColor(int triangle_index);
-    void CalculateNormals();
+    virtual Vec3 getColor(int triangle_index);
+    void calculateNormals();
 
     Vec3 position;
 
@@ -22,7 +22,7 @@ class Cube : public Shape
 public:
     Cube(float size);
 
-    virtual Vec3 GetColor(int triangle_index) override;
+    virtual Vec3 getColor(int triangle_index) override;
 
     std::vector<Vec3> colors;
 };
@@ -38,5 +38,5 @@ class Sphere : public Shape
 public:
     Sphere(int slices, int stacks, float radius = 1.f);
 
-    virtual Vec3 GetColor(int triangle_index) override;
+    virtual Vec3 getColor(int triangle_index) override;
 };

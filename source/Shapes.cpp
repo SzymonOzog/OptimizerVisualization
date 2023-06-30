@@ -7,17 +7,17 @@ IndexedLineVector Shape::GetIndexedLineVector()
     return indexedLineVector;
 }
 
-IndexedTriangleVector &Shape::GetIndexedTriangleVector()
+IndexedTriangleVector &Shape::getIndexedTriangleVector()
 {
     return indexedTriangleVector;
 }
 
-Vec3 Shape::GetColor(int triangle_index)
+Vec3 Shape::getColor(int triangle_index)
 {
     return Color::White;
 }
 
-void Shape::CalculateNormals()
+void Shape::calculateNormals()
 {
     indexedTriangleVector.normals = std::vector<Vec3>(indexedTriangleVector.vertices.size(), Vec3{0.f, 0.f, 0.f});
 
@@ -71,10 +71,10 @@ Cube::Cube(float size)
     colors = {
         Color::Red, Color::Green, Color::Blue, Color::Yellow, Color::Cyan, Color::Magenta,
         Color::Red, Color::Green, Color::Blue, Color::Yellow, Color::Cyan, Color::Magenta};
-    CalculateNormals();
+    calculateNormals();
 }
 
-Vec3 Cube::GetColor(int triangle_index)
+Vec3 Cube::getColor(int triangle_index)
 {
     return colors[triangle_index];
 }
@@ -123,7 +123,7 @@ Plane::Plane(int xSize, int zSize, float xLen, float zLen, bool twoSided)
     indexedTriangleVector.projectedVertices.resize(indexedTriangleVector.vertices.size());
     indexedTriangleVector.transformedVertices.resize(indexedTriangleVector.vertices.size());
 
-    CalculateNormals();
+    calculateNormals();
 }
 
 Sphere::Sphere(int slices, int stacks, float radius)
@@ -175,7 +175,7 @@ Sphere::Sphere(int slices, int stacks, float radius)
     indexedTriangleVector.transformedVertices.resize(indexedTriangleVector.vertices.size());
 }
 
-Vec3 Sphere::GetColor(int triangle_index)
+Vec3 Sphere::getColor(int triangle_index)
 {
     return Color::Red;
 }

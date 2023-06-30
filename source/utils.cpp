@@ -16,12 +16,12 @@ extern "C"
 
     Buffer* GetBuffer(BufferController* bufferController)
     {
-        return bufferController->GetBuffer();
+        return bufferController->getBuffer();
     }
 
     void FillBuffer(BufferController* bufferController, const ViewInfo& viewInfo)
     {
-        bufferController->FillBuffer(viewInfo);
+        bufferController->fillBuffer(viewInfo);
     }
 #ifdef __cplusplus
 }
