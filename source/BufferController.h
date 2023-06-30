@@ -2,7 +2,7 @@
 #include "DataStructures.h"
 #include <memory>
 #include "Shapes.h"
-
+#include "Actor.h"
 
 class BufferController
 {
@@ -30,7 +30,7 @@ private:
     Vec3 GetColor(const Vec3& vertex, const Vec3& normal, Vec3 unlitColor);
     Buffer* buffer;
     std::vector<float> zBuffer;
-    std::vector<std::unique_ptr<Shape>> shapes;
+    std::vector<std::unique_ptr<Actor>> actors;
 
     Vec3 ambientLight;
     Vec3 directionalLightColor;

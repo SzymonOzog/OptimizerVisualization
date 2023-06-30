@@ -19,8 +19,8 @@ cameraPosition({0.f,0.f,0.f})
     buffer->width = width;
     buffer->height = height;
 
-    std::unique_ptr<Shape> plane = std::make_unique<Plane>(80,80,10.f,10.f, true);
-    shapes.push_back(std::move(plane));
+    actors.push_back(std::move(std::make_unique<Landscape>()));
+    actors.push_back(std::move(std::make_unique<Visualizer>()));
 }
 
 BufferController::~BufferController()
@@ -38,16 +38,16 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
     }
 
 
-    for (auto& cube : shapes)
+    for (auto& actor : actors)
     {        
         float closestVertexDist = std::numeric_limits<float>::max();
         radius = viewInfo.innerRadius;
         outerRadius = viewInfo.outerRadius;
         
         sphereLocation = Vec3{0.f,0.f,std::numeric_limits<float>::max()};
-        cube->position = Vec3({0.f,10.f,10.f});
-        cube->CalculateNormals();
-        IndexedTriangleVector& shape = cube->GetIndexedTriangleVector();
+        actor->position = Vec3({0.f,10.f,10.f});
+        actor->tick(viewInfo.deltaTime);
+        IndexedTriangleVector& shape = actor->GetIndexedTriangleVector();
         
         Mat3 rotation = Mat3::Identity();
         cameraRotationInverse = Mat4::rotationY(viewInfo.rotY) * Mat4::rotationX(viewInfo.rotX) * Mat4::rotationZ(viewInfo.rotZ);
@@ -56,7 +56,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
         cameraPosition += cameraRotationInverse.transpose() * viewInfo.deltaPosition;
         for (int i = 0; i < shape.vertices.size(); i++)
         {
-            shape.transformedVertices[i] = WorldViewProjectionMatrix * Vec4((rotation * shape.vertices[i]) + cube->position);
+            shape.transformedVertices[i] = WorldViewProjectionMatrix * Vec4((rotation * shape.vertices[i]) + actor->position);
             shape.normals[i] = rotation * shape.normals[i];
             shape.projectedVertices[i] = ProjectToScreen(shape.transformedVertices[i]);
             const auto& vertex = shape.projectedVertices[i];
@@ -94,7 +94,7 @@ void BufferController::FillBuffer(const ViewInfo& viewInfo)
             bool isInFrontOfNearPlane = v0.z > NearPlane && v1.z > NearPlane && v2.z > NearPlane;
             if(isFacingCamera && isInFrontOfNearPlane)
             {
-                Vec3 unlitColor = cube->GetColor(i / 3);
+                Vec3 unlitColor = actor->shape->GetColor(i / 3);
                 float sphereDist = (Math::distance(sphereLocation, v0, true) + Math::distance(sphereLocation, v1, true) + Math::distance(sphereLocation, v2, true))/3.f;
                 if (sphereDist < radius )  
                 {

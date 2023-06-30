@@ -9,6 +9,8 @@ public:
 
     virtual void tick(float deltaTime);
 
+    IndexedTriangleVector& GetIndexedTriangleVector();
+
     Vec3 position;
     std::unique_ptr<Shape> shape;
 };
