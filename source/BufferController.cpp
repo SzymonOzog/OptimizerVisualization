@@ -44,7 +44,6 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
         outerRadius = viewInfo.outerRadius;
         
         sphereLocation = Vec3{0.f,0.f,std::numeric_limits<float>::max()};
-        actor->position = Vec3({0.f,10.f,10.f});
         actor->tick(viewInfo.deltaTime);
         IndexedTriangleVector& shape = actor->getIndexedTriangleVector();
         

@@ -1,6 +1,6 @@
 #include "Actor.h"
 
-Actor::Actor() : position({0.0f, 0.0f, 0.0f})
+Actor::Actor() : position({0.0f, 10.0f, 10.0f})
 {
 
 }
