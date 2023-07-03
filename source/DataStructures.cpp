@@ -232,3 +232,63 @@ Mat4 Mat4::operator * (const Mat4& RHS)
     }
     return result;
 }
+
+Vertex Vertex::operator+=(const Vertex &other)
+{
+    this->color += other.color;
+    this->normal += other.normal;
+    this->position += other.position;
+    return *this;
+}
+
+Vertex Vertex::operator-=(const Vertex &other)
+{
+    this->color -= other.color;
+    this->normal -= other.normal;
+    this->position -= other.position;
+    return *this;
+}
+
+Vertex Vertex::operator*=(const float &other)
+{
+    this->color *= other;
+    this->normal *= other;
+    this->position *= other;
+    return *this;
+}
+
+Vertex Vertex::operator/=(const float &other)
+{
+    this->color /= other;
+    this->normal /= other;
+    this->position /= other;
+    return *this;
+}
+
+Vertex Vertex::operator+(const Vertex &other) const
+{
+    Vertex result = *this;
+    result += other;
+    return result;
+}
+
+Vertex Vertex::operator-(const Vertex &other) const
+{
+    Vertex result = *this;
+    result -= other;
+    return result;
+}
+
+Vertex Vertex::operator*(const float &other) const
+{
+    Vertex result = *this;
+    result *= other;
+    return result;
+}
+
+Vertex Vertex::operator/(const float &other) const
+{
+    Vertex result = *this;
+    result /= other;
+    return result;
+}

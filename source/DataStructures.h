@@ -66,6 +66,21 @@ struct Mat4
 
 struct Vertex
 {
+    Vertex() : position({0.0f, 0.0f, 0.0f, 1.0f}), normal({0.0f, 0.0f, 0.0f}), color({1.0f, 1.0f, 1.0f}) {}
+    Vertex(const Vec4& position, const Vec3& normal, const Vec3& color) : position(position), normal(normal), color(color) {}
+    Vertex(const Vec4& position, const Vec3& normal) : position(position), normal(normal), color({1.0f, 1.0f, 1.0f}) {}
+    Vertex(const Vec4& position) : position(position), normal({0.0f, 0.0f, 0.0f}), color({1.0f, 1.0f, 1.0f}) {}
+    Vertex(const Vec3& position) : position({position.x, position.y, position.z, 1.0f}), normal({0.0f, 0.0f, 0.0f}), color({1.0f, 1.0f, 1.0f}) {}
+
+    virtual Vertex operator += (const Vertex& other);
+    virtual Vertex operator -= (const Vertex& other);
+    virtual Vertex operator *= (const float& other);
+    virtual Vertex operator /= (const float& other);
+    virtual Vertex operator + (const Vertex& other) const;
+    virtual Vertex operator - (const Vertex& other) const;
+    virtual Vertex operator * (const float& other) const;
+    virtual Vertex operator / (const float& other) const;
+    
     Vec4 position;
     Vec3 normal;
     Vec3 color;
