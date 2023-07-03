@@ -10,7 +10,8 @@ public:
     virtual void tick(float deltaTime);
 
     IndexedTriangleVector& getIndexedTriangleVector();
-
+    virtual Vec3 getColor(int index);
+    
     Vec3 position;
     std::unique_ptr<Shape> shape;
 };

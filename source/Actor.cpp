@@ -15,10 +15,14 @@ IndexedTriangleVector& Actor::getIndexedTriangleVector()
     return shape->getIndexedTriangleVector();
 }
 
+Vec3 Actor::getColor(int index)
+{
+    return shape->getColor(index);
+}
+
 Landscape::Landscape() : Actor()
 {
     shape = std::make_unique<Plane>(80,80,100.f,100.f, true);
-    
 }
 
 void Landscape::tick(float deltaTime)
