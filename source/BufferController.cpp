@@ -45,66 +45,32 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
         
         sphereLocation = Vec3{0.f,0.f,std::numeric_limits<float>::max()};
         actor->tick(viewInfo.deltaTime);
-        IndexedTriangleVector& shape = actor->getIndexedTriangleVector();
+        IndexedTriangleVector shape = actor->getIndexedTriangleVector();
         
         Mat3 rotation = Mat3::identity();
 
         for (int i = 0; i < shape.vertices.size(); i++)
         {
-            shape.transformedVertices[i] = WorldViewProjectionMatrix * Vec4((rotation * shape.vertices[i]) + actor->position);
-            shape.normals[i] = rotation * shape.normals[i];
-            shape.projectedVertices[i] = projectToScreen(shape.transformedVertices[i]);
-            const auto& vertex = shape.projectedVertices[i];
-            float distFromMouse = sqrt(pow(vertex.x - viewInfo.mouseX,2) + pow(vertex.y - viewInfo.mouseY,2));
-            if (distFromMouse < 50.f && distFromMouse < closestVertexDist)
-            {  
-                closestVertexDist = distFromMouse;
-                sphereLocation = shape.transformedVertices[i];
-            }
-        }
-
-        for(int i = 0; i<shape.vertices.size(); i++)
-        {
-            float dist = Math::distance(shape.transformedVertices[i], sphereLocation);
-            if(viewInfo.mouseLeft && dist < radius)
-            {
-                shape.vertices[i] -= Vec3({0.f,0.01f,0.f}) * viewInfo.deltaTime;
-            }
-            else if(viewInfo.mouseLeft && dist < outerRadius)
-            {
-                float alpha = (Math::distance(shape.transformedVertices[i], sphereLocation) - radius) / (outerRadius - radius);
-                shape.vertices[i] -= Vec3({0.f,0.01f *(1.f - alpha),0.f}) * viewInfo.deltaTime;
-            }
+            shape.vertices[i].position = WorldViewProjectionMatrix * Vec4(rotation * shape.vertices[i].position + actor->position);
         }
 
         for (int i = 0; i < shape.indices.size(); i += 3)
         {
             int size = shape.indices.size();
-            Vec3 v0 = shape.transformedVertices[shape.indices[i]];
-            Vec3 v1 = shape.transformedVertices[shape.indices[i + 1]];
-            Vec3 v2 = shape.transformedVertices[shape.indices[i + 2]];
-            Vec3 faceNormal = Math::crossProduct(v1 - v0, v2 - v0);
+            Vertex v0 = shape.vertices[shape.indices[i]];
+            Vertex v1 = shape.vertices[shape.indices[i + 1]];
+            Vertex v2 = shape.vertices[shape.indices[i + 2]];
+            Vec3 faceNormal = Math::crossProduct(v1.position - v0.position, v2.position - v0.position);
             faceNormal.normalize();
-            bool isFacingCamera = Math::dotProduct(faceNormal, v0)  <= 0;
-            bool isInFrontOfNearPlane = v0.z > nearPlane && v1.z > nearPlane && v2.z > nearPlane;
+            bool isFacingCamera = Math::dotProduct(faceNormal, v0.position)  <= 0;
+            bool isInFrontOfNearPlane = v0.position.z > nearPlane && v1.position.z > nearPlane && v2.position.z > nearPlane;
             if(isFacingCamera && isInFrontOfNearPlane)
             {
-                Vec3 unlitColor = actor->shape->getColor(i / 3);
-                float sphereDist = (Math::distance(sphereLocation, v0, true) + Math::distance(sphereLocation, v1, true) + Math::distance(sphereLocation, v2, true))/3.f;
-                if (sphereDist < radius )  
-                {
-                   unlitColor = Color::Red;
-                }
-                else if(sphereDist < outerRadius)
-                {
-                    float alpha = (sphereDist - radius) / (outerRadius - radius);
-                    unlitColor = Math::hadamard(unlitColor, Color::Red) * (1.f - alpha) + unlitColor * alpha ;
-                } 
-                drawTriangle(&shape.projectedVertices[shape.indices[i]],
-                 &shape.projectedVertices[shape.indices[i + 1]], &shape.projectedVertices[shape.indices[i + 2]],
-                   &shape.normals[shape.indices[i]], &shape.normals[shape.indices[i + 1]], &shape.normals[shape.indices[i + 2]], unlitColor);
+                v0.position = projectToScreen(v0.position);
+                v1.position = projectToScreen(v1.position);
+                v2.position = projectToScreen(v2.position);
+                drawTriangle(&v0, &v1, &v2);
             }
-
         }
     }
 
@@ -148,120 +114,97 @@ Vec3 BufferController::projectToScreen(const Vec4 &vertex)
     return Vec3({(vertex.x / vertex.w + 1.0f) * 0.5f * buffer->width, (vertex.y / vertex.w + 1.0f) * 0.5f * buffer->height, vertex.z / vertex.w});
 }
 
-void BufferController::drawTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3* n0, Vec3* n1, Vec3* n2, Vec3 Color)
+void BufferController::drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2)
 {
-    if(v0->y > v1->y)
+    if(v0->position.y > v1->position.y)
     {
         std::swap(v0, v1);
-        std::swap(n0, n1);
-
     }
-    if(v0->y > v2->y) 
+    if(v0->position.y > v2->position.y)
     {
         std::swap(v0, v2);
-        std::swap(n0, n2);
     }
-    if(v1->y > v2->y) 
+    if(v1->position.y > v2->position.y)
     {
         std::swap(v1, v2);
-        std::swap(n1, n2);
     }
 
-    if(v0->y == v1->y) 
+    if(v0->position.y == v1->position.y) 
     {
-        drawFlatTopTriangle(v0, v1, v2, n0, n1, n2, Color);
+        drawFlatTopTriangle(v0, v1, v2);
     }
-    else if(v1->y == v2->y)
+    else if(v1->position.y == v2->position.y)
     {
-        drawFlatBottomTriangle(v0, v1, v2, n0, n1, n2, Color);
+        drawFlatBottomTriangle(v0, v1, v2);
     }
     else
     {
-        Vec3 v3;
-        v3.y = v1->y;
+        float lerpAmount = (float)(v1->position.y - v0->position.y) / (float)(v2->position.y - v0->position.y);
+        Vertex v3 = Math::lerp(*v0, *v2, lerpAmount);
 
-        float lerpAmount = (float)(v1->y - v0->y) / (float)(v2->y - v0->y);
-        v3.x = v0->x +  lerpAmount * (v2->x - v0->x);
-        v3.z = v0->z + lerpAmount * (v2->z - v0->z);
-        Vec3 n3 = Math::lerp(*n0, *n2, lerpAmount);
-
-        drawFlatBottomTriangle(v0, v1, &v3, n0, n1, &n3, Color);
-        drawFlatTopTriangle(v1, &v3, v2, n1, &n3, n2, Color);
+        drawFlatBottomTriangle(v0, v1, &v3);
+        drawFlatTopTriangle(v1, &v3, v2);
     }
 }
  
-void BufferController::drawFlatBottomTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3* n0, Vec3* n1, Vec3* n2, Vec3 Color)
+void BufferController::drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2)
 {
-    if(v1->x > v2->x) 
+    if(v1->position.x > v2->position.x) 
     {
         std::swap(v1, v2);
-        std::swap(n1, n2);
     }
-    float invslope1 = (float)(v1->x - v0->x) / (float)(v1->y - v0->y);
-    float invslope2 = (float)(v2->x - v0->x) / (float)(v2->y - v0->y);
 
-    float zInvslope1 = (float)(v1->z - v0->z) / (float)(v1->y - v0->y);
-    float zInvslope2 = (float)(v2->z - v0->z) / (float)(v2->y - v0->y);
+    float invslope1 = (float)(v1->position.x - v0->position.x) / (float)(v1->position.y - v0->position.y);
+    float invslope2 = (float)(v2->position.x - v0->position.x) / (float)(v2->position.y - v0->position.y);
 
-    const int yStart = std::clamp((int)ceil(v0->y - 0.5f), 0, buffer->height);
-    const int yEnd = std::clamp((int)ceil(v1->y - 0.5f), 0, buffer->height);
+    const int yStart = std::clamp((int)ceil(v0->position.y - 0.5f), 0, buffer->height);
+    const int yEnd =   std::clamp((int)ceil(v1->position.y - 0.5f), 0, buffer->height);
 
     for (int y = yStart; y < yEnd; y++)
     {
-        const int xStart = std::clamp((int)ceil(v0->x + invslope1 * (y + 0.5f - v0->y) - 0.5f), 0, buffer->width);
-        const int xEnd =   std::clamp((int)ceil(v0->x + invslope2 * (y + 0.5f - v0->y) - 0.5f), 0, buffer->width);
-        
-        const float zStart = v0->z + zInvslope1 * (y + 0.5f - v0->y);
-        const float zEnd = v0->z + zInvslope2 * (y + 0.5f - v0->y);
+        const int xStart = std::clamp((int)ceil(v0->position.x + invslope1 * (y + 0.5f - v0->position.y) - 0.5f), 0, buffer->width);
+        const int xEnd =   std::clamp((int)ceil(v0->position.x + invslope2 * (y + 0.5f - v0->position.y) - 0.5f), 0, buffer->width);
 
-        Vec3 nStart = Math::lerp(*n0, *n1, (float)(y - v0->y) / (float)(v1->y - v0->y));
-        Vec3 nEnd = Math::lerp(*n0, *n2, (float)(y  - v0->y) / (float)(v2->y - v0->y));
+        Vertex vStart = Math::lerp(*v0, *v1, (float)(y - v0->position.y) /(float) (v1->position.y - v0->position.y));
+        Vertex vEnd = Math::lerp(*v0, *v2, (float)(y - v0->position.y) /(float) (v2->position.y - v0->position.y));
 
         for (int x = xStart; x < xEnd; x++)
         {
             float lerpAmount = (float)(x - xStart) / (float)(xEnd - xStart);
-            Vec3 lerpedNormal = Math::lerp(nStart, nEnd, lerpAmount);
-            Vec3 LitColor = getColor(Vec3({(float)x, (float)y, 0.f}), lerpedNormal, Color);
-            putPixel(Point{ x, y }, LitColor, zStart + (zEnd - zStart) * lerpAmount);
+            Vertex lerpedVert = Math::lerp(vStart, vEnd, lerpAmount);
+            putPixel(Point{ x, y }, lerpedVert.color, lerpedVert.position.z);
         }
     }
 }
 
-void BufferController::drawFlatTopTriangle(Vec3 *v0, Vec3 *v1, Vec3 *v2, Vec3* n0, Vec3* n1, Vec3* n2, Vec3 Color)
+void BufferController::drawFlatTopTriangle(Vertex* v0, Vertex* v1, Vertex* v2)
 {
-    if(v0->x > v1->x) 
+    if(v0->position.x > v1->position.x) 
     {
         std::swap(v0, v1);
-        std::swap(n0, n1);
     }
 
-    float invslope1 = (float)(v2->x - v0->x) / (float)(v2->y - v0->y);
-    float invslope2 = (float)(v2->x - v1->x) / (float)(v2->y - v1->y);
+    float invslope1 = (float)(v2->position.x - v0->position.x) / (float)(v2->position.y - v0->position.y);
+    float invslope2 = (float)(v2->position.x - v1->position.x) / (float)(v2->position.y - v1->position.y);
 
-    float zInvslope1 = (float)(v2->z - v0->z) / (float)(v2->y - v0->y);
-    float zInvslope2 = (float)(v2->z - v1->z) / (float)(v2->y - v1->y);
-
-    const int yStart = std::clamp((int)ceil(v0->y - 0.5f), 0, buffer->height);
-    const int yEnd =   std::clamp((int)ceil(v2->y - 0.5f), 0, buffer->height);
+    const int yStart = std::clamp((int)ceil(v0->position.y - 0.5f), 0, buffer->height);
+    const int yEnd =   std::clamp((int)ceil(v2->position.y - 0.5f), 0, buffer->height);
     
 
     for (int y = yStart; y < yEnd; y++)
     {
-        const int xStart = std::clamp((int)ceil(v0->x + invslope1 * (y + 0.5f - v0->y) - 0.5f), 0, buffer->width);
-        const int xEnd =   std::clamp((int)ceil(v1->x + invslope2 * (y + 0.5f - v0->y) - 0.5f), 0, buffer->width);
+        const int xStart = std::clamp((int)ceil(v0->position.x + invslope1 * (y + 0.5f - v0->position.y) - 0.5f), 0, buffer->width);
+        const int xEnd =   std::clamp((int)ceil(v1->position.x + invslope2 * (y + 0.5f - v0->position.y) - 0.5f), 0, buffer->width);
 
-        const float zStart = v0->z + zInvslope1 * (y - v0->y);
-        const float zEnd = v1->z + zInvslope2 * (y - v0->y);
-
-        Vec3 nStart = Math::lerp(*n0, *n2, (float)(y - v0->y) /(float) (v2->y - v0->y));
-        Vec3 nEnd = Math::lerp(*n1, *n2, (float)(y - v1->y) /(float) (v2->y - v1->y));
+        Vertex vStart = Math::lerp(*v0, *v2, (float)(y - v0->position.y) /(float) (v2->position.y - v0->position.y));
+        Vertex vEnd = Math::lerp(*v1, *v2, (float)(y - v1->position.y) /(float) (v2->position.y - v1->position.y));
 
         for (int x = xStart; x < xEnd; x++)
         {
             float lerpAmount = (float)(x - xStart) / (float)(xEnd - xStart);
-            Vec3 lerpedNormal = Math::lerp(nStart, nEnd, lerpAmount);
-            Vec3 LitColor = getColor(Vec3({(float)x, (float)y, 0.f}), lerpedNormal, Color);
-            putPixel(Point{ x, y }, LitColor, zStart + (zEnd - zStart) * lerpAmount);
+            //@TODO this lerps position for the second time, kinda wasteful maye make a templated compile time lerp?
+            Vertex lerpedVert = Math::lerp(vStart, vEnd, lerpAmount);
+            putPixel(Point{ x, y }, lerpedVert.color, lerpedVert.position.z);
         }
     }
 }

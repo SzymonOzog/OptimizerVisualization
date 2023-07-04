@@ -21,9 +21,9 @@ private:
 
     bool isPointInsideTriangle(const Point& p, const Vec3& v0, const Vec3& v1, const Vec3& v2);
 
-    void drawTriangle(Vec3* v0, Vec3* v1, Vec3* v2, Vec3* n0, Vec3* n1, Vec3* n2, Vec3 Color);
-    void drawFlatBottomTriangle(Vec3* v0, Vec3* v1, Vec3* v2, Vec3* n0, Vec3* n1, Vec3* n2, Vec3 Color);
-    void drawFlatTopTriangle(Vec3* v0, Vec3* v1, Vec3* v2, Vec3* n0, Vec3* n1, Vec3* n2, Vec3 Color);
+    void drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2);
+    void drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2);;
+    void drawFlatTopTriangle(Vertex* v0, Vertex* v1, Vertex* v2);;
 
     void drawLine(Point a, Point b, Vec3 Color);
     void putPixel(Point a, Vec3 Color, float z = 0.0f);

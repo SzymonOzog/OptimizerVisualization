@@ -124,9 +124,6 @@ struct IndexedLineVector
 
 struct IndexedTriangleVector
 {
-    std::vector<Vec3> vertices;
-    std::vector<Vec4> transformedVertices;
-    std::vector<Vec3> projectedVertices;
-    std::vector<Vec3> normals;
+    std::vector<Vertex> vertices;
     std::vector<int> indices;
 };
