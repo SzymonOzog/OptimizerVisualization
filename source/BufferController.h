@@ -21,9 +21,9 @@ private:
 
     bool isPointInsideTriangle(const Point& p, const Vec3& v0, const Vec3& v1, const Vec3& v2);
 
-    void drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2);
-    void drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2);;
-    void drawFlatTopTriangle(Vertex* v0, Vertex* v1, Vertex* v2);;
+    void drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2, PixelShader* ps);
+    void drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2, PixelShader* ps);;
+    void drawFlatTopTriangle(Vertex* v0, Vertex* v1, Vertex* v2, PixelShader* ps);;
 
     void drawLine(Point a, Point b, Vec3 Color);
     void putPixel(Point a, Vec3 Color, float z = 0.0f);
@@ -32,9 +32,6 @@ private:
     Buffer* buffer;
     std::vector<float> zBuffer;
     std::vector<std::unique_ptr<Actor>> actors;
-
-    Vec3 ambientLight;
-    Vec3 directionalLightColor;
 
     float nearPlane;
     float farPlane;

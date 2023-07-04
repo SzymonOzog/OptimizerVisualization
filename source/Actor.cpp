@@ -1,8 +1,7 @@
 #include "Actor.h"
 
-Actor::Actor() : position({0.0f, 10.0f, 10.0f})
+Actor::Actor() : position({0.0f, 10.0f, 10.0f}), ps({0.1f, 0.1f, 0.1f}, {0.85f, 0.85f, 1.0f})
 {
-
 }
 
 void Actor::tick(float deltaTime)

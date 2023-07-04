@@ -5,8 +5,6 @@
 #include "Math.h"
 #include "Color.h"
 BufferController::BufferController(int width, int height) : zBuffer(width * height, std::numeric_limits<float>::max()),
-ambientLight({0.1f,0.1f,0.1f}),
-directionalLightColor({0.8f,0.85f,1.f}),
 nearPlane(0.1f),
 farPlane(1000.f),
 fov(90.f),
@@ -69,7 +67,7 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
                 v0.position = projectToScreen(v0.position);
                 v1.position = projectToScreen(v1.position);
                 v2.position = projectToScreen(v2.position);
-                drawTriangle(&v0, &v1, &v2);
+                drawTriangle(&v0, &v1, &v2, &actor->ps);
             }
         }
     }
@@ -114,7 +112,7 @@ Vec3 BufferController::projectToScreen(const Vec4 &vertex)
     return Vec3({(vertex.x / vertex.w + 1.0f) * 0.5f * buffer->width, (vertex.y / vertex.w + 1.0f) * 0.5f * buffer->height, vertex.z / vertex.w});
 }
 
-void BufferController::drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2)
+void BufferController::drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2, PixelShader* ps)
 {
     if(v0->position.y > v1->position.y)
     {
@@ -131,23 +129,23 @@ void BufferController::drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2)
 
     if(v0->position.y == v1->position.y) 
     {
-        drawFlatTopTriangle(v0, v1, v2);
+        drawFlatTopTriangle(v0, v1, v2, ps);
     }
     else if(v1->position.y == v2->position.y)
     {
-        drawFlatBottomTriangle(v0, v1, v2);
+        drawFlatBottomTriangle(v0, v1, v2, ps);
     }
     else
     {
         float lerpAmount = (float)(v1->position.y - v0->position.y) / (float)(v2->position.y - v0->position.y);
         Vertex v3 = Math::lerp(*v0, *v2, lerpAmount);
 
-        drawFlatBottomTriangle(v0, v1, &v3);
-        drawFlatTopTriangle(v1, &v3, v2);
+        drawFlatBottomTriangle(v0, v1, &v3, ps);
+        drawFlatTopTriangle(v1, &v3, v2, ps);
     }
 }
  
-void BufferController::drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2)
+void BufferController::drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2, PixelShader* ps)
 {
     if(v1->position.x > v2->position.x) 
     {
@@ -172,12 +170,12 @@ void BufferController::drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2
         {
             float lerpAmount = (float)(x - xStart) / (float)(xEnd - xStart);
             Vertex lerpedVert = Math::lerp(vStart, vEnd, lerpAmount);
-            putPixel(Point{ x, y }, lerpedVert.color, lerpedVert.position.z);
+            putPixel(Point{ x, y }, (*ps)(lerpedVert), lerpedVert.position.z);
         }
     }
 }
 
-void BufferController::drawFlatTopTriangle(Vertex* v0, Vertex* v1, Vertex* v2)
+void BufferController::drawFlatTopTriangle(Vertex* v0, Vertex* v1, Vertex* v2, PixelShader* ps)
 {
     if(v0->position.x > v1->position.x) 
     {
@@ -204,7 +202,7 @@ void BufferController::drawFlatTopTriangle(Vertex* v0, Vertex* v1, Vertex* v2)
             float lerpAmount = (float)(x - xStart) / (float)(xEnd - xStart);
             //@TODO this lerps position for the second time, kinda wasteful maye make a templated compile time lerp?
             Vertex lerpedVert = Math::lerp(vStart, vEnd, lerpAmount);
-            putPixel(Point{ x, y }, lerpedVert.color, lerpedVert.position.z);
+            putPixel(Point{ x, y }, (*ps)(lerpedVert), lerpedVert.position.z);
         }
     }
 }
@@ -234,10 +232,4 @@ void BufferController::putPixel(Point a, Vec3 Color, float z)
     }
     zBuffer[a.x + a.y * buffer->width] = z;
     buffer->data[a.x + a.y * buffer->width] = Color;
-}
-
-Vec3 BufferController::getColor(const Vec3 &vertex, const Vec3 &normal, Vec3 unlitColor)
-{
-    float directionalLightAmount = std::max(0.f,Math::dotProduct(normal, Vec3({0.f,-1.f,0.f})));
-    return Math::hadamard(unlitColor, ambientLight) + Math::hadamard(unlitColor, directionalLightColor) * directionalLightAmount;
 }

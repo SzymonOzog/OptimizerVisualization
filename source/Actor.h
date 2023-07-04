@@ -1,5 +1,6 @@
 #include "Shapes.h"
 #include "DataStructures.h"
+#include "PixelShader.h"
 #include <memory>
 
 class Actor
@@ -11,9 +12,10 @@ public:
 
     IndexedTriangleVector& getIndexedTriangleVector();
     virtual Vec3 getColor(int index);
-    
+
     Vec3 position;
     std::unique_ptr<Shape> shape;
+    PixelShader ps;
 };
 
 class Landscape : public Actor
