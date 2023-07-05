@@ -12,11 +12,6 @@ IndexedTriangleVector &Shape::getIndexedTriangleVector()
     return indexedTriangleVector;
 }
 
-Vec3 Shape::getColor(int triangle_index)
-{
-    return Color::White;
-}
-
 void Shape::calculateNormals()
 {
     for (int j = 0; j < indexedTriangleVector.indices.size(); j += 3)
@@ -61,15 +56,14 @@ Cube::Cube(float size)
         0, 4, 1, 5, 2, 6, 3, 7};
     indexedLineVector.projectedVertices.resize(indexedLineVector.vertices.size());
 
-    colors = {
+    std::vector<Vec3> colors = {
         Color::Red, Color::Green, Color::Blue, Color::Yellow, Color::Cyan, Color::Magenta,
         Color::Red, Color::Green, Color::Blue, Color::Yellow, Color::Cyan, Color::Magenta};
+    for (int i = 0; i < indexedTriangleVector.vertices.size(); i++)
+    {
+        indexedTriangleVector.vertices[i].color = colors[i];
+    }
     calculateNormals();
-}
-
-Vec3 Cube::getColor(int triangle_index)
-{
-    return colors[triangle_index];
 }
 
 Plane::Plane(int xSize, int zSize, float xLen, float zLen, bool twoSided)
@@ -121,6 +115,7 @@ Sphere::Sphere(int slices, int stacks, float radius)
     indexedTriangleVector.indices.reserve(slices * stacks * 6);
 
     indexedTriangleVector.vertices.push_back(Vec3{0.f, radius, 0.f});
+    indexedTriangleVector.vertices.back().color = Color::Red;
     for(int i = 1; i<stacks; i++)
     {
         float phi = Math::PI * i / stacks;
@@ -128,10 +123,11 @@ Sphere::Sphere(int slices, int stacks, float radius)
         {
             float theta = 2 * Math::PI * j / slices;
             indexedTriangleVector.vertices.push_back(Vec3{radius * sinf(phi) * cosf(theta), radius * cosf(phi), radius * sinf(phi) * sinf(theta)});
+            indexedTriangleVector.vertices.back().color = Color::Red;
         }
     }
     indexedTriangleVector.vertices.push_back(Vec3{0.f, -radius, 0.f});
-
+    indexedTriangleVector.vertices.back().color = Color::Red;
     for(int i = 0; i<slices; i++)
     {
         indexedTriangleVector.indices.push_back(0);
@@ -159,9 +155,4 @@ Sphere::Sphere(int slices, int stacks, float radius)
         indexedTriangleVector.indices.push_back(indexedTriangleVector.vertices.size() - 2 - (i + 1) % slices);
         indexedTriangleVector.indices.push_back(indexedTriangleVector.vertices.size() - 2 - i);
     }
-}
-
-Vec3 Sphere::getColor(int triangle_index)
-{
-    return Color::Red;
 }

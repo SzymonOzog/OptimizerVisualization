@@ -14,10 +14,6 @@ IndexedTriangleVector& Actor::getIndexedTriangleVector()
     return shape->getIndexedTriangleVector();
 }
 
-Vec3 Actor::getColor(int index)
-{
-    return shape->getColor(index);
-}
 
 Landscape::Landscape() : Actor()
 {
