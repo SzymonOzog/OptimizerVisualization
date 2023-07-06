@@ -209,7 +209,7 @@ Mat4 Mat4::transpose()
     return result;
 }
 
-Vec4 Mat4::operator* (const Vec4& RHS)
+Vec4 Mat4::operator* (const Vec4& RHS) const
 {
     Vec4 result;
     result.x = data[0][0] * RHS.x + data[1][0] * RHS.y + data[2][0] * RHS.z + data[3][0] * RHS.w;
@@ -219,7 +219,7 @@ Vec4 Mat4::operator* (const Vec4& RHS)
     return result;
 }
 
-Mat4 Mat4::operator * (const Mat4& RHS)
+Mat4 Mat4::operator * (const Mat4& RHS) const
 {
     Mat4 result;
     for (int i = 0; i < 4; i++)

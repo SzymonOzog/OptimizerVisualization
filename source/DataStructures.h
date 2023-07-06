@@ -60,8 +60,8 @@ struct Mat4
     static Mat4 rotationZ(float angle);
 
     Mat4 transpose();
-    Vec4 operator* (const Vec4& RHS);
-    Mat4 operator * (const Mat4& RHS);
+    Vec4 operator* (const Vec4& RHS) const;
+    Mat4 operator * (const Mat4& RHS) const;
 };
 
 struct Vertex

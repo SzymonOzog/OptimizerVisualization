@@ -1,6 +1,6 @@
 #include "Shapes.h"
 #include "DataStructures.h"
-#include "PixelShader.h"
+#include "Shader.h"
 #include <memory>
 
 class Actor
@@ -11,10 +11,11 @@ public:
     virtual void tick(float deltaTime);
 
     IndexedTriangleVector& getIndexedTriangleVector();
+    virtual void initFrame(const ViewInfo& viewInfo, const Mat4& worldViewProjection);
 
     Vec3 position;
     std::unique_ptr<Shape> shape;
-    PixelShader ps;
+    Shader shader;
 };
 
 class Landscape : public Actor

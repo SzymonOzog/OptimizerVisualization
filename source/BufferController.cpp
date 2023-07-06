@@ -42,14 +42,17 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
         outerRadius = viewInfo.outerRadius;
         
         sphereLocation = Vec3{0.f,0.f,std::numeric_limits<float>::max()};
+        
         actor->tick(viewInfo.deltaTime);
+        actor->initFrame(viewInfo, WorldViewProjectionMatrix);
+
         IndexedTriangleVector shape = actor->getIndexedTriangleVector();
         
         Mat3 rotation = Mat3::identity();
 
         for (int i = 0; i < shape.vertices.size(); i++)
         {
-            shape.vertices[i].position = WorldViewProjectionMatrix * Vec4(rotation * shape.vertices[i].position + actor->position);
+            actor->shader.transformVertex(shape.vertices[i]);
         }
 
         for (int i = 0; i < shape.indices.size(); i += 3)
@@ -67,7 +70,7 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
                 v0.position = projectToScreen(v0.position);
                 v1.position = projectToScreen(v1.position);
                 v2.position = projectToScreen(v2.position);
-                drawTriangle(&v0, &v1, &v2, &actor->ps);
+                drawTriangle(&v0, &v1, &v2, &actor->shader);
             }
         }
     }
@@ -112,7 +115,7 @@ Vec3 BufferController::projectToScreen(const Vec4 &vertex)
     return Vec3({(vertex.x / vertex.w + 1.0f) * 0.5f * buffer->width, (vertex.y / vertex.w + 1.0f) * 0.5f * buffer->height, vertex.z / vertex.w});
 }
 
-void BufferController::drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2, PixelShader* ps)
+void BufferController::drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2, Shader* ps)
 {
     if(v0->position.y > v1->position.y)
     {
@@ -145,7 +148,7 @@ void BufferController::drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2, PixelSha
     }
 }
  
-void BufferController::drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2, PixelShader* ps)
+void BufferController::drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2, Shader* ps)
 {
     if(v1->position.x > v2->position.x) 
     {
@@ -170,18 +173,17 @@ void BufferController::drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2
         {
             float lerpAmount = (float)(x - xStart) / (float)(xEnd - xStart);
             Vertex lerpedVert = Math::lerp(vStart, vEnd, lerpAmount);
-            putPixel(Point{ x, y }, (*ps)(lerpedVert), lerpedVert.position.z);
+            putPixel(Point{ x, y }, ps->shadePixel(lerpedVert), lerpedVert.position.z);
         }
     }
 }
 
-void BufferController::drawFlatTopTriangle(Vertex* v0, Vertex* v1, Vertex* v2, PixelShader* ps)
+void BufferController::drawFlatTopTriangle(Vertex* v0, Vertex* v1, Vertex* v2, Shader* ps)
 {
     if(v0->position.x > v1->position.x) 
     {
         std::swap(v0, v1);
     }
-
     float invslope1 = (float)(v2->position.x - v0->position.x) / (float)(v2->position.y - v0->position.y);
     float invslope2 = (float)(v2->position.x - v1->position.x) / (float)(v2->position.y - v1->position.y);
 
@@ -202,7 +204,7 @@ void BufferController::drawFlatTopTriangle(Vertex* v0, Vertex* v1, Vertex* v2, P
             float lerpAmount = (float)(x - xStart) / (float)(xEnd - xStart);
             //@TODO this lerps position for the second time, kinda wasteful maye make a templated compile time lerp?
             Vertex lerpedVert = Math::lerp(vStart, vEnd, lerpAmount);
-            putPixel(Point{ x, y }, (*ps)(lerpedVert), lerpedVert.position.z);
+            putPixel(Point{ x, y }, ps->shadePixel(lerpedVert), lerpedVert.position.z);
         }
     }
 }
