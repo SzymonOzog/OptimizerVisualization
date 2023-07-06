@@ -5,7 +5,7 @@
 #include "Math.h"
 #include "Color.h"
 BufferController::BufferController(int width, int height) : zBuffer(width * height, std::numeric_limits<float>::max()),
-nearPlane(0.1f),
+nearPlane(0.01f),
 farPlane(1000.f),
 fov(90.f),
 projectionMatrix(Mat4::projection(fov, (float)height / (float)width, nearPlane, farPlane)),
