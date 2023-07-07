@@ -24,6 +24,7 @@ public:
     Landscape();
 
     virtual void tick(float deltaTime) override;
+    virtual void initFrame(const ViewInfo& viewInfo, const Mat4& worldViewProjection) override;
 
 };
 

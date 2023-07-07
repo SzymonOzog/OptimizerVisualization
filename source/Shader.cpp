@@ -39,21 +39,25 @@ void LandscapeShader::initFrame(const ViewInfo &viewInfo, const Mat4 &worldViewP
     radius = viewInfo.innerRadius;
     outerRadius = viewInfo.outerRadius;
     closestDistance = 50.f;
+    alphas.clear();
 }
 
 void LandscapeShader::transformVertex(Vertex &vertex)
 {
     Shader::transformVertex(vertex);
     float dist = Math::distance(vertex.position, sphereLocation);
+    float alpha = 0.f;
     if(dist < radius)
     {
+        alpha = 1.f;
         vertex.color = Color::Green;   
     }
     else if(dist < outerRadius)
     {
-        float alpha = (dist - radius) / (outerRadius - radius);
+        alpha = (dist - radius) / (outerRadius - radius);
         vertex.color = Math::lerp(Color::Green, vertex.color, alpha);
     }
+    alphas.push_back(alpha);
 }
 
 void LandscapeShader::projectVertex(Vertex &vertex, int width, int height)

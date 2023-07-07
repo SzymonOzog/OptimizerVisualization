@@ -23,6 +23,8 @@ public:
     virtual void initFrame(const ViewInfo& viewInfo, const Mat4& worldViewProjection, const Vec3& actorPosition) override;
     virtual void transformVertex(Vertex& vertex) override;
     virtual void projectVertex(Vertex& vertex, int width, int height) override;
+
+    std::vector<float> alphas;
 private:
     Point mousePos;
     float radius;

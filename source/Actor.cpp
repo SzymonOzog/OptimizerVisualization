@@ -33,6 +33,20 @@ void Landscape::tick(float deltaTime)
     Actor::tick(deltaTime);
     shape->calculateNormals();
 }
+
+void Landscape::initFrame(const ViewInfo &viewInfo, const Mat4 &worldViewProjection)
+{
+    if(viewInfo.mouseLeft)
+    {
+        const std::vector<float>& alphas = std::static_pointer_cast<LandscapeShader>(shader)->alphas;
+        for (int i = 0; i < shape->getIndexedTriangleVector().vertices.size(); i++)
+        {
+            shape->getIndexedTriangleVector().vertices[i].position -= Vec3{0.f, 0.01f, 0.f} * alphas[i] * viewInfo.deltaTime; 
+        }
+    }
+    Actor::initFrame(viewInfo, worldViewProjection);
+}
+
 Visualizer::Visualizer() : Actor()
 {
     shape = std::make_unique<Sphere>(20,20, 0.5f);
