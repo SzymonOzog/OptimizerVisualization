@@ -24,7 +24,7 @@ IndexedTriangleVector& Actor::getIndexedTriangleVector()
 
 Landscape::Landscape() : Actor()
 {
-    shape = std::make_unique<Plane>(80,80,100.f,100.f, true);
+    shape = std::make_unique<Plane>(80,80,50.f,50.f, true);
 }
 
 void Landscape::tick(float deltaTime)
