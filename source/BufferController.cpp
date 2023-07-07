@@ -37,12 +37,6 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
 
     for (auto& actor : actors)
     {        
-        float closestVertexDist = std::numeric_limits<float>::max();
-        radius = viewInfo.innerRadius;
-        outerRadius = viewInfo.outerRadius;
-        
-        sphereLocation = Vec3{0.f,0.f,std::numeric_limits<float>::max()};
-        
         actor->tick(viewInfo.deltaTime);
         actor->initFrame(viewInfo, WorldViewProjectionMatrix);
 
