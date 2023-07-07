@@ -25,6 +25,7 @@ IndexedTriangleVector& Actor::getIndexedTriangleVector()
 Landscape::Landscape() : Actor()
 {
     shape = std::make_unique<Plane>(80,80,50.f,50.f, true);
+    shader = std::make_shared<LandscapeShader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f});
 }
 
 void Landscape::tick(float deltaTime)
