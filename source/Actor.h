@@ -15,7 +15,7 @@ public:
 
     Vec3 position;
     std::unique_ptr<Shape> shape;
-    Shader shader;
+    std::shared_ptr<Shader> shader;
 };
 
 class Landscape : public Actor

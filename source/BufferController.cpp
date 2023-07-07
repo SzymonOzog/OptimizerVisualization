@@ -52,7 +52,7 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
 
         for (int i = 0; i < shape.vertices.size(); i++)
         {
-            actor->shader.transformVertex(shape.vertices[i]);
+            actor->shader->transformVertex(shape.vertices[i]);
         }
 
         for (int i = 0; i < shape.indices.size(); i += 3)
@@ -70,7 +70,7 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
                 v0.position = projectToScreen(v0.position);
                 v1.position = projectToScreen(v1.position);
                 v2.position = projectToScreen(v2.position);
-                drawTriangle(&v0, &v1, &v2, &actor->shader);
+                drawTriangle(&v0, &v1, &v2, actor->shader);
             }
         }
     }
@@ -115,7 +115,7 @@ Vec3 BufferController::projectToScreen(const Vec4 &vertex)
     return Vec3({(vertex.x / vertex.w + 1.0f) * 0.5f * buffer->width, (vertex.y / vertex.w + 1.0f) * 0.5f * buffer->height, vertex.z / vertex.w});
 }
 
-void BufferController::drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2, Shader* ps)
+void BufferController::drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2, std::shared_ptr<Shader> ps)
 {
     if(v0->position.y > v1->position.y)
     {
@@ -148,7 +148,7 @@ void BufferController::drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2, Shader* 
     }
 }
  
-void BufferController::drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2, Shader* ps)
+void BufferController::drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2, std::shared_ptr<Shader> ps)
 {
     if(v1->position.x > v2->position.x) 
     {
@@ -178,7 +178,7 @@ void BufferController::drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2
     }
 }
 
-void BufferController::drawFlatTopTriangle(Vertex* v0, Vertex* v1, Vertex* v2, Shader* ps)
+void BufferController::drawFlatTopTriangle(Vertex* v0, Vertex* v1, Vertex* v2, std::shared_ptr<Shader> ps)
 {
     if(v0->position.x > v1->position.x) 
     {

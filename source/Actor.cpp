@@ -1,17 +1,18 @@
 #include "Actor.h"
+#include "iostream"
 
-Actor::Actor() : position({0.0f, 10.0f, 10.0f}), shader({0.1f, 0.1f, 0.1f}, {0.85f, 0.85f, 1.0f})
+
+Actor::Actor() : position({0.0f, 10.0f, 10.0f}), shader(std::make_shared<Shader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f}))
 {
 }
 
 void Actor::tick(float deltaTime)
 {
-
 }
 
 void Actor::initFrame(const ViewInfo& viewInfo, const Mat4& worldViewProjection)
 {
-    shader.initFrame(viewInfo, worldViewProjection, position);
+    shader->initFrame(viewInfo, worldViewProjection, position);
 }
 
 

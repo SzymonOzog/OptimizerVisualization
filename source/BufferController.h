@@ -21,9 +21,9 @@ private:
 
     bool isPointInsideTriangle(const Point& p, const Vec3& v0, const Vec3& v1, const Vec3& v2);
 
-    void drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2, Shader* ps);
-    void drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2, Shader* ps);;
-    void drawFlatTopTriangle(Vertex* v0, Vertex* v1, Vertex* v2, Shader* ps);;
+    void drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2, std::shared_ptr<Shader> ps);
+    void drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2, std::shared_ptr<Shader> ps);;
+    void drawFlatTopTriangle(Vertex* v0, Vertex* v1, Vertex* v2, std::shared_ptr<Shader> ps);;
 
     void drawLine(Point a, Point b, Vec3 Color);
     void putPixel(Point a, Vec3 Color, float z = 0.0f);
