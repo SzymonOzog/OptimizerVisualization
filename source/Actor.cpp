@@ -35,9 +35,9 @@ IndexedTriangleVector& Actor::getIndexedTriangleVector()
 }
 
 
-Landscape::Landscape() : Actor()
+Landscape::Landscape() : Actor(), currentSpherePositionIndex(0)
 {
-    shape = std::make_unique<Plane>(80,80,50.f,50.f, true);
+    shape = std::make_unique<Plane>(180,180,50.f,50.f, true);
     shader = std::make_shared<LandscapeShader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f}, getIndexedTriangleVector().vertices.size());
 }
 
@@ -56,6 +56,7 @@ void Landscape::initFrame(const ViewInfo &viewInfo, const Mat4 &worldViewProject
             shape->getIndexedTriangleVector().vertices[i].position -= Vec3{0.f, 0.01f, 0.f} * alphas[i] * viewInfo.deltaTime; 
         }
         shape->calculateNormals();
+        gBufferController->addEvent(std::make_shared<SetVisualiserPositionEvent>(shape->getIndexedTriangleVector().vertices[currentSpherePositionIndex].position + position));
     }
     Actor::initFrame(viewInfo, worldViewProjection);
 }
@@ -64,7 +65,8 @@ void Landscape::handleEvent(std::shared_ptr<Event> e)
 {
     if(auto getMousePositionWorldSpaceEvent = std::dynamic_pointer_cast<GetMousePositionWorldSpaceEvent>(e))
     {
-        getMousePositionWorldSpaceEvent->mousePosition = getIndexedTriangleVector().vertices[std::static_pointer_cast<LandscapeShader>(shader)->sphereLocationVertexIndex].position + position;
+        currentSpherePositionIndex = std::static_pointer_cast<LandscapeShader>(shader)->sphereLocationVertexIndex;
+        getMousePositionWorldSpaceEvent->mousePosition = getIndexedTriangleVector().vertices[currentSpherePositionIndex].position + position;
     }
 }
 
@@ -86,7 +88,7 @@ void Visualizer::handleEvent(std::shared_ptr<Event> e)
     if(auto setVisualiserPositionEvent = std::dynamic_pointer_cast<SetVisualiserPositionEvent>(e))
     {
 
-        position = setVisualiserPositionEvent->position;
+        position = setVisualiserPositionEvent->position - Vec3{0.f, 0.5f, 0.f};
         setVisualiserPositionEvent->endEvent();    
     }
 }
@@ -113,7 +115,7 @@ void VisualizerMover::initFrame(const ViewInfo &viewInfo, const Mat4 &worldViewP
         position = mousePositionEvent.lock()->mousePosition - Vec3{0.f, 0.5f, 0.f};
         if(viewInfo.mouseLeft)
         {
-            gBufferController->addEvent(std::make_shared<SetVisualiserPositionEvent>(position));
+            gBufferController->addEvent(std::make_shared<SetVisualiserPositionEvent>(mousePositionEvent.lock()->mousePosition));
         }
     }
     else if(!bIsVisible && !mousePositionEvent.expired())
