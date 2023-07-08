@@ -14,6 +14,10 @@ void Actor::initFrame(const ViewInfo& viewInfo, const Mat4& worldViewProjection)
     shader->initFrame(viewInfo, worldViewProjection, position);
 }
 
+bool Actor::isVisible() const
+{
+    return bIsVisible;
+}
 
 IndexedTriangleVector& Actor::getIndexedTriangleVector()
 {

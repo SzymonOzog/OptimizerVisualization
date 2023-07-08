@@ -14,7 +14,9 @@ public:
 
     IndexedTriangleVector& getIndexedTriangleVector();
     virtual void initFrame(const ViewInfo& viewInfo, const Mat4& worldViewProjection);
+    bool isVisible() const;
 
+    bool bIsVisible;
     Vec3 position;
     std::unique_ptr<Shape> shape;
     std::shared_ptr<Shader> shader;

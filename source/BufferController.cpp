@@ -46,6 +46,11 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
         actor->tick(viewInfo.deltaTime);
         actor->initFrame(viewInfo, WorldViewProjectionMatrix);
 
+        if(!actor->isVisible())
+        {
+            continue;
+        }
+
         IndexedTriangleVector shape = actor->getIndexedTriangleVector();
         
         Mat3 rotation = Mat3::identity();
