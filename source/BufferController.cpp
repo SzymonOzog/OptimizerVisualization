@@ -51,9 +51,6 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
         }
 
         IndexedTriangleVector shape = actor->getIndexedTriangleVector();
-        
-        Mat3 rotation = Mat3::identity();
-
         for (int i = 0; i < shape.vertices.size(); i++)
         {
             actor->shader->transformVertex(shape.vertices[i]);
