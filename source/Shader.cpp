@@ -70,10 +70,10 @@ void LandscapeShader::transformVertex(Vertex &vertex)
     }
 
     float dist = Math::distance(vertex.position, sphereLocation);
-    float alpha = 0.f;
+    float alpha = 1.f;
     if(dist < radius)
     {
-        alpha = 1.f;
+        alpha = 0.f;
         vertex.color = Color::Green;   
     }
     else if(dist < outerRadius)
@@ -81,7 +81,7 @@ void LandscapeShader::transformVertex(Vertex &vertex)
         alpha = (dist - radius) / (outerRadius - radius);
         vertex.color = Math::lerp(Color::Green, vertex.color, alpha);
     }
-    alphas.push_back(alpha);
+    alphas.push_back(1.f - alpha);
 }
 
 void LandscapeShader::projectVertex(Vertex &vertex, int width, int height, int index)
