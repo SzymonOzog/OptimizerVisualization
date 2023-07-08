@@ -2,6 +2,7 @@
 #include "Math.h"
 #include "Color.h"
 #include "BufferController.h"
+#include <iostream>
 
 #define INVALID_VECTOR Vec3({std::numeric_limits<float>::max(),std::numeric_limits<float>::max(),std::numeric_limits<float>::max()})
 
@@ -55,7 +56,7 @@ void LandscapeShader::initFrame(const ViewInfo &viewInfo, const Mat4 &worldViewP
     mousePos = Point({viewInfo.mouseX, viewInfo.mouseY});
     radius = viewInfo.innerRadius;
     outerRadius = viewInfo.outerRadius;
-    closestDistance = 50.f;
+    closestDistance = gBufferController->getEditMode() == EditMode::Sculpt ? 50.f : std::numeric_limits<float>::max();
     alphas.clear();
 }
 
