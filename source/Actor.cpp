@@ -101,7 +101,7 @@ VisualizerMover::VisualizerMover() : Actor()
 void VisualizerMover::initFrame(const ViewInfo &viewInfo, const Mat4 &worldViewProjection)
 {
     Actor::initFrame(viewInfo, worldViewProjection);
-    bIsVisible = true;//gBufferController->getEditMode() == EditMode::MoveSphere;
+    bIsVisible = gBufferController->getEditMode() == EditMode::MoveSphere;
     if (bIsVisible && mousePositionEvent.expired())
     {
         auto sp = std::make_shared<GetMousePositionWorldSpaceEvent>();
