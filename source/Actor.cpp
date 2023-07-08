@@ -12,6 +12,7 @@ void Actor::tick(float deltaTime)
 void Actor::initFrame(const ViewInfo& viewInfo, const Mat4& worldViewProjection)
 {
     shader->initFrame(viewInfo, worldViewProjection, position);
+    tick(viewInfo.deltaTime);
 }
 
 bool Actor::isVisible() const

@@ -42,8 +42,7 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
     cameraPosition += cameraRotationInverse.transpose() * viewInfo.deltaPosition;
 
     for (auto& actor : actors)
-    {        
-        actor->tick(viewInfo.deltaTime);
+    {
         actor->initFrame(viewInfo, WorldViewProjectionMatrix);
 
         if(!actor->isVisible())
