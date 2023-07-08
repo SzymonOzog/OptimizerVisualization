@@ -1,5 +1,10 @@
 #include "Actor.h"
 #include "BufferController.h"
+#include "Color.h"
+#include "Shapes.h"
+#include "Shader.h"
+#include "Event.h"
+#include <iostream>
 
 Actor::Actor() : position({0.0f, 10.0f, 10.0f}), shader(std::make_shared<Shader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f}))
 {

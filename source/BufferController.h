@@ -1,8 +1,9 @@
 #pragma once
 #include "DataStructures.h"
 #include <memory>
-#include "Shapes.h"
-#include "Actor.h"
+
+class Actor;
+class Shader;
 
 class BufferController
 {

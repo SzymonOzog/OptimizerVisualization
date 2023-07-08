@@ -4,6 +4,10 @@
 #include <algorithm>
 #include "Math.h"
 #include "Color.h"
+#include "Shapes.h"
+#include "Shader.h"
+#include "Actor.h"
+#include "Event.h"
 
 BufferController* gBufferController = nullptr;
 

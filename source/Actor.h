@@ -1,9 +1,10 @@
 #pragma once
 
-#include "Shapes.h"
 #include "DataStructures.h"
-#include "Shader.h"
 #include <memory>
+
+class Shader;
+class Shape;
 
 class Actor
 {
