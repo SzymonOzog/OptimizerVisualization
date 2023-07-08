@@ -86,6 +86,13 @@ struct Vertex
     Vec3 color;
 };
 
+enum class EditMode : unsigned char
+{
+    None = 0,
+    Sculpt = 1,
+    MoveSphere = 2
+};
+
 struct ViewInfo
 {
     float rotX;
@@ -101,6 +108,8 @@ struct ViewInfo
 
     float innerRadius;
     float outerRadius;
+
+    EditMode editMode;
 };
 
 struct Buffer 

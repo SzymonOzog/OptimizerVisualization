@@ -1,6 +1,7 @@
 #include "Shader.h"
 #include "Math.h"
 #include "Color.h"
+#include "BufferController.h"
 
 Shader::Shader(const Vec3& ambientLight, const Vec3& directionalLightColor) : ambientLight(ambientLight), directionalLightColor(directionalLightColor)
 {
@@ -45,6 +46,12 @@ void LandscapeShader::initFrame(const ViewInfo &viewInfo, const Mat4 &worldViewP
 void LandscapeShader::transformVertex(Vertex &vertex)
 {
     Shader::transformVertex(vertex);
+
+    if(gBufferController->getEditMode() != EditMode::Sculpt)
+    {
+        return;
+    }
+
     float dist = Math::distance(vertex.position, sphereLocation);
     float alpha = 0.f;
     if(dist < radius)
@@ -62,6 +69,12 @@ void LandscapeShader::transformVertex(Vertex &vertex)
 
 void LandscapeShader::projectVertex(Vertex &vertex, int width, int height)
 {
+    if(gBufferController->getEditMode() == EditMode::None)
+    {
+        Shader::projectVertex(vertex,width,height);
+        return;
+    }
+    
     Vec3 transformedPos = vertex.position;
     Shader::projectVertex(vertex, width, height);
     float dist = Math::distance(vertex.position, Vec3({(float)mousePos.x, (float)mousePos.y, 0.f}), true);

@@ -13,6 +13,8 @@ public:
     void fillBuffer(const ViewInfo& viewInfo);
     Buffer* getBuffer();
 
+    EditMode getEditMode();
+
 private:
     void clearBuffer();
 
@@ -39,5 +41,8 @@ private:
 
     Mat4 cameraRotationInverse;
     Vec3 cameraPosition;
+
+    EditMode editMode;
 };
+
 extern BufferController* gBufferController;

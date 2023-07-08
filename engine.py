@@ -84,6 +84,12 @@ class Engine():
                 self.keyboard_listener.stop()
             else:
                 self.mouse_listener.start()
+        elif key.char == '1':
+            self.view_info.editMode = NONE
+        elif key.char == '2':
+            self.view_info.editMode = SCULPT
+        elif key.char == '3':
+            self.view_info.editMode = MOVE_SPHERE
 
     def on_key_release(self, key):
         if hasattr(key, 'char') == False:

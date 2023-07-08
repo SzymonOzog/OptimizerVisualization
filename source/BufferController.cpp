@@ -13,7 +13,8 @@ farPlane(1000.f),
 fov(90.f),
 projectionMatrix(Mat4::projection(fov, (float)height / (float)width, nearPlane, farPlane)),
 cameraRotationInverse(Mat4::identity()),
-cameraPosition({0.f,0.f,0.f})
+cameraPosition({0.f,0.f,0.f}),
+editMode(EditMode::None)
 {
     buffer = new Buffer();
     buffer->data = new Vec3[width * height];
@@ -33,6 +34,8 @@ BufferController::~BufferController()
 void BufferController::fillBuffer(const ViewInfo& viewInfo)
 {
     clearBuffer();
+    
+    editMode = viewInfo.editMode;
 
     cameraRotationInverse = Mat4::rotationY(viewInfo.rotY) * Mat4::rotationX(viewInfo.rotX) * Mat4::rotationZ(viewInfo.rotZ);
     Mat4 WorldViewProjectionMatrix = Mat4::translation(cameraPosition) * cameraRotationInverse * projectionMatrix; 
@@ -91,6 +94,11 @@ bool BufferController::isPointInsideTriangle(const Point& p, const Vec3& v0, con
 Buffer* BufferController::getBuffer()
 {
     return buffer;
+}
+
+EditMode BufferController::getEditMode()
+{
+    return editMode;
 }
 
 void BufferController::clearBuffer()

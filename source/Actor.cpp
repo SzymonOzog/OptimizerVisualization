@@ -1,6 +1,5 @@
 #include "Actor.h"
-#include "iostream"
-
+#include "BufferController.h"
 
 Actor::Actor() : position({0.0f, 10.0f, 10.0f}), shader(std::make_shared<Shader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f}))
 {
@@ -36,7 +35,7 @@ void Landscape::tick(float deltaTime)
 
 void Landscape::initFrame(const ViewInfo &viewInfo, const Mat4 &worldViewProjection)
 {
-    if(viewInfo.mouseLeft)
+    if(viewInfo.mouseLeft && gBufferController->getEditMode() == EditMode::Sculpt)
     {
         const std::vector<float>& alphas = std::static_pointer_cast<LandscapeShader>(shader)->alphas;
         for (int i = 0; i < shape->getIndexedTriangleVector().vertices.size(); i++)

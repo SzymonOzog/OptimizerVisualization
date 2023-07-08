@@ -19,4 +19,7 @@ class ViewInfo(ctypes.Structure):
                 ("mouseLeft", ctypes.c_bool),
                 ("deltaTime", ctypes.c_int),
                 ("innerRadius", ctypes.c_float),
-                ("outerRadius", ctypes.c_float)]
+                ("outerRadius", ctypes.c_float),
+                ("editMode", ctypes.c_uint8)]
+    
+(NONE, SCULPT, MOVE_SPHERE) = (0, 1, 2)
