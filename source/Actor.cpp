@@ -44,7 +44,6 @@ Landscape::Landscape() : Actor()
 void Landscape::tick(float deltaTime)
 {
     Actor::tick(deltaTime);
-    shape->calculateNormals();
 }
 
 void Landscape::initFrame(const ViewInfo &viewInfo, const Mat4 &worldViewProjection)
@@ -56,6 +55,7 @@ void Landscape::initFrame(const ViewInfo &viewInfo, const Mat4 &worldViewProject
         {
             shape->getIndexedTriangleVector().vertices[i].position -= Vec3{0.f, 0.01f, 0.f} * alphas[i] * viewInfo.deltaTime; 
         }
+        shape->calculateNormals();
     }
     Actor::initFrame(viewInfo, worldViewProjection);
 }
