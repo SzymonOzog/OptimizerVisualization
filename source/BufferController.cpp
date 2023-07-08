@@ -80,9 +80,9 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
             bool isInFrontOfNearPlane = v0.position.z > nearPlane && v1.position.z > nearPlane && v2.position.z > nearPlane;
             if(isFacingCamera && isInFrontOfNearPlane)
             {
-                actor->shader->projectVertex(v0, buffer->width, buffer->height);
-                actor->shader->projectVertex(v1, buffer->width, buffer->height);
-                actor->shader->projectVertex(v2, buffer->width, buffer->height);
+                actor->shader->projectVertex(v0, buffer->width, buffer->height, shape.indices[i]);
+                actor->shader->projectVertex(v1, buffer->width, buffer->height, shape.indices[i+1]);
+                actor->shader->projectVertex(v2, buffer->width, buffer->height, shape.indices[i+2]);
                 drawTriangle(&v0, &v1, &v2, actor->shader);
             }
         }

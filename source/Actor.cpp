@@ -6,7 +6,7 @@
 #include "Event.h"
 #include <iostream>
 
-Actor::Actor() : position({0.0f, 10.0f, 10.0f}), shader(std::make_shared<Shader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f}))
+Actor::Actor() : position({0.0f, 10.0f, 10.0f}), shader(std::make_shared<Shader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f}, 0))
 {
 }
 
@@ -38,7 +38,7 @@ IndexedTriangleVector& Actor::getIndexedTriangleVector()
 Landscape::Landscape() : Actor()
 {
     shape = std::make_unique<Plane>(80,80,50.f,50.f, true);
-    shader = std::make_shared<LandscapeShader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f});
+    shader = std::make_shared<LandscapeShader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f}, getIndexedTriangleVector().vertices.size());
 }
 
 void Landscape::tick(float deltaTime)
@@ -64,6 +64,8 @@ Visualizer::Visualizer() : Actor()
 {
     shape = std::make_unique<Sphere>(20,20, 0.5f);
     shape->calculateNormals();
+    //@TODO double shader creation - no me gusta
+    shader = std::make_shared<Shader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f}, getIndexedTriangleVector().vertices.size());
 }
 
 void Visualizer::tick(float deltaTime)

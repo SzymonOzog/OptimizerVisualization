@@ -67,6 +67,15 @@ Vec3 Vec3::operator / (const float& other) const
     return result;
 }
 
+bool Vec3::operator==(const Vec3 &other) const
+{
+    return this->x == other.x && this->y == other.y && this->z == other.z;
+}
+
+bool Vec3::operator!=(const Vec3 &other) const
+{
+    return !(*this == other);
+}
 
 Mat3 Mat3::identity()
 {

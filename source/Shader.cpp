@@ -3,7 +3,10 @@
 #include "Color.h"
 #include "BufferController.h"
 
-Shader::Shader(const Vec3& ambientLight, const Vec3& directionalLightColor) : ambientLight(ambientLight), directionalLightColor(directionalLightColor)
+#define INVALID_VECTOR Vec3({std::numeric_limits<float>::max(),std::numeric_limits<float>::max(),std::numeric_limits<float>::max()})
+
+Shader::Shader(const Vec3& ambientLight, const Vec3& directionalLightColor, int numVerts) : 
+ambientLight(ambientLight), directionalLightColor(directionalLightColor), projectionCache(numVerts, INVALID_VECTOR)
 {
 }
 
@@ -11,6 +14,7 @@ void Shader::initFrame(const ViewInfo& viewInfo, const Mat4& worldViewProjection
 {
     this->worldViewProjection = worldViewProjection;
     this->actorPosition = actorPosition;
+    projectionCache.assign(projectionCache.size(), INVALID_VECTOR);
 }
 
 void Shader::transformVertex(Vertex& vertex)
@@ -18,9 +22,17 @@ void Shader::transformVertex(Vertex& vertex)
     vertex.position = worldViewProjection * (vertex.position + actorPosition);
 }
 
-void Shader::projectVertex(Vertex &vertex, int width, int height)
+void Shader::projectVertex(Vertex &vertex, int width, int height, int index)
 {
-    vertex.position = Vec3({(vertex.position.x / vertex.position.w + 1.0f) * 0.5f * width, (vertex.position.y / vertex.position.w + 1.0f) * 0.5f * height, vertex.position.z / vertex.position.w});
+    if(projectionCache[index] != INVALID_VECTOR)
+    {
+        vertex.position = projectionCache[index];
+    }
+    else
+    {
+        vertex.position = Vec3({(vertex.position.x / vertex.position.w + 1.0f) * 0.5f * width, (vertex.position.y / vertex.position.w + 1.0f) * 0.5f * height, vertex.position.z / vertex.position.w});
+        projectionCache[index] = vertex.position;
+    }
 }
 
 Vec3 Shader::shadePixel(const Vertex& vertex)
@@ -29,7 +41,11 @@ Vec3 Shader::shadePixel(const Vertex& vertex)
     return Math::hadamard(vertex.color, ambientLight) + Math::hadamard(vertex.color, directionalLightColor) * directionalLightAmount;
 }
 
-LandscapeShader::LandscapeShader(const Vec3 &ambientLight, const Vec3 &directionalLightColor) : Shader(ambientLight, directionalLightColor), sphereLocation({0.f,0.f,std::numeric_limits<float>::max()}), closestDistance(50.f)
+LandscapeShader::LandscapeShader(const Vec3 &ambientLight, const Vec3 &directionalLightColor, int numVerts) : 
+Shader(ambientLight, directionalLightColor, numVerts), 
+sphereLocation({0.f,0.f,std::numeric_limits<float>::max()}), 
+closestDistance(50.f),
+sphereLocationVertexIndex(-1)
 {
 }
 
@@ -67,20 +83,21 @@ void LandscapeShader::transformVertex(Vertex &vertex)
     alphas.push_back(alpha);
 }
 
-void LandscapeShader::projectVertex(Vertex &vertex, int width, int height)
+void LandscapeShader::projectVertex(Vertex &vertex, int width, int height, int index)
 {
     if(gBufferController->getEditMode() == EditMode::None)
     {
-        Shader::projectVertex(vertex,width,height);
+        Shader::projectVertex(vertex,width,height, index);
         return;
     }
     
     Vec3 transformedPos = vertex.position;
-    Shader::projectVertex(vertex, width, height);
+    Shader::projectVertex(vertex, width, height, index);
     float dist = Math::distance(vertex.position, Vec3({(float)mousePos.x, (float)mousePos.y, 0.f}), true);
     if(dist < closestDistance)
     {
         closestDistance = dist;
         sphereLocation = transformedPos;
+        sphereLocationVertexIndex = index;
     }
 }
