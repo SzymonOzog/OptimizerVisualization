@@ -126,23 +126,23 @@ void BufferController::drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2, std::sha
 
     if(v0->position.y == v1->position.y) 
     {
-        drawFlatTopTriangle(v0, v1, v2, ps);
+        drawFlatTriangle(v2, v0, v1, ps);
     }
     else if(v1->position.y == v2->position.y)
     {
-        drawFlatBottomTriangle(v0, v1, v2, ps);
+        drawFlatTriangle(v0, v1, v2, ps);
     }
     else
     {
         float lerpAmount = (float)(v1->position.y - v0->position.y) / (float)(v2->position.y - v0->position.y);
         Vertex v3 = Math::lerp(*v0, *v2, lerpAmount);
 
-        drawFlatBottomTriangle(v0, v1, &v3, ps);
-        drawFlatTopTriangle(v1, &v3, v2, ps);
+        drawFlatTriangle(v0, v1, &v3, ps);
+        drawFlatTriangle(v2, v1, &v3, ps);
     }
 }
  
-void BufferController::drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2, std::shared_ptr<Shader> ps)
+void BufferController::drawFlatTriangle(Vertex* v0, Vertex* v1, Vertex* v2, std::shared_ptr<Shader> ps)
 {
     if(v1->position.x > v2->position.x) 
     {
@@ -152,8 +152,13 @@ void BufferController::drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2
     float invslope1 = (float)(v1->position.x - v0->position.x) / (float)(v1->position.y - v0->position.y);
     float invslope2 = (float)(v2->position.x - v0->position.x) / (float)(v2->position.y - v0->position.y);
 
-    const int yStart = std::clamp((int)ceil(v0->position.y - 0.5f), 0, buffer->height);
-    const int yEnd =   std::clamp((int)ceil(v1->position.y - 0.5f), 0, buffer->height);
+    int yStart = std::clamp((int)ceil(v0->position.y - 0.5f), 0, buffer->height);
+    int yEnd =   std::clamp((int)ceil(v1->position.y - 0.5f), 0, buffer->height);
+
+    if(yEnd < yStart)
+    {
+        std::swap(yStart, yEnd);
+    }
 
     for (int y = yStart; y < yEnd; y++)
     {
@@ -162,36 +167,6 @@ void BufferController::drawFlatBottomTriangle(Vertex* v0, Vertex* v1, Vertex* v2
 
         Vertex vStart = Math::lerp(*v0, *v1, (float)(y - v0->position.y) /(float) (v1->position.y - v0->position.y));
         Vertex vEnd = Math::lerp(*v0, *v2, (float)(y - v0->position.y) /(float) (v2->position.y - v0->position.y));
-
-        for (int x = xStart; x < xEnd; x++)
-        {
-            float lerpAmount = (float)(x - xStart) / (float)(xEnd - xStart);
-            Vertex lerpedVert = Math::lerp(vStart, vEnd, lerpAmount);
-            putPixel(Point{ x, y }, ps->shadePixel(lerpedVert), lerpedVert.position.z);
-        }
-    }
-}
-
-void BufferController::drawFlatTopTriangle(Vertex* v0, Vertex* v1, Vertex* v2, std::shared_ptr<Shader> ps)
-{
-    if(v0->position.x > v1->position.x) 
-    {
-        std::swap(v0, v1);
-    }
-    float invslope1 = (float)(v2->position.x - v0->position.x) / (float)(v2->position.y - v0->position.y);
-    float invslope2 = (float)(v2->position.x - v1->position.x) / (float)(v2->position.y - v1->position.y);
-
-    const int yStart = std::clamp((int)ceil(v0->position.y - 0.5f), 0, buffer->height);
-    const int yEnd =   std::clamp((int)ceil(v2->position.y - 0.5f), 0, buffer->height);
-    
-
-    for (int y = yStart; y < yEnd; y++)
-    {
-        const int xStart = std::clamp((int)ceil(v0->position.x + invslope1 * (y + 0.5f - v0->position.y) - 0.5f), 0, buffer->width);
-        const int xEnd =   std::clamp((int)ceil(v1->position.x + invslope2 * (y + 0.5f - v0->position.y) - 0.5f), 0, buffer->width);
-
-        Vertex vStart = Math::lerp(*v0, *v2, (float)(y - v0->position.y) /(float) (v2->position.y - v0->position.y));
-        Vertex vEnd = Math::lerp(*v1, *v2, (float)(y - v1->position.y) /(float) (v2->position.y - v1->position.y));
 
         for (int x = xStart; x < xEnd; x++)
         {
