@@ -3,6 +3,7 @@
 #include <memory>
 
 class Actor;
+class Event;
 class Shader;
 
 class BufferController
@@ -15,6 +16,8 @@ public:
     Buffer* getBuffer();
 
     EditMode getEditMode();
+
+    void addEvent(std::shared_ptr<Event> e);
 
 private:
     void clearBuffer();
@@ -34,6 +37,7 @@ private:
     Buffer* buffer;
     std::vector<float> zBuffer;
     std::vector<std::unique_ptr<Actor>> actors;
+    std::vector<std::shared_ptr<Event>> events;
 
     float nearPlane;
     float farPlane;

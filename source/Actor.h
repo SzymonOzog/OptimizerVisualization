@@ -3,6 +3,7 @@
 #include "DataStructures.h"
 #include <memory>
 
+class Event;
 class Shader;
 class Shape;
 
@@ -16,6 +17,8 @@ public:
     IndexedTriangleVector& getIndexedTriangleVector();
     virtual void initFrame(const ViewInfo& viewInfo, const Mat4& worldViewProjection);
     bool isVisible() const;
+    virtual void handleEvent(std::shared_ptr<Event> e);
+    
 
     bool bIsVisible;
     Vec3 position;

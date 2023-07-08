@@ -25,6 +25,10 @@ bool Actor::isVisible() const
     return bIsVisible;
 }
 
+void Actor::handleEvent(std::shared_ptr<Event> e)
+{
+}
+
 IndexedTriangleVector& Actor::getIndexedTriangleVector()
 {
     return shape->getIndexedTriangleVector();

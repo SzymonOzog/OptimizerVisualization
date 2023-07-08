@@ -48,6 +48,14 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
     for (auto& actor : actors)
     {
         actor->initFrame(viewInfo, WorldViewProjectionMatrix);
+        for (auto ri = events.rbegin(); ri != events.rend(); ri++)
+        {
+            actor->handleEvent(*ri);
+            if((*ri)->bIsHandled)
+            {
+                events.erase(std::next(ri).base());
+            }
+        }
 
         if(!actor->isVisible())
         {
@@ -104,6 +112,11 @@ Buffer* BufferController::getBuffer()
 EditMode BufferController::getEditMode()
 {
     return editMode;
+}
+
+void BufferController::addEvent(std::shared_ptr<Event> e)
+{
+    events.push_back(e);
 }
 
 void BufferController::clearBuffer()
