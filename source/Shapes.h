@@ -1,5 +1,6 @@
 #pragma once
 #include "DataStructures.h"
+#include "Color.h"
 
 class Shape
 {
@@ -31,5 +32,5 @@ public:
 class Sphere : public Shape
 {
 public:
-    Sphere(int slices, int stacks, float radius = 1.f);
+    Sphere(int slices, int stacks, float radius = 1.f, Vec3 color = Color::Red);
 };

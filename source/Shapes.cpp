@@ -109,13 +109,13 @@ Plane::Plane(int xSize, int zSize, float xLen, float zLen, bool twoSided)
     calculateNormals();
 }
 
-Sphere::Sphere(int slices, int stacks, float radius)
+Sphere::Sphere(int slices, int stacks, float radius, Vec3 color)
 {
     indexedTriangleVector.vertices.reserve(slices * stacks);
     indexedTriangleVector.indices.reserve(slices * stacks * 6);
 
     indexedTriangleVector.vertices.push_back(Vec3{0.f, radius, 0.f});
-    indexedTriangleVector.vertices.back().color = Color::Red;
+    indexedTriangleVector.vertices.back().color = color;
     for(int i = 1; i<stacks; i++)
     {
         float phi = Math::PI * i / stacks;
@@ -123,11 +123,11 @@ Sphere::Sphere(int slices, int stacks, float radius)
         {
             float theta = 2 * Math::PI * j / slices;
             indexedTriangleVector.vertices.push_back(Vec3{radius * sinf(phi) * cosf(theta), radius * cosf(phi), radius * sinf(phi) * sinf(theta)});
-            indexedTriangleVector.vertices.back().color = Color::Red;
+            indexedTriangleVector.vertices.back().color = color;
         }
     }
     indexedTriangleVector.vertices.push_back(Vec3{0.f, -radius, 0.f});
-    indexedTriangleVector.vertices.back().color = Color::Red;
+    indexedTriangleVector.vertices.back().color = color;
     for(int i = 0; i<slices; i++)
     {
         indexedTriangleVector.indices.push_back(0);
