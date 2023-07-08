@@ -4,6 +4,7 @@
 #include <memory>
 
 class Event;
+class GetMousePositionWorldSpaceEvent;
 class Shader;
 class Shape;
 
@@ -33,7 +34,7 @@ public:
 
     virtual void tick(float deltaTime) override;
     virtual void initFrame(const ViewInfo& viewInfo, const Mat4& worldViewProjection) override;
-
+    virtual void handleEvent(std::shared_ptr<Event> e) override;
 };
 
 class Visualizer : public Actor
@@ -42,4 +43,16 @@ public:
     Visualizer();
 
     virtual void tick(float deltaTime) override;
+    virtual void handleEvent(std::shared_ptr<Event> e) override;
+};
+
+class VisualizerMover : public Actor
+{
+public:
+    VisualizerMover();
+
+    virtual void initFrame(const ViewInfo& viewInfo, const Mat4& worldViewProjection) override;
+
+private:
+    std::weak_ptr<GetMousePositionWorldSpaceEvent> mousePositionEvent;
 };

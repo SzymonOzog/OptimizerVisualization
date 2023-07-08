@@ -27,6 +27,7 @@ editMode(EditMode::None)
 
     actors.push_back(std::move(std::make_unique<Landscape>()));
     actors.push_back(std::move(std::make_unique<Visualizer>()));
+    actors.push_back(std::move(std::make_unique<VisualizerMover>()));
 }
 
 BufferController::~BufferController()
