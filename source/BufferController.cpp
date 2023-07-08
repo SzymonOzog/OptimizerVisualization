@@ -4,6 +4,9 @@
 #include <algorithm>
 #include "Math.h"
 #include "Color.h"
+
+BufferController* gBufferController = nullptr;
+
 BufferController::BufferController(int width, int height) : zBuffer(width * height, std::numeric_limits<float>::max()),
 nearPlane(0.01f),
 farPlane(1000.f),

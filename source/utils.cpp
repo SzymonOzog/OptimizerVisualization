@@ -6,11 +6,16 @@ extern "C"
 #endif
     BufferController* BufferController_Create(int width, int height)
     {
-        return new BufferController(width, height);
+        gBufferController = new BufferController(width, height);
+        return gBufferController;
     }
 
     void BufferController_Destroy(BufferController* bufferController)
     {
+        if(gBufferController == bufferController)
+        {
+            gBufferController = nullptr;
+        }
         delete bufferController;
     }
 

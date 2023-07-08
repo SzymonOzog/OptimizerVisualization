@@ -40,3 +40,4 @@ private:
     Mat4 cameraRotationInverse;
     Vec3 cameraPosition;
 };
+extern BufferController* gBufferController;
