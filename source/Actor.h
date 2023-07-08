@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Shapes.h"
 #include "DataStructures.h"
 #include "Shader.h"
