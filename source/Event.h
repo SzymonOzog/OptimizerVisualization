@@ -22,3 +22,9 @@ public:
     SetVisualiserPositionEvent(const Vec3& position) : position(position) {}
     Vec3 position;
 };
+
+class GetVisualiserGradientEvent : public Event
+{
+public:
+    Vec3 gradient;
+};
