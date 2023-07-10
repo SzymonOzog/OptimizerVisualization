@@ -135,7 +135,6 @@ class Engine():
             cv2.waitKey(1)
             if cv2.getWindowProperty(self.window_name, cv2.WND_PROP_VISIBLE) < 1:
                 self.run = False
-            print(buffer.gradient.x, buffer.gradient.y, buffer.gradient.z)
             self.frame_time =  current_time() - start_frame        
         self.c_lib.BufferController_Destroy(ctypes.c_void_p(self.buffer_controller))
         
