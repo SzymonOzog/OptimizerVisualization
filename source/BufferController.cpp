@@ -55,12 +55,11 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
     for (auto& actor : actors)
     {
         actor->initFrame(viewInfo, WorldViewProjectionMatrix);
-        for (auto ri = events.rbegin(); ri != events.rend(); ri++)
+        for (int i = events.size() - 1; i >= 0; i--)
         {
-            actor->handleEvent(*ri);
-            if((*ri)->bIsHandled)
+            if (events[i]->bIsHandled)
             {
-                events.erase(std::next(ri).base());
+                events.erase(events.begin() + i);
             }
         }
 
