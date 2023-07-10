@@ -57,6 +57,7 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
         actor->initFrame(viewInfo, WorldViewProjectionMatrix);
         for (int i = events.size() - 1; i >= 0; i--)
         {
+            actor->handleEvent(events[i]);
             if (events[i]->bIsHandled)
             {
                 events.erase(events.begin() + i);
