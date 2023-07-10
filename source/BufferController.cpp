@@ -24,10 +24,16 @@ editMode(EditMode::None)
     buffer->data = new Vec3[width * height];
     buffer->width = width;
     buffer->height = height;
+    buffer->currentGradient = Vec3{0.0f, 0.0f, 0.0f};
+
+    visualiserGradientEvent = std::make_shared<GetVisualiserGradientEvent>();
+    addEvent(visualiserGradientEvent);
 
     actors.push_back(std::move(std::make_unique<Landscape>()));
     actors.push_back(std::move(std::make_unique<Visualizer>()));
     actors.push_back(std::move(std::make_unique<VisualizerMover>()));
+
+
 }
 
 BufferController::~BufferController()
@@ -89,6 +95,7 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
         }
     }
 
+    buffer->currentGradient = visualiserGradientEvent->gradient;
 }
 
 bool BufferController::isPointInsideTriangle(const Point& p, const Vec3& v0, const Vec3& v1, const Vec3& v2)

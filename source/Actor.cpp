@@ -68,6 +68,29 @@ void Landscape::handleEvent(std::shared_ptr<Event> e)
         currentSpherePositionIndex = std::static_pointer_cast<LandscapeShader>(shader)->sphereLocationVertexIndex;
         getMousePositionWorldSpaceEvent->mousePosition = getIndexedTriangleVector().vertices[currentSpherePositionIndex].position + position;
     }
+    else if (auto getVisualiserGradientEvent = std::dynamic_pointer_cast<GetVisualiserGradientEvent>(e))
+    {
+        getVisualiserGradientEvent->gradient = getSpherePositionGradient();
+    }
+}
+
+Vec3 Landscape::getSpherePositionGradient() const
+{
+    Vec3 gradient{0.f, 0.f, 0.f};
+    const auto& indices = shape->getIndexedTriangleVector().indices;
+    for(int i = 0; i < indices.size(); i+=3)
+    {
+        if(indices[i] == currentSpherePositionIndex || indices[i+1] == currentSpherePositionIndex || indices[i+2] == currentSpherePositionIndex)
+        {
+            Vec3 v0 = shape->getIndexedTriangleVector().vertices[indices[i]].position;
+            Vec3 v1 = shape->getIndexedTriangleVector().vertices[indices[i+1]].position;
+            Vec3 v2 = shape->getIndexedTriangleVector().vertices[indices[i+2]].position;
+            float dy = v1.y - v0.y == 0.0f ? 0.0001f : v1.y - v0.y;
+            gradient.x += (v1.x - v0.x)/dy;
+            gradient.z += (v1.z - v0.z)/dy;    
+        }
+    }
+    return gradient;
 }
 
 Visualizer::Visualizer() : Actor()
@@ -87,7 +110,6 @@ void Visualizer::handleEvent(std::shared_ptr<Event> e)
 {
     if(auto setVisualiserPositionEvent = std::dynamic_pointer_cast<SetVisualiserPositionEvent>(e))
     {
-
         position = setVisualiserPositionEvent->position - Vec3{0.f, 0.5f, 0.f};
         setVisualiserPositionEvent->endEvent();    
     }

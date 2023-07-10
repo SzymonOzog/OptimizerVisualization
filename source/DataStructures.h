@@ -117,6 +117,7 @@ struct Buffer
 {
     Vec3* data;
     int width, height;
+    Vec3 currentGradient;
 };
 
 struct Point

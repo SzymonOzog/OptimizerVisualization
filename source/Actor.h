@@ -35,6 +35,7 @@ public:
     virtual void tick(float deltaTime) override;
     virtual void initFrame(const ViewInfo& viewInfo, const Mat4& worldViewProjection) override;
     virtual void handleEvent(std::shared_ptr<Event> e) override;
+    Vec3 getSpherePositionGradient() const;
 private:
     int currentSpherePositionIndex;
 };
