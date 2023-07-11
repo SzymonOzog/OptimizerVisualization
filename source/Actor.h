@@ -36,6 +36,7 @@ public:
     virtual void initFrame(const ViewInfo& viewInfo, const Mat4& worldViewProjection) override;
     virtual void handleEvent(std::shared_ptr<Event> e) override;
     Vec3 getSpherePositionGradient() const;
+    void moveSpherePosition(const Vec3& delta);
 private:
     int currentSpherePositionIndex;
 };

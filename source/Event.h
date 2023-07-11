@@ -28,3 +28,10 @@ class GetVisualiserGradientEvent : public Event
 public:
     Vec3 gradient;
 };
+
+class MoveVisualiserEvent : public Event
+{
+public:
+    MoveVisualiserEvent(const Vec3& delta) : delta(delta) {}
+    Vec3 delta;
+};

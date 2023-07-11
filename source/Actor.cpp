@@ -4,6 +4,7 @@
 #include "Shapes.h"
 #include "Shader.h"
 #include "Event.h"
+#include "Math.h"
 #include <iostream>
 
 Actor::Actor() : position({0.0f, 10.0f, 10.0f}), shader(std::make_shared<Shader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f}, 0))
@@ -72,6 +73,11 @@ void Landscape::handleEvent(std::shared_ptr<Event> e)
     {
         getVisualiserGradientEvent->gradient = getSpherePositionGradient();
     }
+    else if (auto moveVisualiserEvent = std::dynamic_pointer_cast<MoveVisualiserEvent>(e))
+    {
+        moveSpherePosition(moveVisualiserEvent->delta);
+        moveVisualiserEvent->endEvent();
+    }
 }
 
 Vec3 Landscape::getSpherePositionGradient() const
@@ -91,6 +97,25 @@ Vec3 Landscape::getSpherePositionGradient() const
         }
     }
     return gradient;
+}
+
+void Landscape::moveSpherePosition(const Vec3 &delta)
+{
+    Vec3 NewPositionWS = shape->getIndexedTriangleVector().vertices[currentSpherePositionIndex].position + delta;
+    float closestDistance = std::numeric_limits<float>::max();
+    Vec3 closestVertex;
+    for(int i = 0; i< shape->getIndexedTriangleVector().vertices.size(); i++)
+    {
+        const auto& v = getIndexedTriangleVector().vertices[i];
+        float distance = Math::distance(v.position, NewPositionWS);
+        if(distance < closestDistance)
+        {
+            closestDistance = distance;
+            closestVertex = v.position;
+            currentSpherePositionIndex = i;
+        }
+    }
+    gBufferController->addEvent(std::make_shared<SetVisualiserPositionEvent>(closestVertex + position));
 }
 
 Visualizer::Visualizer() : Actor()
