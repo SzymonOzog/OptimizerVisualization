@@ -7,8 +7,9 @@ class Vec3(ctypes.Structure):
 
 class Buffer(ctypes.Structure):
     _fields_ = [("data", ctypes.POINTER(Vec3)),
-                ("size", ctypes.c_int),
                 ("gradient", Vec3)]
+                ("width", ctypes.c_int),
+                ("height", ctypes.c_int),
 
 class ViewInfo(ctypes.Structure):
     _fields_ = [("rotX", ctypes.c_float),
