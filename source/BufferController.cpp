@@ -28,6 +28,8 @@ editMode(EditMode::None)
 
     visualiserGradientEvent = std::make_shared<GetVisualiserGradientEvent>();
     addEvent(visualiserGradientEvent);
+    visualiserPositionEvent = std::make_shared<GetVisualiserPositionEvent>();
+    addEvent(visualiserPositionEvent);
 
     actors.push_back(std::move(std::make_unique<Landscape>()));
     actors.push_back(std::move(std::make_unique<Visualizer>()));
@@ -45,8 +47,13 @@ BufferController::~BufferController()
 void BufferController::fillBuffer(const ViewInfo& viewInfo)
 {
     clearBuffer();
-    
     editMode = viewInfo.editMode;
+    
+    if(getEditMode() == EditMode::Run)
+    {
+        auto moveVisualiser = std::make_shared<MoveVisualiserEvent>(viewInfo.visualizerDelta);
+        addEvent(moveVisualiser);
+    }
 
     cameraRotationInverse = Mat4::rotationY(viewInfo.rotY) * Mat4::rotationX(viewInfo.rotX) * Mat4::rotationZ(viewInfo.rotZ);
     Mat4 WorldViewProjectionMatrix = Mat4::translation(cameraPosition) * cameraRotationInverse * projectionMatrix; 
@@ -96,6 +103,7 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
     }
 
     buffer->currentGradient = visualiserGradientEvent->gradient;
+    buffer->visualizerPosition = visualiserPositionEvent->position;
 }
 
 bool BufferController::isPointInsideTriangle(const Point& p, const Vec3& v0, const Vec3& v1, const Vec3& v2)

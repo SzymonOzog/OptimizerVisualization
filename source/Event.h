@@ -35,3 +35,9 @@ public:
     MoveVisualiserEvent(const Vec3& delta) : delta(delta) {}
     Vec3 delta;
 };
+
+class GetVisualiserPositionEvent : public Event
+{
+public:
+    Vec3 position;
+};

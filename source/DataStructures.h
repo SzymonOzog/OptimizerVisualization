@@ -91,7 +91,8 @@ enum class EditMode : unsigned char
 {
     None = 0,
     Sculpt = 1,
-    MoveSphere = 2
+    MoveSphere = 2,
+    Run = 3
 };
 
 struct ViewInfo
@@ -111,6 +112,8 @@ struct ViewInfo
     float outerRadius;
 
     EditMode editMode;
+
+    Vec3 visualizerDelta;
 };
 
 struct Buffer 
@@ -118,6 +121,7 @@ struct Buffer
     Vec3* data;
     int width, height;
     Vec3 currentGradient;
+    Vec3 visualizerPosition;
 };
 
 struct Point

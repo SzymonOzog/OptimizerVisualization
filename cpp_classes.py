@@ -7,9 +7,10 @@ class Vec3(ctypes.Structure):
 
 class Buffer(ctypes.Structure):
     _fields_ = [("data", ctypes.POINTER(Vec3)),
-                ("gradient", Vec3)]
                 ("width", ctypes.c_int),
                 ("height", ctypes.c_int),
+                ("gradient", Vec3),
+                ("visualizerPosition", Vec3)]
 
 class ViewInfo(ctypes.Structure):
     _fields_ = [("rotX", ctypes.c_float),
@@ -22,6 +23,7 @@ class ViewInfo(ctypes.Structure):
                 ("deltaTime", ctypes.c_int),
                 ("innerRadius", ctypes.c_float),
                 ("outerRadius", ctypes.c_float),
-                ("editMode", ctypes.c_uint8)]
+                ("editMode", ctypes.c_uint8),
+                ("visualizerDelta", Vec3)]
     
-(NONE, SCULPT, MOVE_SPHERE) = (0, 1, 2)
+(NONE, SCULPT, MOVE_SPHERE, RUN) = (0, 1, 2, 3)

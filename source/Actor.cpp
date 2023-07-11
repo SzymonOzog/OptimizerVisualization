@@ -78,6 +78,10 @@ void Landscape::handleEvent(std::shared_ptr<Event> e)
         moveSpherePosition(moveVisualiserEvent->delta);
         moveVisualiserEvent->endEvent();
     }
+    else if (auto getVisualizerPositionEvent = std::dynamic_pointer_cast<GetVisualiserPositionEvent>(e))
+    {
+        getVisualizerPositionEvent->position = getIndexedTriangleVector().vertices[currentSpherePositionIndex].position + position;
+    }
 }
 
 Vec3 Landscape::getSpherePositionGradient() const

@@ -4,6 +4,7 @@ import numpy as np
 import cv2
 import math
 import time
+from optimizer import *
 from utils import *
 from cpp_classes import *
 from pynput import mouse, keyboard
@@ -46,6 +47,8 @@ class Engine():
         self.buffer_controller = self.c_lib.BufferController_Create(w,h)
         self.mouse_x = 0
         self.mouse_y = 0
+
+        self.optimizer = Optimizer(lr=0.1)
 
     def on_move(self,x,y):
         if self.mouse_pressed_right:
@@ -90,6 +93,11 @@ class Engine():
             self.view_info.editMode = SCULPT
         elif key.char == '3':
             self.view_info.editMode = MOVE_SPHERE
+        elif key.char == '4':
+            self.view_info.editMode = RUN
+            pos = self.buffer.visualizerPosition   
+            self.optimizer.setPos(pos.x,pos.z)
+
 
     def on_key_release(self, key):
         if hasattr(key, 'char') == False:
@@ -118,13 +126,18 @@ class Engine():
             start_frame = current_time()
             
             self.c_lib.FillBuffer(ctypes.c_void_p(self.buffer_controller), ctypes.byref(self.view_info))
-            buffer = Buffer.from_address(self.c_lib.GetBuffer(ctypes.c_void_p(self.buffer_controller)))  
-            data = np.ctypeslib.as_array(buffer.data, (self.h,self.w))
+            self.buffer = Buffer.from_address(self.c_lib.GetBuffer(ctypes.c_void_p(self.buffer_controller)))  
+            data = np.ctypeslib.as_array(self.buffer.data, (self.h,self.w))
             data = data.view((np.float32, 3))
             data = cv2.cvtColor(data, cv2.COLOR_RGB2BGR)
             cv2.putText(data, f'FPS:{format(1000/self.frame_time, ".2f")}',(30,30)
                         ,cv2.FONT_HERSHEY_SIMPLEX,0.3,(0,0,255),1)
-            cv2.imshow(self.window_name, data)       
+            cv2.imshow(self.window_name, data)
+
+            if self.view_info.editMode == RUN:
+                new_x, new_z = self.optimizer.step(self.buffer.gradient.x, self.buffer.gradient.z)
+                self.view_info.visualizerDelta.x = new_x - self.buffer.visualizerPosition.x
+                self.view_info.visualizerDelta.z = new_z - self.buffer.visualizerPosition.z
 
             image_transform = cv2.getWindowImageRect(self.window_name)
             self.view_info.mouseX = self.mouse_x - image_transform[0]

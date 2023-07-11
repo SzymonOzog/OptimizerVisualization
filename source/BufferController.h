@@ -5,6 +5,7 @@
 class Actor;
 class Event;
 class GetVisualiserGradientEvent;
+class GetVisualiserPositionEvent;
 class Shader;
 
 class BufferController
@@ -41,6 +42,7 @@ private:
     std::vector<std::shared_ptr<Event>> events;
 
     std::shared_ptr<GetVisualiserGradientEvent> visualiserGradientEvent;
+    std::shared_ptr<GetVisualiserPositionEvent> visualiserPositionEvent;
 
     float nearPlane;
     float farPlane;
