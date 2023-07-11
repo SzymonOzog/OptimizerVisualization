@@ -64,7 +64,7 @@ class Engine():
     def on_key_press(self, key):
         if key == keyboard.Key.esc:
             self.run = False
-        elif hasattr(key, 'char') == False:
+        elif not hasattr(key, 'char'):
             return
         elif key.char == 'w':
             self.view_info.deltaPosition.z = -0.01 * self.frame_time
@@ -137,5 +137,3 @@ class Engine():
                 self.run = False
             self.frame_time =  current_time() - start_frame        
         self.c_lib.BufferController_Destroy(ctypes.c_void_p(self.buffer_controller))
-        
-
