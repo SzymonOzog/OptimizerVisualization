@@ -4,6 +4,9 @@ class Vec3(ctypes.Structure):
     _fields_ = [("x", ctypes.c_float),
                 ("y", ctypes.c_float),
                 ("z", ctypes.c_float)]
+    
+    def __repr__(self):
+        return "Vec3({}, {}, {})".format(self.x, self.y, self.z)
 
 class Buffer(ctypes.Structure):
     _fields_ = [("data", ctypes.POINTER(Vec3)),
