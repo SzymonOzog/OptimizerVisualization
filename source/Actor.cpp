@@ -96,8 +96,8 @@ Vec3 Landscape::getSpherePositionGradient() const
             Vec3 v1 = shape->getIndexedTriangleVector().vertices[indices[i+1]].position;
             Vec3 v2 = shape->getIndexedTriangleVector().vertices[indices[i+2]].position;
             float dy = v1.y - v0.y == 0.0f ? 0.0001f : v1.y - v0.y;
-            gradient.x += (v1.x - v0.x)/dy;
-            gradient.z += (v1.z - v0.z)/dy;    
+            gradient.x -= (v1.x - v0.x)/dy;
+            gradient.z -= (v1.z - v0.z)/dy;    
         }
     }
     return gradient;
