@@ -135,6 +135,11 @@ void BufferController::addEvent(std::shared_ptr<Event> e)
     events.push_back(e);
 }
 
+void BufferController::initLandscape(float (*callback)(int, int))
+{
+    addEvent(std::make_shared<InitLandscapeEvent>(callback));
+}
+
 void BufferController::clearBuffer()
 {
     for (int i = 0; i < buffer->width * buffer->height; i++)

@@ -82,6 +82,11 @@ void Landscape::handleEvent(std::shared_ptr<Event> e)
     {
         getVisualizerPositionEvent->position = getIndexedTriangleVector().vertices[currentSpherePositionIndex].position + position;
     }
+    else if (auto initializeLandscapeEvent = std::dynamic_pointer_cast<InitLandscapeEvent>(e))
+    {
+        init(initializeLandscapeEvent->callback);
+        initializeLandscapeEvent->endEvent();
+    }
 }
 
 Vec3 Landscape::getSpherePositionGradient() const
@@ -120,6 +125,17 @@ void Landscape::moveSpherePosition(const Vec3 &delta)
         }
     }
     gBufferController->addEvent(std::make_shared<SetVisualiserPositionEvent>(closestVertex + position));
+}
+
+void Landscape::init(float (*callback)(int, int))
+{
+    IndexedTriangleVector& indexedTriangleVector = shape->getIndexedTriangleVector();
+    for (auto & vertex : indexedTriangleVector.vertices)
+    {
+       vertex.position.y = callback(vertex.position.x, vertex.position.z);
+    }
+    shape->calculateNormals();
+    gBufferController->addEvent(std::make_shared<SetVisualiserPositionEvent>(shape->getIndexedTriangleVector().vertices[currentSpherePositionIndex].position + position));
 }
 
 Visualizer::Visualizer() : Actor()

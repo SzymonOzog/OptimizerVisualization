@@ -37,6 +37,7 @@ public:
     virtual void handleEvent(std::shared_ptr<Event> e) override;
     Vec3 getSpherePositionGradient() const;
     void moveSpherePosition(const Vec3& delta);
+    void init(float (*callback)(int, int));
 private:
     int currentSpherePositionIndex;
 };

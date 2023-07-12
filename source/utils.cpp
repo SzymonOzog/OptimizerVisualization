@@ -1,5 +1,5 @@
 #include "BufferController.h"
-
+#include <iostream>
 #ifdef __cplusplus
 extern "C" 
 {
@@ -27,6 +27,11 @@ extern "C"
     void FillBuffer(BufferController* bufferController, const ViewInfo& viewInfo)
     {
         bufferController->fillBuffer(viewInfo);
+    }
+
+    void InitLandscape(BufferController* bufferController, float (*callback)(int, int))
+    {
+        bufferController->initLandscape(callback);
     }
 #ifdef __cplusplus
 }

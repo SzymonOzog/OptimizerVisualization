@@ -21,6 +21,8 @@ public:
 
     void addEvent(std::shared_ptr<Event> e);
 
+    void initLandscape(float (*callback)(int, int));
+
 private:
     void clearBuffer();
 

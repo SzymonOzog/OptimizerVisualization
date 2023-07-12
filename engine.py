@@ -1,13 +1,19 @@
 import ctypes
+from ctypes import *
 import pathlib
 import numpy as np
 import cv2
-import math
+from math import *
 import time
 from optimizer import *
 from utils import *
 from cpp_classes import *
 from pynput import mouse, keyboard
+
+@CFUNCTYPE(c_float, c_int,c_int)
+def test(x,y):
+    funct = "sin(x)+cos(y)"
+    return eval(funct)
 
 class Engine():
     def __init__(self, w, h, window_name = 'OptimizerVisualisation'):
@@ -47,6 +53,8 @@ class Engine():
         self.buffer_controller = self.c_lib.BufferController_Create(w,h)
         self.mouse_x = 0
         self.mouse_y = 0
+
+        self.c_lib.InitLandscape(ctypes.c_void_p(self.buffer_controller) ,test)
 
         self.optimizer = Optimizer(lr=0.1)
 

@@ -41,3 +41,10 @@ class GetVisualiserPositionEvent : public Event
 public:
     Vec3 position;
 };
+
+class InitLandscapeEvent : public Event
+{
+public:
+    InitLandscapeEvent(float (*callback)(int, int)) : callback(callback) {}
+    float (*callback)(int, int);
+};
