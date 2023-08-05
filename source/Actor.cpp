@@ -180,7 +180,7 @@ void Landscape::colorize()
 
 Visualizer::Visualizer() : Actor()
 {
-    shape = std::make_unique<Sphere>(20,20, 0.5f);
+    shape = std::make_unique<Sphere>(20,20, 0.50f, Color::Green);
     shape->calculateNormals();
     //@TODO double shader creation - no me gusta
     shader = std::make_shared<Shader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f}, getIndexedTriangleVector().vertices.size());
@@ -202,7 +202,7 @@ void Visualizer::handleEvent(std::shared_ptr<Event> e)
 
 VisualizerMover::VisualizerMover() : Actor()
 {
-    shape = std::make_unique<Sphere>(20,20, 0.49f, Color::Magenta);
+    shape = std::make_unique<Sphere>(20,20, 0.49f, Color::White);
     shape->calculateNormals();
     shader = std::make_shared<Shader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f}, getIndexedTriangleVector().vertices.size());
 }
