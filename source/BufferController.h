@@ -1,6 +1,8 @@
 #pragma once
 #include "DataStructures.h"
 #include <memory>
+#include <unordered_map>
+#include <string>
 
 class Actor;
 class Event;
@@ -22,7 +24,6 @@ public:
     void addEvent(std::shared_ptr<Event> e);
 
     void initLandscape(float (*callback)(float, float));
-
 private:
     void clearBuffer();
 
@@ -55,6 +56,8 @@ private:
     Vec3 cameraPosition;
 
     EditMode editMode;
+
 };
 
 extern BufferController* gBufferController;
+extern std::unordered_map<std::string, std::string> gConfig;

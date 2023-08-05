@@ -5,8 +5,8 @@
 #include "Shader.h"
 #include "Event.h"
 #include "Math.h"
-#include <iostream>
 #include <algorithm>
+#include <string>
 
 Actor::Actor() : position({0.0f, 10.0f, 10.0f}), shader(std::make_shared<Shader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f}, 0)), bIsVisible(true)
 {
@@ -39,7 +39,10 @@ IndexedTriangleVector& Actor::getIndexedTriangleVector()
 
 Landscape::Landscape() : Actor(), currentSpherePositionIndex(0)
 {
-    shape = std::make_unique<Plane>(180,180,50.f,50.f, true);
+    shape = std::make_unique<Plane>(std::stoi(gConfig.at("landscapeXSize")),
+                                    std::stoi(gConfig.at("landscapeZSize")),
+                                    std::stof(gConfig.at("landscapeXLen")),
+                                    std::stof(gConfig.at("landscapeZLen")), true);
     shader = std::make_shared<LandscapeShader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f}, getIndexedTriangleVector().vertices.size());
 }
 
@@ -114,7 +117,7 @@ Vec3 Landscape::getSpherePositionGradient() const
                 float dx = v1.x - v0.x;
                 gradient.x -= dy/dx;
             }
-            
+
             if (v1.z == v0.z && v2.z != v0.z)
             {
                 float dy = v2.y - v0.y;

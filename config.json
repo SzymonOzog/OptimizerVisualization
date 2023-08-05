@@ -1,0 +1,9 @@
+{
+    "optimizer" : "torch.optim.Adam(params, lr=0.1)",
+    "width" : 800,
+    "height" : 600,
+    "landscapeXSize" : 100,
+    "landscapeZSize" : 100,
+    "landscapeXLen": 50,
+    "landscapeZLen": 50
+}

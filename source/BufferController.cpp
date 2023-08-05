@@ -1,15 +1,16 @@
 #include "BufferController.h"
-#include <iostream>
-#include <cmath>
-#include <algorithm>
 #include "Math.h"
 #include "Color.h"
 #include "Shapes.h"
 #include "Shader.h"
 #include "Actor.h"
 #include "Event.h"
+#include <iostream>
+#include <cmath>
+#include <algorithm>
 
 BufferController* gBufferController = nullptr;
+std::unordered_map<std::string, std::string> gConfig;
 
 BufferController::BufferController(int width, int height) : zBuffer(width * height, std::numeric_limits<float>::max()),
 nearPlane(0.01f),
@@ -34,8 +35,6 @@ editMode(EditMode::None)
     actors.push_back(std::move(std::make_unique<Landscape>()));
     actors.push_back(std::move(std::make_unique<Visualizer>()));
     actors.push_back(std::move(std::make_unique<VisualizerMover>()));
-
-
 }
 
 BufferController::~BufferController()

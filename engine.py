@@ -17,7 +17,7 @@ def test(x, y):
     return eval(funct)
 
 class Engine():
-    def __init__(self, w, h, window_name = 'OptimizerVisualisation'):
+    def __init__(self, config, window_name = 'OptimizerVisualisation'):
         self.window_name = window_name
 
         self.view_info = ViewInfo()
@@ -43,21 +43,25 @@ class Engine():
 
         self.frame_time = 16
 
-        self.w = w
-        self.h = h
+        self.w = config["width"]
+        self.h = config["height"]
 
         libname = pathlib.Path().absolute() /'obj'/'libbuffer.dll'
         self.c_lib = ctypes.cdll.LoadLibrary(str(libname))
+       
+        for key, value in config.items():
+            self.c_lib.AddConfigEntry(key.encode('utf-8'), str(value).encode('utf-8'))
 
         self.c_lib.BufferController_Create.restype = ctypes.c_void_p
         self.c_lib.GetBuffer.restype = ctypes.c_void_p
 
-        self.buffer_controller = self.c_lib.BufferController_Create(w,h)
+        self.buffer_controller = self.c_lib.BufferController_Create(self.w, self.h)
+
         self.mouse_x = 0
         self.mouse_y = 0
 
         self.c_lib.InitLandscape(ctypes.c_void_p(self.buffer_controller), test)
-        self.optimizer = Optimizer(lr=0.1)
+        self.optimizer = Optimizer(config)
         self.function = ''
 
     def on_move(self,x,y):
@@ -121,7 +125,6 @@ class Engine():
         elif key.char == '5':
             self.read_function = True
 
-
     def on_key_release(self, key):
         if hasattr(key, 'char') == False:
             return
@@ -155,11 +158,10 @@ class Engine():
             data = cv2.cvtColor(data, cv2.COLOR_RGB2BGR)
             cv2.putText(data, f'FPS:{format(1000/self.frame_time, ".2f")}',(30,30)
                         ,cv2.FONT_HERSHEY_SIMPLEX,0.3,(0,0,255),1)
-
+            
             if self.read_function:
                 cv2.rectangle(data, (0,self.h-30), (self.w, self.h), (0,0,0), -1)
                 cv2.putText(data, self.function,(10,self.h-10),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),1)
-            
             
             cv2.imshow(self.window_name, data)
 
@@ -167,7 +169,6 @@ class Engine():
                 new_x, new_z = self.optimizer.step(self.buffer.gradient.x, self.buffer.gradient.z)
                 self.view_info.visualizerDelta.x = new_x - self.buffer.visualizerPosition.x
                 self.view_info.visualizerDelta.z = new_z - self.buffer.visualizerPosition.z
-
 
             image_transform = cv2.getWindowImageRect(self.window_name)
             self.view_info.mouseX = self.mouse_x - image_transform[0]

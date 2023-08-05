@@ -1,5 +1,6 @@
 #include "BufferController.h"
 #include <iostream>
+#include <string>
 #ifdef __cplusplus
 extern "C" 
 {
@@ -32,6 +33,11 @@ extern "C"
     void InitLandscape(BufferController* bufferController, float (*callback)(float, float))
     {
         bufferController->initLandscape(callback);
+    }
+
+    void AddConfigEntry(const char* key, const char* value)
+    {
+        gConfig.insert(std::make_pair(std::string(key), std::string(value)));
     }
 #ifdef __cplusplus
 }
