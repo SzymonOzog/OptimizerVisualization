@@ -10,9 +10,10 @@ from utils import *
 from cpp_classes import *
 from pynput import mouse, keyboard
 
+funct = "sin(x*3.14/50) * 10 + sin(y*3.14/50) * 10"
 @CFUNCTYPE(c_float, c_int,c_int)
-def test(x,y):
-    funct = "sin(x)+cos(y)"
+def test(x, y):
+    global funct
     return eval(funct)
 
 class Engine():
@@ -38,6 +39,7 @@ class Engine():
         self.run = True
         self.mouse_pressed_right = False
         self.mouse_pressed_left = False
+        self.read_function = False
 
         self.frame_time = 16
 
@@ -54,9 +56,9 @@ class Engine():
         self.mouse_x = 0
         self.mouse_y = 0
 
-        self.c_lib.InitLandscape(ctypes.c_void_p(self.buffer_controller) ,test)
-
+        self.c_lib.InitLandscape(ctypes.c_void_p(self.buffer_controller), test)
         self.optimizer = Optimizer(lr=0.1)
+        self.function = ''
 
     def on_move(self,x,y):
         if self.mouse_pressed_right:
@@ -75,6 +77,17 @@ class Engine():
     def on_key_press(self, key):
         if key == keyboard.Key.esc:
             self.run = False
+        elif self.read_function:
+            if key == keyboard.Key.backspace and len(self.function) > 0:
+                self.function = self.function[:-1]
+            elif key == keyboard.Key.enter:
+                self.read_function = False
+                if len(self.function) > 0:
+                    global funct
+                    funct = self.function
+                    self.c_lib.InitLandscape(ctypes.c_void_p(self.buffer_controller), test)
+            elif hasattr(key, 'char'):
+                self.function += key.char
         elif not hasattr(key, 'char'):
             return
         elif key.char == 'w':
@@ -105,6 +118,8 @@ class Engine():
             self.view_info.editMode = RUN
             pos = self.buffer.visualizerPosition   
             self.optimizer.setPos(pos.x,pos.z)
+        elif key.char == '5':
+            self.read_function = True
 
 
     def on_key_release(self, key):
@@ -140,12 +155,19 @@ class Engine():
             data = cv2.cvtColor(data, cv2.COLOR_RGB2BGR)
             cv2.putText(data, f'FPS:{format(1000/self.frame_time, ".2f")}',(30,30)
                         ,cv2.FONT_HERSHEY_SIMPLEX,0.3,(0,0,255),1)
+
+            if self.read_function:
+                cv2.rectangle(data, (0,self.h-30), (self.w, self.h), (0,0,0), -1)
+                cv2.putText(data, self.function,(10,self.h-10),cv2.FONT_HERSHEY_SIMPLEX,1,(255,255,255),1)
+            
+            
             cv2.imshow(self.window_name, data)
 
             if self.view_info.editMode == RUN:
                 new_x, new_z = self.optimizer.step(self.buffer.gradient.x, self.buffer.gradient.z)
                 self.view_info.visualizerDelta.x = new_x - self.buffer.visualizerPosition.x
                 self.view_info.visualizerDelta.z = new_z - self.buffer.visualizerPosition.z
+
 
             image_transform = cv2.getWindowImageRect(self.window_name)
             self.view_info.mouseX = self.mouse_x - image_transform[0]
