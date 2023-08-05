@@ -45,6 +45,6 @@ public:
 class InitLandscapeEvent : public Event
 {
 public:
-    InitLandscapeEvent(float (*callback)(int, int)) : callback(callback) {}
-    float (*callback)(int, int);
+    InitLandscapeEvent(float (*callback)(float, float)) : callback(callback) {}
+    float (*callback)(float, float);
 };

@@ -129,7 +129,7 @@ void Landscape::moveSpherePosition(const Vec3 &delta)
     gBufferController->addEvent(std::make_shared<SetVisualiserPositionEvent>(closestVertex + position));
 }
 
-void Landscape::init(float (*callback)(int, int))
+void Landscape::init(float (*callback)(float, float))
 {
     IndexedTriangleVector& indexedTriangleVector = shape->getIndexedTriangleVector();
     for (auto & vertex : indexedTriangleVector.vertices)

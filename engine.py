@@ -11,7 +11,7 @@ from cpp_classes import *
 from pynput import mouse, keyboard
 
 funct = "sin(x*3.14/50) * 10 + sin(y*3.14/50) * 10"
-@CFUNCTYPE(c_float, c_int,c_int)
+@CFUNCTYPE(c_float, c_float, c_float)
 def test(x, y):
     global funct
     return eval(funct)

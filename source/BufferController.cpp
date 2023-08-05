@@ -135,7 +135,7 @@ void BufferController::addEvent(std::shared_ptr<Event> e)
     events.push_back(e);
 }
 
-void BufferController::initLandscape(float (*callback)(int, int))
+void BufferController::initLandscape(float (*callback)(float, float))
 {
     addEvent(std::make_shared<InitLandscapeEvent>(callback));
 }

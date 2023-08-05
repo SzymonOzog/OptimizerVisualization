@@ -29,7 +29,7 @@ extern "C"
         bufferController->fillBuffer(viewInfo);
     }
 
-    void InitLandscape(BufferController* bufferController, float (*callback)(int, int))
+    void InitLandscape(BufferController* bufferController, float (*callback)(float, float))
     {
         bufferController->initLandscape(callback);
     }
