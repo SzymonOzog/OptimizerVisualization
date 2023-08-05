@@ -102,11 +102,31 @@ Vec3 Landscape::getSpherePositionGradient() const
             Vec3 v0 = shape->getIndexedTriangleVector().vertices[indices[i]].position;
             Vec3 v1 = shape->getIndexedTriangleVector().vertices[indices[i+1]].position;
             Vec3 v2 = shape->getIndexedTriangleVector().vertices[indices[i+2]].position;
-            float dy = v1.y - v0.y;
-            float dx = v1.x - v0.x == 0.0f ? 0.0001f : v1.x - v0.x;
-            float dz = v1.z - v0.z == 0.0f ? 0.0001f : v1.z - v0.z;
-            gradient.x -= dy/dx;
-            gradient.z -= dy/dz;    
+            if (v1.x == v0.x && v2.x != v0.x)
+            {
+                float dy = v2.y - v0.y;
+                float dx = v2.x - v0.x;
+                gradient.x -= dy/dx;
+            }
+            else if (v2.x == v0.x && v1.x != v0.x)
+            {
+                float dy = v1.y - v0.y;
+                float dx = v1.x - v0.x;
+                gradient.x -= dy/dx;
+            }
+            
+            if (v1.z == v0.z && v2.z != v0.z)
+            {
+                float dy = v2.y - v0.y;
+                float dz = v2.z - v0.z;
+                gradient.z -= dy/dz;
+            }
+            else if (v2.z == v0.z && v1.z != v0.z)
+            {
+                float dy = v1.y - v0.y;
+                float dz = v1.z - v0.z;
+                gradient.z -= dy/dz;
+            }
         }
     }
     return gradient;
