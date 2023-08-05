@@ -38,6 +38,7 @@ public:
     Vec3 getSpherePositionGradient() const;
     void moveSpherePosition(const Vec3& delta);
     void init(float (*callback)(float, float));
+    void colorize();
 private:
     int currentSpherePositionIndex;
 };

@@ -6,6 +6,7 @@
 #include "Event.h"
 #include "Math.h"
 #include <iostream>
+#include <algorithm>
 
 Actor::Actor() : position({0.0f, 10.0f, 10.0f}), shader(std::make_shared<Shader>(Vec3{0.1f, 0.1f, 0.1f}, Vec3{0.85f, 0.85f, 1.0f}, 0))
 {
@@ -57,6 +58,7 @@ void Landscape::initFrame(const ViewInfo &viewInfo, const Mat4 &worldViewProject
             shape->getIndexedTriangleVector().vertices[i].position -= Vec3{0.f, 0.01f, 0.f} * alphas[i] * viewInfo.deltaTime; 
         }
         shape->calculateNormals();
+        colorize(); 
         gBufferController->addEvent(std::make_shared<SetVisualiserPositionEvent>(shape->getIndexedTriangleVector().vertices[currentSpherePositionIndex].position + position));
     }
     Actor::initFrame(viewInfo, worldViewProjection);
@@ -137,7 +139,20 @@ void Landscape::init(float (*callback)(float, float))
        vertex.position.y = callback(vertex.position.x, vertex.position.z);
     }
     shape->calculateNormals();
+    colorize();
     gBufferController->addEvent(std::make_shared<SetVisualiserPositionEvent>(shape->getIndexedTriangleVector().vertices[currentSpherePositionIndex].position + position));
+}
+
+void Landscape::colorize()
+{
+    float maxY = std::max_element(shape->getIndexedTriangleVector().vertices.begin(), shape->getIndexedTriangleVector().vertices.end(), [](const Vertex& v1, const Vertex& v2){return v1.position.y < v2.position.y;})->position.y;
+    float minY = std::min_element(shape->getIndexedTriangleVector().vertices.begin(), shape->getIndexedTriangleVector().vertices.end(), [](const Vertex& v1, const Vertex& v2){return v1.position.y < v2.position.y;})->position.y;
+    float range = maxY - minY;
+    for (auto & vertex : shape->getIndexedTriangleVector().vertices)
+    {
+        float lerpAmount = (vertex.position.y - minY) / range;
+        vertex.color = Math::lerp(Color::Red, Color::Blue, lerpAmount);
+    }
 }
 
 Visualizer::Visualizer() : Actor()
