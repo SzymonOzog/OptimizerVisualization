@@ -1,9 +1,16 @@
 {
+    "_comment0":"torch optimizer to use - must have params as first argument",
     "optimizer" : "torch.optim.Adam(params, lr=0.1)",
+
+    "_comment1":"window size in pixels",
     "width" : 800,
     "height" : 600,
+
+    "_comment2":"landscape size in vertices",
     "landscapeXSize" : 100,
     "landscapeZSize" : 100,
+    
+    "_comment3":"how large will the landscape be in world units",
     "landscapeXLen": 50,
     "landscapeZLen": 50
 }
