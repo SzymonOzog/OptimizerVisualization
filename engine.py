@@ -106,12 +106,6 @@ class Engine():
             self.view_info.deltaPosition.y = -0.01 * self.frame_time
         elif key.char == 'e':
             self.view_info.deltaPosition.y = 0.01 * self.frame_time
-        elif key.char == 'p':
-            if self.mouse_listener.is_alive():
-                self.mouse_listener.stop()
-                self.keyboard_listener.stop()
-            else:
-                self.mouse_listener.start()
         elif key.char == '1':
             self.view_info.editMode = NONE
         elif key.char == '2':
