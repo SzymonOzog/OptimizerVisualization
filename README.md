@@ -19,7 +19,7 @@ Currently it can:
 </p>
 
 ## How to run it
-Simply install the packages in requirements.txt and call `python run.py`
+Simply install the packages in requirements.txt and [g++](https://code.visualstudio.com/docs/cpp/config-mingw#_installing-the-mingww64-toolchain) and call `python run.py`
 
 If you want to, you can edit the configuration file `config.json` or specify another one by runing with `-config=path`
 
