@@ -61,15 +61,7 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
     for (auto& actor : actors)
     {
         actor->initFrame(viewInfo, WorldViewProjectionMatrix);
-        for (int i = events.size() - 1; i >= 0; i--)
-        {
-            actor->handleEvent(events[i]);
-            if (events[i]->bIsHandled)
-            {
-                events.erase(events.begin() + i);
-            }
-        }
-
+        dispatchEvents(actor);
         if(!actor->isVisible())
         {
             continue;
@@ -145,6 +137,18 @@ void BufferController::clearBuffer()
     {
         putPixel(Point{ i % buffer->width, i / buffer->width }, Color::Black);
         zBuffer[i] = std::numeric_limits<float>::max();
+    }
+}
+
+void BufferController::dispatchEvents(const std::unique_ptr<Actor>& actor)
+{
+    for (int i = events.size() - 1; i >= 0; i--)
+    {
+        actor->handleEvent(events[i]);
+        if (events[i]->bIsHandled)
+        {
+            events.erase(events.begin() + i);
+        }
     }
 }
 

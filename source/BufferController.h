@@ -27,6 +27,8 @@ public:
 private:
     void clearBuffer();
 
+    void dispatchEvents(const std::unique_ptr<Actor>& actor);
+
     Vec3 projectToScreen(const Vec3& vertex);
     Vec3 projectToScreen(const Vec4& vertex);
 
