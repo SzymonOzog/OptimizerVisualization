@@ -97,20 +97,6 @@ void BufferController::fillBuffer(const ViewInfo& viewInfo)
     buffer->visualizerPosition = visualiserPositionEvent->position;
 }
 
-bool BufferController::isPointInsideTriangle(const Point& p, const Vec3& v0, const Vec3& v1, const Vec3& v2)
-{
-    int v0p_x = p.x - v0.x;
-    int v0p_y = p.y - v0.y;
-
-    bool p_v0v1 = (v1.x - v0.x) * v0p_y - (v1.y - v0.y) * v0p_x > 0;
-
-    if (((v2.x - v0.x) * v0p_y - (v2.y - v0.y) * v0p_x > 0) == p_v0v1) 
-        return false;
-    if (((v2.x - v1.x) * (p.y - v1.y) - (v2.y - v1.y)*(p.x - v1.x) > 0 )!= p_v0v1) 
-        return false;
-    return true;
-}
-
 Buffer* BufferController::getBuffer()
 {
     return buffer;
@@ -150,16 +136,6 @@ void BufferController::dispatchEvents(const std::unique_ptr<Actor>& actor)
             events.erase(events.begin() + i);
         }
     }
-}
-
-Vec3 BufferController::projectToScreen(const Vec3 &vertex)
-{
-    return Vec3{(vertex.x / vertex.z + 1.0f) * 0.5f * buffer->width, (vertex.y / vertex.z + 1.0f) * 0.5f * buffer->height, vertex.z };
-}
-
-Vec3 BufferController::projectToScreen(const Vec4 &vertex)
-{
-    return Vec3({(vertex.x / vertex.w + 1.0f) * 0.5f * buffer->width, (vertex.y / vertex.w + 1.0f) * 0.5f * buffer->height, vertex.z / vertex.w});
 }
 
 void BufferController::drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2, std::shared_ptr<Shader> ps)

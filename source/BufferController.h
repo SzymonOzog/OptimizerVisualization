@@ -29,11 +29,6 @@ private:
 
     void dispatchEvents(const std::unique_ptr<Actor>& actor);
 
-    Vec3 projectToScreen(const Vec3& vertex);
-    Vec3 projectToScreen(const Vec4& vertex);
-
-    bool isPointInsideTriangle(const Point& p, const Vec3& v0, const Vec3& v1, const Vec3& v2);
-
     void drawTriangle(Vertex* v0, Vertex* v1, Vertex* v2, std::shared_ptr<Shader> ps);
     void drawFlatTriangle(Vertex* v0, Vertex* v1, Vertex* v2, std::shared_ptr<Shader> ps);
 
