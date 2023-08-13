@@ -5,17 +5,17 @@ Currently it can:
 - Initialize the optimization landscape to a custom function
 
  <p align="center">
-<img src="https://github.com/SzymonOzog/OptimizerVisualization/assets/58388001/48144c91-032f-4e48-a438-10319b79b285"  width="400" />
+<img src="https://github.com/SzymonOzog/OptimizerVisualization/assets/58388001/d9bc9d84-de22-489d-969b-015d074ca2aa"  width="400" />
  </p>
 
 - Edit the landscape post initialization
 <p align="center">
-<img src="https://github.com/SzymonOzog/OptimizerVisualization/assets/58388001/64200395-3c2d-4742-a6fc-4fab36bf81be"  width="400" />
+<img src="https://github.com/SzymonOzog/OptimizerVisualization/assets/58388001/c58fa3db-3031-4501-a5a8-7a5fa5158923"  width="400" />
 </p>
 
 - Optimize!
 <p align="center">
-<img src="https://github.com/SzymonOzog/OptimizerVisualization/assets/58388001/03960d33-0a6b-4849-a9da-33e118d36ec9"  width="400" />
+<img src="https://github.com/SzymonOzog/OptimizerVisualization/assets/58388001/a5b6a4df-2acd-40ca-ae34-4fec7a6bd78d"  width="400" />
 </p>
 
 ## How to run it
